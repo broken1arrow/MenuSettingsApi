@@ -9,6 +9,7 @@ public final class ItemSettings {
 
 	private final int priority;
 	private final boolean updateButton;
+	private final int refreshButton;
 	private final boolean glow;
 	private final String displayname;
 	private final String slot;
@@ -31,6 +32,7 @@ public final class ItemSettings {
 
 	private ItemSettings(Builder builder) {
 		this.priority = builder.priority;
+		this.refreshButton = builder.refreshButton;
 		this.updateButton = builder.updateButton;
 		this.glow = builder.glow;
 		this.displayname = builder.displayname;
@@ -59,6 +61,10 @@ public final class ItemSettings {
 
 	public boolean isUpdateButton() {
 		return updateButton;
+	}
+
+	public int getRefreshButton() {
+		return refreshButton;
 	}
 
 	public boolean isGlow() {
@@ -139,6 +145,7 @@ public final class ItemSettings {
 
 	public static class Builder {
 		private int priority;
+		private int refreshButton;
 		private boolean updateButton;
 		private boolean glow;
 		private String displayname = "";
@@ -161,6 +168,11 @@ public final class ItemSettings {
 
 		public Builder setPriority(int priority) {
 			this.priority = priority;
+			return this;
+		}
+
+		public Builder setRefreshButton(int refreshButton) {
+			this.refreshButton = refreshButton;
 			return this;
 		}
 
@@ -270,6 +282,7 @@ public final class ItemSettings {
 		return "ItemSettings{" +
 				"priority=" + priority +
 				", updateButton=" + updateButton +
+				", refreshButton=" + refreshButton +
 				", glow=" + glow +
 				", displayname='" + displayname + '\'' +
 				", slot='" + slot + '\'' +
