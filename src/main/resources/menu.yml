@@ -42,7 +42,34 @@ Menus:
         Lore:
           - ""
           - "&4Example lore"
+        # This is all diffrent requirement checks you
+        # can use to check diffrent clicks.
+        #
+        # Right_click_requirement:
+        # Shift_left_click_requirement:
+        # Shift_right_click_requirement:
+        # Left_click_requirement:
+        # Middle_click_requirement:
         Click_requirement:
-          - [message] "&6test if this works"
+          Requirement:
+            something:
+              type: has permission
+              output: "test"
+              success_commands:
+                - "command 1"
+              deny_commands:
+                - "command 1"
+        Click_commands:
+          - "[message] &6Anny button trigger this"
+        Left_click_commands:
+          - "[message] &7Left click"
+        Right_click_commands:
+          - "[message] &4Right click"
+        Left_shift_click_commands:
+          - "[message] &4Left and shift click"
+        Right_shift_click_commands:
+          - "[message] &4Right and shift click "
+        Middle_click_commands:
+          - "[message] &7Middle click"
 
       

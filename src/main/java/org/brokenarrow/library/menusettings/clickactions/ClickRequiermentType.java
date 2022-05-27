@@ -7,7 +7,8 @@ public enum ClickRequiermentType {
 	RIGHT_CLICK_REQUIREMENT("Right_click_requirement"),
 	SHIFT_LEFT_CLICK_REQUIREMENT("Shift_left_click_requirement"),
 	SHIFT_RIGHT_CLICK_REQUIREMENT("Shift_right_click_requirement"),
-	CLICK_REQUIREMENT("Click_requirement");
+	CLICK_REQUIREMENT("Click_requirement"),
+	MIDDLE_CLICK_REQUIREMENT("Middle_click_requirement");
 
 	private final String requirementType;
 
