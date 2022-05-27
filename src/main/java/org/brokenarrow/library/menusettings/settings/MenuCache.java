@@ -5,10 +5,7 @@ import org.brokenarrow.library.menusettings.builders.MenuSettings;
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
 import org.brokenarrow.library.menusettings.clickactions.ClickRequiermentType;
 import org.brokenarrow.library.menusettings.clickactions.CommandActionType;
-import org.brokenarrow.library.menusettings.requirements.InputOutputRequirement;
-import org.brokenarrow.library.menusettings.requirements.Requirement;
-import org.brokenarrow.library.menusettings.requirements.RequirementType;
-import org.brokenarrow.library.menusettings.requirements.RequirementsLogic;
+import org.brokenarrow.library.menusettings.requirements.*;
 import org.brokenarrow.library.menusettings.tasks.ClickActionTask;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -178,7 +175,7 @@ public class MenuCache extends AllYamlFilesInFolder {
 		String type = config.getString(path + ".type");
 		String input = config.getString(path + ".input");
 		String output = config.getString(path + ".output");
-
+		String expression = config.getString(path + ".expression");
 		ClickRequiermentType clickRequiermentType = ClickRequiermentType.getType(clicktype);
 		RequirementType requirementType = RequirementType.getType(type);
 
@@ -203,6 +200,10 @@ public class MenuCache extends AllYamlFilesInFolder {
 			case DO_NOT_HAVE_MONEY:
 				break;
 			case JAVASCRIPT:
+				if (expression != null)
+					rec = new JavascriptRequirement(expression);
+				else
+					System.out.println("Javascript  expression is null ");
 				break;
 			case STRING_EQUALS:
 			case STRING_CONTAINS:
@@ -216,6 +217,7 @@ public class MenuCache extends AllYamlFilesInFolder {
 			case INT_LESS_THAN_OR_EQUALS_OUTPUT:
 			case INT_LESS_THAN_OUTPUT:
 				rec = new InputOutputRequirement(requirementType, input, output);
+				break;
 			case CUSTOM:
 				break;
 		}

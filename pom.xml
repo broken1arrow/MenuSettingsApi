@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
+    <groupId>org.lib</groupId>
     <artifactId>MenuSettingsApi</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -68,6 +68,18 @@
             <artifactId>RBG-Gradients</artifactId>
             <version>0.16</version>
             <scope>compile</scope>
+        </dependency>
+        <!--       <dependency>
+                   <groupId>org.openjdk.nashorn</groupId>
+                   <artifactId>nashorn-core</artifactId>
+                   <version>15.4</version>
+                   <scope>provided</scope>
+               </dependency>-->
+        <dependency>
+            <groupId>com.github.broken1arrow</groupId>
+            <artifactId>NashornPlusAPI</artifactId>
+            <version>0.12</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>
@@ -158,6 +170,8 @@
                                 <includes>
                                     <include>broken_MenuAPI:*</include>
                                     <include>com.github.broken1arrow.Item-NBT-API:item-nbt-api:*</include>
+                                    <!--                   <include>org.openjdk.nashorn:*</include>
+                                                       <include>org.ow2.asm:*</include>-->
                                     <!-- <include>broken_NBT:*</include>-->
                                     <include>com.github.broken1arrow:*</include>
                                 </includes>
@@ -170,6 +184,22 @@
                                 <relocation>
                                     <pattern>org.brokenarrow.menu</pattern>
                                     <shadedPattern>${project.groupId}.${project.artifactId}.MenuAPI</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.openjdk.nashorn.api</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.nashorn</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.openjdk.nashorn.internal</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.nashorn</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.objectweb.asm</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.asm</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.openjdk.nashorn.tools</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.nashorn</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>de.tr7zw</pattern>
