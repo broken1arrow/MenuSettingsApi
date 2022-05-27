@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>MenuSettingsApi</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <source>8</source>
+        <target>8</target>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>spigotmc-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+        </repository>
+        <repository> <!-- for development builds -->
+            <id>sonatype-oss-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
+        <repository>
+            <id>papermc</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
+        </repository>
+    </repositories>
+    <dependencies>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.11.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.broken1arrow</groupId>
+            <artifactId>Item-NBT-API</artifactId>
+            <version>2.9.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.broken1arrow</groupId>
+            <artifactId>RBG-Gradients</artifactId>
+            <version>0.16</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+    <build>
+
+        <!--
+           When we are building your plugins, what plugins should we use during this process?
+
+           The plugins here extend the functionality of Maven, just like your plugin enhances Minecraft
+           These are not Minecraft plugins, but only Maven plugins!
+       -->
+        <plugins>
+
+            <!--
+               The first and the most essential plugin is the compiler, that translates your
+               human readable code into bytecode.
+           -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <!--
+                   You want to check and update the latest version periodically from
+                   https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin
+               -->
+                <version>3.10.1</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                    <!--                    <source>${java.version}</source>
+                                        <target>${java.version}</target>-->
+                    <!--                    <release>8</release>-->
+                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
+
+                </configuration>
+            </plugin>
+
+
+            <!--     <plugin>
+                     <groupId>org.apache.maven.plugins</groupId>
+                     <artifactId>maven-install-plugin</artifactId>
+                     <version>2.4</version>
+                     <executions>
+                         <execution>
+                             <phase>initialize</phase>
+                             <goals>
+                                 <goal>install-file</goal>
+                             </goals>
+                             <configuration>
+                                 <file>H:/PluginsJarUseForAPI/Foundation-5.12.7.jar</file>
+                                 <groupId>com.fundation.id</groupId>
+                                 <artifactId>fundation</artifactId>
+                                 <version>5.12.7</version>
+                                 <packaging>jar</packaging>
+                             </configuration>
+                         </execution>
+                     </executions>
+                 </plugin>-->
+
+
+            <!--
+                        The second plugin is the shade plugin, packaging every library with
+                        the "compile" scope (see dependencies)
+                        -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <!--
+                   You want to check and update the latest version periodically from
+                   https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-shade-plugin
+               -->
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <!--
+                            By default we configure the Foundation to include itself and all classes when
+                            we set the scope to compile (see above).
+
+                            There are many libraries from Foundation we will not need to use, and here
+                            can you specify which ones to exclude. Please leave the default ones as they are.
+                       -->
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <finalName>${project.name}-${project.version}</finalName>
+                            <artifactSet>
+                                <includes>
+                                    <include>broken_MenuAPI:*</include>
+                                    <include>com.github.broken1arrow.Item-NBT-API:item-nbt-api:*</include>
+                                    <!-- <include>broken_NBT:*</include>-->
+                                    <include>com.github.broken1arrow:*</include>
+                                </includes>
+                            </artifactSet>
+                            <relocations>
+                                <!-- <relocation>
+                                   <pattern>net.kyori.adventure</pattern>
+                                   <shadedPattern>${project.groupId}.${project.artifactId}.adventure</shadedPattern>
+                               </relocation>-->
+                                <relocation>
+                                    <pattern>org.brokenarrow.menu</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.MenuAPI</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>de.tr7zw</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.nbt</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.broken.lib</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.rbglib</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+        <!--
+        During the build, we are going to scan all files in src/main/resources
+        folder such as plugin.yml and your settings files and replace all variables
+        such as ${main.class} with their proper values.
+
+        You can use native variables such as ${project.X} or the ones you defined above
+        in the properties section.
+        -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+
+</project>

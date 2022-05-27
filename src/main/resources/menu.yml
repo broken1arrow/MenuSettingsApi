@@ -1,0 +1,48 @@
+Menus:
+  ######################################################
+  # MainMenu.
+  Main_Menu:
+    Menu_Size: 36
+    Menu_Title: "&1Main menu"
+    # slots you want to use to add items inside.
+    FillSpace: 9-35
+    # max amount of item on the page (if you not fill all slots and wants more pages).
+    Max_Amount_Of_Items: 13
+    Update_Buttons: true
+    Delay: 5
+    Open_requirement:
+      Requirement:
+        Permission:
+          type: has permission
+          input: "test"
+        Money:
+          type: <
+          output: 5
+          input: 0
+    # menu key for all items in the menu (don´t change this name).
+    Menu_Items:
+      # one menu item.
+      Menu_Icon:
+        Priority: 0
+        Update_Button: false
+        Button_delay: 2
+        Glow: true
+        Slot: 11
+        Icon: SUNFLOWER
+        View_requirement:
+          Requirement:
+            Custom:
+              type: custom
+              output: "test"
+              success_commands:
+                - "command 1"
+              deny_commands:
+                - "command 1"
+        Display_name: "&6Example item"
+        Lore:
+          - ""
+          - "&4Example lore"
+        Click_requirement:
+          - [message] "&6test if this works"
+
+      
