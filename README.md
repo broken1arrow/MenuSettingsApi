@@ -1,4 +1,3 @@
-# MenuSettingsApi usage.
+## More info in the wiki.
 
-More info in the wiki.
 
