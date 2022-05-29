@@ -1,6 +1,10 @@
 package org.brokenarrow.library.menusettings;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import org.brokenarrow.library.menusettings.hooks.economy.PriceProvider;
+import org.brokenarrow.library.menusettings.hooks.economy.RegisterEconomyHook;
+import org.brokenarrow.library.menusettings.hooks.permission.PermissionProvider;
+import org.brokenarrow.library.menusettings.hooks.permission.RegisterPermissionHook;
 import org.brokenarrow.library.menusettings.settings.MenuCache;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -13,6 +17,8 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+import static org.brokenarrow.library.menusettings.exceptions.Valid.checkBoolean;
+
 public class RegisterMenuAddon {
 
 	private static Plugin PLUGIN;
@@ -22,12 +28,16 @@ public class RegisterMenuAddon {
 	private static int accesAmount;
 	private static ScriptEngineFactory engineFactory;
 	private static ScriptEngineManager engineManager;
+	private static RegisterEconomyHook registerEconomyHook;
+	private static RegisterPermissionHook registerPermissionHook;
 
 	private RegisterMenuAddon() {
 		accesAmount++;
 		if (accesAmount > 0)
 			System.out.println("acces amoiunt " + accesAmount);
 		registerNashorn();
+		registerEconomyHook = new RegisterEconomyHook();
+		registerPermissionHook = new RegisterPermissionHook();
 	}
 
 	public RegisterMenuAddon(Plugin plugin, String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
@@ -65,6 +75,24 @@ public class RegisterMenuAddon {
 			engineFactory = NashornPlusPlugin.getInstance().getEngineFactory();
 		}
 
+	}
+
+	public static RegisterEconomyHook getRegisterEconomyHook() {
+		return registerEconomyHook;
+	}
+
+	public static PriceProvider getEconomyProvider() {
+		checkBoolean(registerEconomyHook == null, "economyProvider is null, so you can't add or remove money from players");
+		return registerEconomyHook.getProvider();
+	}
+
+	public static RegisterPermissionHook getRegisterPermissionHook() {
+		return registerPermissionHook;
+	}
+
+	public static PermissionProvider getPermissionProvider() {
+		checkBoolean(registerEconomyHook == null, "permissionProvider is null, so you can't set or remove permissions from players");
+		return registerPermissionHook.getProvider();
 	}
 
 	public static ScriptEngineFactory getEngineFactory() {
