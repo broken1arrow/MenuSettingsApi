@@ -8,6 +8,8 @@ public enum RequirementType {
 
 	HAS_PERMISSION(set("has permission")),
 	DO_NOT_HAVE_PERMISSION(set("!has permission")),
+	HAS_EXPERIENCE(set("has experience")),
+	DO_NOT_HAVE_EXPERIENCE(set("!has experience")),
 	HAS_MONEY(set("has money")),
 	DO_NOT_HAVE_MONEY(set("!has money")),
 	STRING_EQUALS(set("string equals")),

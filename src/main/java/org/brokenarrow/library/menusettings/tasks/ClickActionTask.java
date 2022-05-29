@@ -10,8 +10,9 @@ import org.bukkit.entity.Player;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.broken.lib.rbg.TextTranslator.toSpigotFormat;
-import static org.brokenarrow.library.menusettings.RegisterMenuAddon.formatDubbleDecimal;
-import static org.brokenarrow.library.menusettings.RegisterMenuAddon.setPlaceholders;
+import static org.brokenarrow.library.menusettings.RegisterMenuAddon.*;
+import static org.brokenarrow.library.menusettings.clickactions.CommandActionType.TAKE_EXP;
+import static org.brokenarrow.library.menusettings.utillity.ExperiensUtillity.setExp;
 
 
 public class ClickActionTask {
@@ -45,6 +46,7 @@ public class ClickActionTask {
 				player.sendMessage(toSpigotFormat(executable));
 				break;
 			case BROADCAST:
+				Bukkit.broadcastMessage(toSpigotFormat(executable));
 				break;
 			case CHAT:
 				player.chat(executable);
@@ -78,16 +80,23 @@ public class ClickActionTask {
 
 				break;
 			case TAKE_MONEY:
+				getEconomyProvider().withdrawAmont(player.getUniqueId(), Double.parseDouble(executable));
 				break;
 			case GIVE_MONEY:
+				getEconomyProvider().depositAmont(player.getUniqueId(), Double.parseDouble(executable));
 				break;
 			case TAKE_EXP:
-				break;
 			case GIVE_EXP:
+				if (this.actionType == TAKE_EXP)
+					executable = "-" + executable;
+
+				setExp(player, executable);
 				break;
 			case TAKE_PERM:
+				getPermissionProvider().setPermission(player, executable);
 				break;
 			case GIVE_PERM:
+				getPermissionProvider().removePermission(player, executable);
 				break;
 		}
 	}

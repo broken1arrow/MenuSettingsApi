@@ -15,6 +15,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.brokenarrow.library.menusettings.requirements.RequirementType.DO_NOT_HAVE_EXPERIENCE;
+import static org.brokenarrow.library.menusettings.requirements.RequirementType.DO_NOT_HAVE_PERMISSION;
+
 public class MenuCache extends AllYamlFilesInFolder {
 
 	Map<String, MenuSettings> menuCache = new HashMap<>();
@@ -175,7 +178,10 @@ public class MenuCache extends AllYamlFilesInFolder {
 		String type = config.getString(path + ".type");
 		String input = config.getString(path + ".input");
 		String output = config.getString(path + ".output");
+		String permission = config.getString(path + ".permission");
 		String expression = config.getString(path + ".expression");
+		String experiencesAmount = config.getString(path + ".amount");
+		boolean useLevel = config.getBoolean(path + ".level");
 		ClickRequiermentType clickRequiermentType = ClickRequiermentType.getType(clicktype);
 		RequirementType requirementType = RequirementType.getType(type);
 
@@ -192,18 +198,27 @@ public class MenuCache extends AllYamlFilesInFolder {
 
 		switch (requirementType) {
 			case HAS_PERMISSION:
-				break;
 			case DO_NOT_HAVE_PERMISSION:
+				if (permission != null)
+					rec = new HasPermissionRequirement(permission, requirementType == DO_NOT_HAVE_PERMISSION);
+				else
+					System.out.println("permission path is null");
 				break;
 			case HAS_MONEY:
-				break;
 			case DO_NOT_HAVE_MONEY:
+				break;
+			case HAS_EXPERIENCE:
+			case DO_NOT_HAVE_EXPERIENCE:
+				if (experiencesAmount != null)
+					rec = new HasExpRequirement(experiencesAmount, useLevel, requirementType == DO_NOT_HAVE_EXPERIENCE);
+				else
+					System.out.println("amount path is null");
 				break;
 			case JAVASCRIPT:
 				if (expression != null)
 					rec = new JavascriptRequirement(expression);
 				else
-					System.out.println("Javascript  expression is null ");
+					System.out.println("Javascript expression is null ");
 				break;
 			case STRING_EQUALS:
 			case STRING_CONTAINS:
