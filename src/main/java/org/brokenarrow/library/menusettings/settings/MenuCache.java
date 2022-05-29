@@ -1,6 +1,6 @@
 package org.brokenarrow.library.menusettings.settings;
 
-import org.brokenarrow.library.menusettings.builders.ItemSettings;
+import org.brokenarrow.library.menusettings.builders.ButtonSettings;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
 import org.brokenarrow.library.menusettings.clickactions.ClickRequiermentType;
@@ -41,7 +41,7 @@ public class MenuCache extends AllYamlFilesInFolder {
 
 		if (configurationSection == null) return;
 
-		Map<List<Integer>, List<ItemSettings>> buttonsCache = new HashMap<>();
+		Map<List<Integer>, List<ButtonSettings>> buttonsCache = new HashMap<>();
 		for (String key : configurationSection.getKeys(false)) {
 			if (key == null) continue;
 
@@ -53,7 +53,7 @@ public class MenuCache extends AllYamlFilesInFolder {
 		System.out.println("menuCache menuCache " + menuCache.keySet());
 	}
 
-	public MenuSettings chacheYamlData(Map<List<Integer>, List<ItemSettings>> buttonsCache, String key) {
+	public MenuSettings chacheYamlData(Map<List<Integer>, List<ButtonSettings>> buttonsCache, String key) {
 		FileConfiguration config = getCustomConfig();
 		int menuSize = config.getInt("Menus." + key + ".Menu_Size");
 		String menuTitle = config.getString("Menus." + key + ".Menu_Title");
@@ -64,7 +64,7 @@ public class MenuCache extends AllYamlFilesInFolder {
 		ConfigurationSection sectionOfButtons = config.getConfigurationSection("Menus." + key + ".Menu_Items");
 		if (sectionOfButtons != null)
 			for (String buttons : sectionOfButtons.getKeys(false)) {
-				List<ItemSettings> itemSettings = new ArrayList<>();
+				List<ButtonSettings> buttonSettings = new ArrayList<>();
 				int priority = config.getInt("Menus." + key + ".Menu_Items." + buttons + ".Priority");
 				boolean updateButton = config.getBoolean("Menus." + key + ".Menu_Items." + buttons + ".Update_Button");
 				int updateButtondelay = config.getInt("Menus." + key + ".Menu_Items." + buttons + ".Update_delay");
@@ -76,7 +76,7 @@ public class MenuCache extends AllYamlFilesInFolder {
 
 				String path = "Menus." + key + ".Menu_Items." + buttons;
 
-				ItemSettings.Builder builder = new ItemSettings.Builder()
+				ButtonSettings.Builder builder = new ButtonSettings.Builder()
 						.setDisplayname(displayName)
 						.setIcon(icon).setGlow(glow)
 						.setLore(lore)
@@ -97,13 +97,13 @@ public class MenuCache extends AllYamlFilesInFolder {
 						.setShiftRightClickActionHandler(checkCommands(config, path, "Right_shift_click_commands"));
 				List<Integer> slotsList = getSlot(slot);
 
-				List<ItemSettings> oldbuttonsCache = buttonsCache.get(slotsList);
+				List<ButtonSettings> oldbuttonsCache = buttonsCache.get(slotsList);
 				if (oldbuttonsCache != null && !oldbuttonsCache.isEmpty()) {
 					oldbuttonsCache.add(builder.build());
 					buttonsCache.put(slotsList, oldbuttonsCache);
 				} else {
-					itemSettings.add(builder.build());
-					buttonsCache.put(slotsList, itemSettings);
+					buttonSettings.add(builder.build());
+					buttonsCache.put(slotsList, buttonSettings);
 				}
 			}
 
@@ -117,11 +117,11 @@ public class MenuCache extends AllYamlFilesInFolder {
 		return builder.build();
 	}
 
-	public Map<List<Integer>, List<ItemSettings>> sortList(Map<List<Integer>, List<ItemSettings>> buttonsCache) {
-		Map<List<Integer>, List<ItemSettings>> sortedButtons = new HashMap<>();
-		for (Map.Entry<List<Integer>, List<ItemSettings>> entry : buttonsCache.entrySet()) {
-			List<ItemSettings> value = entry.getValue();
-			value = value.stream().sorted(Comparator.comparingInt(ItemSettings::getPriority)).collect(Collectors.toList());
+	public Map<List<Integer>, List<ButtonSettings>> sortList(Map<List<Integer>, List<ButtonSettings>> buttonsCache) {
+		Map<List<Integer>, List<ButtonSettings>> sortedButtons = new HashMap<>();
+		for (Map.Entry<List<Integer>, List<ButtonSettings>> entry : buttonsCache.entrySet()) {
+			List<ButtonSettings> value = entry.getValue();
+			value = value.stream().sorted(Comparator.comparingInt(ButtonSettings::getPriority)).collect(Collectors.toList());
 			sortedButtons.put(entry.getKey(), value);
 		}
 		return sortedButtons;

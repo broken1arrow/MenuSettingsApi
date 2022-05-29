@@ -1,6 +1,6 @@
 package org.brokenarrow.library.menusettings;
 
-import org.brokenarrow.library.menusettings.builders.ItemSettings;
+import org.brokenarrow.library.menusettings.builders.ButtonSettings;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
 import org.brokenarrow.library.menusettings.requirements.RequirementsLogic;
 import org.bukkit.entity.Player;
@@ -37,7 +37,7 @@ public class GetMenuButtonsData {
 		return wiver;
 	}
 
-	public boolean checkClickRequirements(ItemSettings requirements, ClickType clickType) {
+	public boolean checkClickRequirements(ButtonSettings requirements, ClickType clickType) {
 		if (requirements == null)
 			return true;
 
@@ -96,15 +96,15 @@ public class GetMenuButtonsData {
 	}
 
 	/**
-	 * Get button data on current slot. It return data from {@link ItemSettings}
+	 * Get button data on current slot. It return data from {@link ButtonSettings}
 	 *
 	 * @param slot get the data from.
 	 * @return items settings or null.
 	 */
-	public ItemSettings getButton(int slot) {
-		List<ItemSettings> buttons = getButtons(slot);
+	public ButtonSettings getButton(int slot) {
+		List<ButtonSettings> buttons = getButtons(slot);
 		if (buttons != null)
-			for (ItemSettings key : buttons) {
+			for (ButtonSettings key : buttons) {
 				if (checkRequirement(key.getViewRequirement())) {
 					return key;
 				}
@@ -118,7 +118,7 @@ public class GetMenuButtonsData {
 		return viewRequirement.estimate(this.wiver);
 	}
 
-	public List<ItemSettings> getButtons(int slot) {
+	public List<ButtonSettings> getButtons(int slot) {
 		for (List<Integer> keys : menucache.getItemSettings().keySet()) {
 			if (keys.contains(slot))
 				return menucache.getItemSettings().get(keys);

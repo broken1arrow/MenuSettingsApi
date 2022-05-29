@@ -5,7 +5,7 @@ import org.brokenarrow.library.menusettings.requirements.RequirementsLogic;
 
 import java.util.List;
 
-public final class ItemSettings {
+public final class ButtonSettings {
 
 	private final int priority;
 	private final boolean updateButton;
@@ -30,7 +30,7 @@ public final class ItemSettings {
 	private final ClickActionHandler shiftRightClickActionHandler;
 	private final Builder builder;
 
-	private ItemSettings(Builder builder) {
+	private ButtonSettings(Builder builder) {
 		this.priority = builder.priority;
 		this.refreshButton = builder.refreshButton;
 		this.updateButton = builder.updateButton;
@@ -271,15 +271,15 @@ public final class ItemSettings {
 			return this;
 		}
 
-		public ItemSettings build() {
-			return new ItemSettings(this);
+		public ButtonSettings build() {
+			return new ButtonSettings(this);
 		}
 	}
 
 
 	@Override
 	public String toString() {
-		return "ItemSettings{" +
+		return "ButtonSettings{" +
 				"priority=" + priority +
 				", updateButton=" + updateButton +
 				", refreshButton=" + refreshButton +

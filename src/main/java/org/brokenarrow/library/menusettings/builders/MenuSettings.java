@@ -9,7 +9,7 @@ public final class MenuSettings {
 	private final boolean updateButtons;
 	private final String menuTitle;
 	private final String fillSpace;
-	private final Map<List<Integer>, List<ItemSettings>> itemSettings;
+	private final Map<List<Integer>, List<ButtonSettings>> itemSettings;
 	private final Builder builder;
 
 	private MenuSettings(Builder builder) {
@@ -42,7 +42,7 @@ public final class MenuSettings {
 		return fillSpace;
 	}
 
-	public Map<List<Integer>, List<ItemSettings>> getItemSettings() {
+	public Map<List<Integer>, List<ButtonSettings>> getItemSettings() {
 		return itemSettings;
 	}
 
@@ -57,7 +57,7 @@ public final class MenuSettings {
 		private boolean updateButtons;
 		private String menuTitle;
 		private String fillSpace;
-		private Map<List<Integer>, List<ItemSettings>> itemSettings;
+		private Map<List<Integer>, List<ButtonSettings>> itemSettings;
 
 		public Builder setMenuSize(int menuSize) {
 			this.menuSize = menuSize;
@@ -84,7 +84,7 @@ public final class MenuSettings {
 			return this;
 		}
 
-		public Builder setItemSetting(Map<List<Integer>, List<ItemSettings>> itemSettings) {
+		public Builder setItemSetting(Map<List<Integer>, List<ButtonSettings>> itemSettings) {
 			this.itemSettings = itemSettings;
 			return this;
 		}
