@@ -1,5 +1,6 @@
 package org.brokenarrow.library.menusettings;
 
+import de.tr7zw.changeme.nbtapi.metodes.RegisterNbtAPI;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.brokenarrow.library.menusettings.hooks.economy.PriceProvider;
 import org.brokenarrow.library.menusettings.hooks.economy.RegisterEconomyHook;
@@ -15,9 +16,11 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.List;
 import java.util.Locale;
 
 import static org.brokenarrow.library.menusettings.exceptions.Valid.checkBoolean;
+import static org.brokenarrow.library.menusettings.utillity.ServerVersion.setServerVersion;
 
 public class RegisterMenuAddon {
 
@@ -30,6 +33,7 @@ public class RegisterMenuAddon {
 	private static ScriptEngineManager engineManager;
 	private static RegisterEconomyHook registerEconomyHook;
 	private static RegisterPermissionHook registerPermissionHook;
+	private static RegisterNbtAPI nbtApi;
 
 	private RegisterMenuAddon() {
 		accesAmount++;
@@ -48,6 +52,8 @@ public class RegisterMenuAddon {
 			PLUGIN = plugin;
 			menuCache = new MenuCache(name, "", shallGenerateDefultFiles);
 		}
+		setServerVersion(plugin);
+		nbtApi = new RegisterNbtAPI(plugin, false);
 	}
 
 	public RegisterMenuAddon(Plugin plugin, String name, boolean makeOneFile) {
@@ -58,15 +64,27 @@ public class RegisterMenuAddon {
 			PLUGIN = plugin;
 			menuCache = new MenuCache(name, "", false);
 		}
+		setServerVersion(plugin);
+		nbtApi = new RegisterNbtAPI(plugin, false);
 	}
 
 	public RegisterMenuAddon(Plugin plugin, String folderName, String filename, boolean shallGenerateDefultFiles) {
 		PLUGIN = plugin;
 		menuCache = new MenuCache(folderName, filename, shallGenerateDefultFiles);
+		setServerVersion(plugin);
+		nbtApi = new RegisterNbtAPI(plugin, false);
 	}
 
 	public static String setPlaceholders(Player player, String string) {
 		return PlaceholderAPI.setPlaceholders(player, string);
+	}
+
+	public static List<String> setPlaceholders(Player player, List<String> string) {
+		return PlaceholderAPI.setPlaceholders(player, string);
+	}
+
+	public static RegisterNbtAPI getNbtApi() {
+		return nbtApi;
 	}
 
 	private void registerNashorn() {

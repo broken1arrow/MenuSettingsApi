@@ -12,6 +12,8 @@ public enum RequirementType {
 	DO_NOT_HAVE_EXPERIENCE(set("!has experience")),
 	HAS_MONEY(set("has money")),
 	DO_NOT_HAVE_MONEY(set("!has money")),
+	HAS_ITEM(set("has item")),
+	DO_NOT_HAVE_ITEM(set("!has item")),
 	STRING_EQUALS(set("string equals")),
 	STRING_CONTAINS(set("string contains")),
 	STRING_EQUALS_IGNORE_CASE(set("string equals ignorecase")),

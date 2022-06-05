@@ -2,19 +2,23 @@ package org.brokenarrow.library.menusettings.builders;
 
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
 import org.brokenarrow.library.menusettings.requirements.RequirementsLogic;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
 public final class ButtonSettings {
 
 	private final int priority;
+	private final int refreshTimeWhenUpdateButton;
 	private final boolean updateButton;
-	private final int refreshButton;
 	private final boolean glow;
-	private final String displayname;
+	private final boolean refreshAllButtons;
+	private final String displayName;
+	private final String buttonName;
 	private final String slot;
 	private final String icon;
 	private final List<String> lore;
+	private final ItemWrapper buttonItem;
 	private final RequirementsLogic viewRequirement;
 	private final RequirementsLogic clickrequirement;
 	private final RequirementsLogic shiftRightClickRequirement;
@@ -32,13 +36,16 @@ public final class ButtonSettings {
 
 	private ButtonSettings(Builder builder) {
 		this.priority = builder.priority;
-		this.refreshButton = builder.refreshButton;
+		this.refreshTimeWhenUpdateButton = builder.refreshTimeWhenUpdateButton;
 		this.updateButton = builder.updateButton;
 		this.glow = builder.glow;
-		this.displayname = builder.displayname;
+		this.refreshAllButtons = builder.refreshAllButtons;
+		this.displayName = builder.displayName;
+		this.buttonName = builder.buttonName;
 		this.slot = builder.slot;
 		this.icon = builder.icon;
 		this.lore = builder.lore;
+		this.buttonItem = builder.buttonItem;
 		this.viewRequirement = builder.viewRequirement;
 		this.clickrequirement = builder.clickrequirement;
 		this.shiftRightClickRequirement = builder.shiftRightClickRequirement;
@@ -59,20 +66,33 @@ public final class ButtonSettings {
 		return priority;
 	}
 
-	public boolean isUpdateButton() {
-		return updateButton;
+	public int getRefreshTimeWhenUpdateButton() {
+		return refreshTimeWhenUpdateButton;
 	}
 
-	public int getRefreshButton() {
-		return refreshButton;
+	public boolean isUpdateButton() {
+		return updateButton;
 	}
 
 	public boolean isGlow() {
 		return glow;
 	}
 
-	public String getDisplayname() {
-		return displayname;
+	public boolean isRefreshAllButtons() {
+		return refreshAllButtons;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	/**
+	 * Get name in this button.
+	 *
+	 * @return name on the button.
+	 */
+	public String getButtonName() {
+		return buttonName;
 	}
 
 	public String getSlot() {
@@ -85,6 +105,16 @@ public final class ButtonSettings {
 
 	public List<String> getLore() {
 		return lore;
+	}
+
+	public ItemWrapper getButtonItem() {
+		return buttonItem;
+	}
+
+
+	public ItemStack getItemStack() {
+		
+		return buttonItem;
 	}
 
 	public RequirementsLogic getViewRequirement() {
@@ -145,13 +175,16 @@ public final class ButtonSettings {
 
 	public static class Builder {
 		private int priority;
-		private int refreshButton;
+		private int refreshTimeWhenUpdateButton;
 		private boolean updateButton;
 		private boolean glow;
-		private String displayname = "";
+		private boolean refreshAllButtons;
+		private String displayName = "";
+		private String buttonName;
 		private String slot;
 		private String icon;
 		private List<String> lore;
+		private ItemWrapper buttonItem;
 		private RequirementsLogic viewRequirement;
 		private RequirementsLogic clickrequirement;
 		private RequirementsLogic shiftRightClickRequirement;
@@ -171,8 +204,8 @@ public final class ButtonSettings {
 			return this;
 		}
 
-		public Builder setRefreshButton(int refreshButton) {
-			this.refreshButton = refreshButton;
+		public Builder setRefreshTimeWhenUpdateButton(int refreshTimeWhenUpdateButton) {
+			this.refreshTimeWhenUpdateButton = refreshTimeWhenUpdateButton;
 			return this;
 		}
 
@@ -186,8 +219,24 @@ public final class ButtonSettings {
 			return this;
 		}
 
-		public Builder setDisplayname(String displayname) {
-			this.displayname = displayname;
+		public Builder setRefreshAllButtons(boolean refreshAllButtons) {
+			this.refreshAllButtons = refreshAllButtons;
+			return this;
+		}
+
+		public Builder setButtonItem(ItemWrapper buttonItem) {
+			this.buttonItem = buttonItem;
+			return this;
+		}
+
+		public Builder setDisplayName(String displayName) {
+			this.displayName = displayName;
+			return this;
+		}
+
+		public Builder setButtonName(String buttonName) {
+
+			this.buttonName = buttonName;
 			return this;
 		}
 
@@ -282,9 +331,9 @@ public final class ButtonSettings {
 		return "ButtonSettings{" +
 				"priority=" + priority +
 				", updateButton=" + updateButton +
-				", refreshButton=" + refreshButton +
+				", refreshButton=" + refreshTimeWhenUpdateButton +
 				", glow=" + glow +
-				", displayname='" + displayname + '\'' +
+				", displayname='" + displayName + '\'' +
 				", slot='" + slot + '\'' +
 				", icon='" + icon + '\'' +
 				", lore=" + lore +

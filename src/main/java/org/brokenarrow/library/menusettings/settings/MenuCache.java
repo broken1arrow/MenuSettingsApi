@@ -1,22 +1,33 @@
 package org.brokenarrow.library.menusettings.settings;
 
 import org.brokenarrow.library.menusettings.builders.ButtonSettings;
+import org.brokenarrow.library.menusettings.builders.ItemChecks;
+import org.brokenarrow.library.menusettings.builders.ItemWrapper;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
 import org.brokenarrow.library.menusettings.clickactions.ClickRequiermentType;
 import org.brokenarrow.library.menusettings.clickactions.CommandActionType;
+import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.requirements.*;
 import org.brokenarrow.library.menusettings.tasks.ClickActionTask;
+import org.brokenarrow.library.menusettings.utillity.Tuple;
+import org.bukkit.DyeColor;
+import org.bukkit.NamespacedKey;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.brokenarrow.library.menusettings.requirements.RequirementType.DO_NOT_HAVE_EXPERIENCE;
-import static org.brokenarrow.library.menusettings.requirements.RequirementType.DO_NOT_HAVE_PERMISSION;
+import static org.brokenarrow.library.menusettings.requirements.RequirementType.*;
 
 public class MenuCache extends AllYamlFilesInFolder {
 
@@ -65,22 +76,17 @@ public class MenuCache extends AllYamlFilesInFolder {
 		if (sectionOfButtons != null)
 			for (String buttons : sectionOfButtons.getKeys(false)) {
 				List<ButtonSettings> buttonSettings = new ArrayList<>();
-				int priority = config.getInt("Menus." + key + ".Menu_Items." + buttons + ".Priority");
-				boolean updateButton = config.getBoolean("Menus." + key + ".Menu_Items." + buttons + ".Update_Button");
-				int updateButtondelay = config.getInt("Menus." + key + ".Menu_Items." + buttons + ".Update_delay");
-				boolean glow = config.getBoolean("Menus." + key + ".Menu_Items." + buttons + ".Glow");
-				String slot = config.getString("Menus." + key + ".Menu_Items." + buttons + ".Slot");
-				String icon = config.getString("Menus." + key + ".Menu_Items." + buttons + ".Icon");
-				String displayName = config.getString("Menus." + key + ".Menu_Items." + buttons + ".Display_name");
-				List<String> lore = config.getStringList("Menus." + key + ".Menu_Items." + buttons + ".Lore");
-
 				String path = "Menus." + key + ".Menu_Items." + buttons;
 
+				int priority = config.getInt(path + ".Priority");
+				boolean refreshButtons = config.getBoolean(path + "Refresh_buttons");
+				boolean updateButton = config.getBoolean(path + ".Update_Button");
+				int updateButtondelay = config.getInt(path + ".Update_Button_delay");
+				String slot = config.getString(path + ".Slot");
+
+
 				ButtonSettings.Builder builder = new ButtonSettings.Builder()
-						.setDisplayname(displayName)
-						.setIcon(icon).setGlow(glow)
-						.setLore(lore)
-						.setSlot(slot)
+						.setButtonItem(addItem(config, path, false))
 						.setUpdateButton(updateButton)
 						.setPriority(priority)
 						.setClickrequirement(checkRequirements(config, path, "Click_requirement"))
@@ -170,6 +176,164 @@ public class MenuCache extends AllYamlFilesInFolder {
 		return requirementsLogic;
 	}
 
+	public ItemWrapper addItem(FileConfiguration config, String path, boolean addItemChecks) {
+		ItemWrapper.Builder builder = new ItemWrapper.Builder();
+		boolean unbreakable = config.getBoolean(path + ".Unbreakable");
+		boolean glow = config.getBoolean(path + ".Glow");
+		String icon = config.getString(path + ".Icon");
+		String displayName = config.getString(path + ".Display_name");
+		String materialColor = config.getString(path + ".Material_color");
+		String rpg = config.getString(path + ".Rpg");
+		String dynamicAmount = config.getString(path + ".Dynamic_Amount");
+		int amountOfItems = config.getInt(path + ".Amount");
+		int data = config.getInt(path + ".Data", -1);
+		int modeldata = config.getInt(path + ".Modeldata", -1);
+		List<String> lore = config.getStringList(path + ".Lore");
+		List<String> hideFlags = config.getStringList(path + ".Hide_item_flags");
+		Map<String, Map<String, String>> portionsEffects = getMaps(config, path + ".Potion_effects");
+		Map<String, Map<String, String>> enchantments = getMaps(config, path + ".Enchantments");
+		Map<String, String> bannerPattern = getMap(config, path + ".Banner_pattern");
+
+		System.out.println("bannerPatter " + bannerPattern);
+		System.out.println("portionsefect " + portionsEffects);
+
+		builder.setDisplayname(displayName)
+				.setLore(lore)
+				.setAmount(amountOfItems)
+				.setDynamicAmount(dynamicAmount)
+				.setData(data)
+				.setIcon(icon)
+				.setGlow(glow)
+				.setMatrialColor(materialColor)
+				.setRbg(rpg)
+				.setCustomModeldata(modeldata)
+				.setHideFlags(getItemFlags(hideFlags))
+				.setUnbreakable(unbreakable)
+				.setPortionEffects(getPotionEffects(portionsEffects))
+				.setEnchantments(getEnchantments(enchantments))
+				.setBannerPatterns(getPattern(bannerPattern));
+		if (addItemChecks)
+			builder.setItemChecks(getItemChecks(config, path));
+		return builder.build();
+	}
+
+	public ItemChecks getItemChecks(FileConfiguration config, String path) {
+		ItemChecks.Builder builder = new ItemChecks.Builder();
+		boolean offHand = config.getBoolean(path + ".Off_hand");
+		boolean item = config.getBoolean(path + ".Armor_slots");
+		boolean strict = config.getBoolean(path + ".Strict");
+		boolean nameContains = config.getBoolean(path + ".Name_contains");
+		boolean nameEquals = config.getBoolean(path + ".Name_equals");
+		boolean nameIgnorecase = config.getBoolean(path + ".Name_ignorecase");
+		boolean loreContains = config.getBoolean(path + ".Lore_contains");
+		boolean loreEquals = config.getBoolean(path + ".Lore_equals");
+		boolean loreIgnorecase = config.getBoolean(path + ".Lore_ignorecase");
+
+		builder.setCheckArmorSlots(item)
+				.setCheckOffHand(offHand)
+				// check only items some not contains lore or displayname.
+				.setStrict(strict)
+				.setCheckNameContains(nameContains)
+				.setCheckNameEquals(nameEquals)
+				.setCheckNameIgnorecase(nameIgnorecase)
+				.setCheckLoreContains(loreContains)
+				.setCheckLoreEquals(loreEquals)
+				.setCheckLoreIgnorecase(loreIgnorecase);
+
+		return builder.build();
+	}
+
+	public Map<String, Map<String, String>> getMaps(FileConfiguration config, String path) {
+		ConfigurationSection configurationSection = config.getConfigurationSection(path);
+		if (configurationSection == null) return null;
+		Map<String, Map<String, String>> map = new HashMap<>();
+		for (String innerPath : configurationSection.getKeys(false)) {
+			Map<String, String> innerkeys = new HashMap<>();
+			ConfigurationSection innerconfigurationSection = config.getConfigurationSection(path + "." + innerPath);
+			if (innerconfigurationSection == null) continue;
+
+			for (String cildrenKeys : innerconfigurationSection.getKeys(false))
+				innerkeys.put(cildrenKeys.toLowerCase(Locale.ROOT), config.getString(path + "." + innerPath + "." + cildrenKeys));
+			map.put(innerPath.toUpperCase(Locale.ROOT), innerkeys);
+		}
+		return map;
+	}
+
+	public Map<String, String> getMap(FileConfiguration config, String path) {
+		ConfigurationSection configurationSection = config.getConfigurationSection(path);
+		if (configurationSection == null) return null;
+		Map<String, String> map = new HashMap<>();
+		for (String innerPath : configurationSection.getKeys(false)) {
+			map.put(innerPath.toUpperCase(Locale.ROOT), config.getString(path + "." + innerPath));
+		}
+		return map;
+	}
+
+	public List<ItemFlag> getItemFlags(List<String> itemFlags) {
+		if (itemFlags == null || itemFlags.isEmpty()) return null;
+		List<ItemFlag> itemFlagList = new ArrayList<>();
+		for (String itemFlag : itemFlags) {
+			if (itemFlag == null) continue;
+			try {
+				ItemFlag flag = ItemFlag.valueOf(itemFlag);
+				itemFlagList.add(flag);
+			} catch (IllegalArgumentException exception) {
+				exception.printStackTrace();
+			}
+		}
+		return itemFlagList;
+	}
+
+	public List<Pattern> getPattern(Map<String, String> enchantmentList) {
+		if (enchantmentList == null || enchantmentList.isEmpty()) return null;
+		List<Pattern> enchantmentsMap = new ArrayList<>();
+		for (Map.Entry<String, String> petterns : enchantmentList.entrySet()) {
+			String pattern = petterns.getKey();
+			String color = petterns.getValue();
+
+			if (pattern != null)
+				if (color != null)
+					enchantmentsMap.add(new Pattern(DyeColor.valueOf(color), PatternType.valueOf(pattern)));
+				else
+					enchantmentsMap.add(new Pattern(DyeColor.WHITE, PatternType.valueOf(pattern)));
+		}
+		return enchantmentsMap;
+	}
+
+	public Map<Enchantment, Tuple<Integer, Boolean>> getEnchantments(Map<String, Map<String, String>> enchantmentList) {
+		if (enchantmentList == null || enchantmentList.isEmpty()) return null;
+		Map<Enchantment, Tuple<Integer, Boolean>> enchantmentsMap = new HashMap<>();
+
+		for (Map.Entry<String, Map<String, String>> stringMapEntry : enchantmentList.entrySet()) {
+			Valid.checkNotNull(stringMapEntry.getKey(), "Enchantment is null. Should always return a value");
+			Enchantment enchantment = Enchantment.getByKey(NamespacedKey.fromString(stringMapEntry.getKey()));
+			Map<String, String> enchantOptions = stringMapEntry.getValue();
+			String enchantmentLevel = enchantOptions.get("level");
+			int level = enchantmentLevel == null ? 1 : Integer.parseInt(enchantmentLevel);
+			boolean levelRestriction = Boolean.getBoolean(enchantOptions.get("level_restriction"));
+
+			if (enchantment != null)
+				enchantmentsMap.put(enchantment, new Tuple<>(level, !levelRestriction));
+		}
+
+		return enchantmentsMap;
+	}
+
+	public List<PotionEffect> getPotionEffects(Map<String, Map<String, String>> portionsEffects) {
+		if (portionsEffects == null || portionsEffects.isEmpty()) return null;
+		List<PotionEffect> potionEffectList = new ArrayList<>();
+
+		for (Map.Entry<String, Map<String, String>> potionEffect : portionsEffects.entrySet()) {
+			Valid.checkNotNull(potionEffect.getKey(), "Portion effects is null. Should always return a value");
+			PotionEffectType potionEffectType = PotionEffectType.getByName(potionEffect.getKey());
+			Map<String, String> potionEffectValue = potionEffect.getValue();
+			System.out.println("potionEffectValue " + potionEffectValue);
+			if (potionEffectType != null)
+				potionEffectList.add(new PotionEffect(potionEffectType, Integer.parseInt(potionEffectValue.get("duration")), Integer.parseInt(potionEffectValue.get("amplifier"))));
+		}
+		return potionEffectList;
+	}
+
 	public List<Requirement> checkRequirement(FileConfiguration config, String path, String clicktype) {
 		List<Requirement> requirementsList = new ArrayList<>();
 		Requirement rec = null;
@@ -180,7 +344,7 @@ public class MenuCache extends AllYamlFilesInFolder {
 		String output = config.getString(path + ".output");
 		String permission = config.getString(path + ".permission");
 		String expression = config.getString(path + ".expression");
-		String experiencesAmount = config.getString(path + ".amount");
+		String amount = config.getString(path + ".amount");
 		boolean useLevel = config.getBoolean(path + ".level");
 		ClickRequiermentType clickRequiermentType = ClickRequiermentType.getType(clicktype);
 		RequirementType requirementType = RequirementType.getType(type);
@@ -206,11 +370,16 @@ public class MenuCache extends AllYamlFilesInFolder {
 				break;
 			case HAS_MONEY:
 			case DO_NOT_HAVE_MONEY:
+				if (amount != null)
+					rec = new HasMoneyRequirement(requirementType == DO_NOT_HAVE_MONEY, amount);
+				break;
+			case HAS_ITEM:
+			case DO_NOT_HAVE_ITEM:
 				break;
 			case HAS_EXPERIENCE:
 			case DO_NOT_HAVE_EXPERIENCE:
-				if (experiencesAmount != null)
-					rec = new HasExpRequirement(experiencesAmount, useLevel, requirementType == DO_NOT_HAVE_EXPERIENCE);
+				if (amount != null)
+					rec = new HasExpRequirement(amount, useLevel, requirementType == DO_NOT_HAVE_EXPERIENCE);
 				else
 					System.out.println("amount path is null");
 				break;
@@ -272,7 +441,6 @@ public class MenuCache extends AllYamlFilesInFolder {
 
 	public ClickActionHandler checkCommands(FileConfiguration config, String path, String commandType) {
 		String requirementsPath = path + "." + commandType;
-		System.out.println("requirementsPath " + config.getStringList(requirementsPath));
 		List<String> commans = config.getStringList(requirementsPath);
 		if (!commans.isEmpty())
 			return new ClickActionHandler(formatCommands(commans));
@@ -302,5 +470,11 @@ public class MenuCache extends AllYamlFilesInFolder {
 			throw new NumberFormatException("can not parse this " + slots + " as numbers.");
 		}
 		return slotList;
+	}
+
+	public static class getInnerValues {
+		Object value1;
+		Object value2;
+		Object value3;
 	}
 }
