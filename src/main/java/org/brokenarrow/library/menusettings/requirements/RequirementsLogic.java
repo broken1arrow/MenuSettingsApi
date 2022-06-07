@@ -1,6 +1,5 @@
 package org.brokenarrow.library.menusettings.requirements;
 
-import org.brokenarrow.library.menusettings.clickactions.ClickRequiermentType;
 import org.brokenarrow.library.menusettings.tasks.ClickActionTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -26,13 +25,13 @@ public class RequirementsLogic {
 		for (Requirement requirement : this.getRequirements()) {
 			if (requirement.estimate(wiver)) {
 				++success;
-				if (requirement.getClickRequiermentType() != ClickRequiermentType.VIEW_REQUIREMENT && requirement.getSuccessCommands() != null) {
+				if (requirement.getSuccessCommands() != null) {
 					runClickActionTask(requirement.getSuccessCommands(), wiver);
 				}
 				if (this.isStopAtSuccess() && success >= this.getMinimumRequirements())
 					break;
 			} else {
-				if (requirement.getClickRequiermentType() != ClickRequiermentType.VIEW_REQUIREMENT && requirement.getDenyCommands() != null) {
+				if (requirement.getDenyCommands() != null) {
 					runClickActionTask(requirement.getDenyCommands(), wiver);
 				}
 				if (!requirement.isOptional()) {

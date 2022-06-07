@@ -59,20 +59,21 @@ public class HasItemRequirement extends Requirement {
 
 	private boolean checkIfIsRequiredItem(ItemStack itemToCheck, ItemChecks itemChecks, Player wiver, Material material) {
 		if (itemToCheck == null || itemToCheck.getType() != material) return false;
-		if (this.wrapper.getData() != 0 && itemToCheck.getDurability() != this.wrapper.getData()) return false;
-
+		if (this.wrapper.getData() > 0 && itemToCheck.getDurability() != this.wrapper.getData()) return false;
 
 		ItemMeta itemMetaOnInventoryItem = itemToCheck.getItemMeta();
-		if (itemMetaOnInventoryItem != null) {
-			if (itemChecks.isStrict()) {
+		if (itemChecks.isStrict()) {
+			if (itemMetaOnInventoryItem != null) {
 				if (ServerVersion.newerThan(ServerVersion.v1_13))
 					if (itemMetaOnInventoryItem.hasCustomModelData())
 						return false;
 				if (itemMetaOnInventoryItem.hasLore())
 					return false;
 				return !itemMetaOnInventoryItem.hasDisplayName();
-
 			}
+			return true;
+		}
+		if (itemMetaOnInventoryItem != null) {
 			if (this.wrapper.getCustomModeldata() != 0) {
 				if (ServerVersion.newerThan(ServerVersion.v1_13)) {
 					if (!itemMetaOnInventoryItem.hasCustomModelData())
@@ -81,7 +82,6 @@ public class HasItemRequirement extends Requirement {
 						return false;
 				}
 			}
-
 			if (this.wrapper.getDisplayname() != null) {
 				if (itemMetaOnInventoryItem.hasDisplayName()) {
 					String itemToMatch = formatColors(setPlaceholders(wiver, this.wrapper.getDisplayname()));
@@ -95,7 +95,7 @@ public class HasItemRequirement extends Requirement {
 					if (itemChecks.isCheckNameEquals())
 						types = CheckTypes.EQUALS;
 
-					if (!checkLore(itemToMatch, itemInInventory, types))
+					if (!checkString(itemToMatch, itemInInventory, types))
 						return false;
 
 				} else {
@@ -115,7 +115,7 @@ public class HasItemRequirement extends Requirement {
 					if (itemChecks.isCheckLoreEquals())
 						types = CheckTypes.EQUALS;
 
-					if (!checkLore(itemToMatch, itemInInventory, types))
+					if (!checkString(itemToMatch, itemInInventory, types))
 						return false;
 
 				} else {
@@ -127,7 +127,7 @@ public class HasItemRequirement extends Requirement {
 		return false;
 	}
 
-	private boolean checkLore(String itemToMatch, String itemInInventory, CheckTypes types) {
+	private boolean checkString(String itemToMatch, String itemInInventory, CheckTypes types) {
 		if (types == null) return false;
 
 		if (types == CheckTypes.CONTAINS)

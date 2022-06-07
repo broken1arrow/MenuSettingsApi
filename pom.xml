@@ -199,22 +199,22 @@
                                     <pattern>org.brokenarrow.menu</pattern>
                                     <shadedPattern>${project.groupId}.${project.artifactId}.MenuAPI</shadedPattern>
                                 </relocation>
-                                <relocation>
-                                    <pattern>org.openjdk.nashorn.api</pattern>
-                                    <shadedPattern>${project.groupId}.${project.artifactId}.nashorn</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.openjdk.nashorn.internal</pattern>
-                                    <shadedPattern>${project.groupId}.${project.artifactId}.nashorn</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.objectweb.asm</pattern>
-                                    <shadedPattern>${project.groupId}.${project.artifactId}.asm</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.openjdk.nashorn.tools</pattern>
-                                    <shadedPattern>${project.groupId}.${project.artifactId}.nashorn</shadedPattern>
-                                </relocation>
+                                <!--                                <relocation>
+                                                                    <pattern>org.openjdk.nashorn.api</pattern>
+                                                                    <shadedPattern>${project.groupId}.${project.artifactId}.nashorn</shadedPattern>
+                                                                </relocation>
+                                                                <relocation>
+                                                                    <pattern>org.openjdk.nashorn.internal</pattern>
+                                                                    <shadedPattern>${project.groupId}.${project.artifactId}.nashorn</shadedPattern>
+                                                                </relocation>
+                                                                <relocation>
+                                                                    <pattern>org.objectweb.asm</pattern>
+                                                                    <shadedPattern>${project.groupId}.${project.artifactId}.asm</shadedPattern>
+                                                                </relocation>
+                                                                <relocation>
+                                                                    <pattern>org.openjdk.nashorn.tools</pattern>
+                                                                    <shadedPattern>${project.groupId}.${project.artifactId}.nashorn</shadedPattern>
+                                                                </relocation>-->
                                 <relocation>
                                     <pattern>de.tr7zw</pattern>
                                     <shadedPattern>${project.groupId}.${project.artifactId}.nbt</shadedPattern>

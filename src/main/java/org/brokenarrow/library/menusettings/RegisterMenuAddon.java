@@ -10,14 +10,22 @@ import org.brokenarrow.library.menusettings.settings.MenuCache;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.ServicePriority;
+import org.bukkit.plugin.ServicesManager;
+import org.jetbrains.annotations.Nullable;
 import org.mineacademy.nashornplus.NashornPlusPlugin;
 
+import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
 
 import static org.brokenarrow.library.menusettings.exceptions.Valid.checkBoolean;
 import static org.brokenarrow.library.menusettings.utillity.ServerVersion.setServerVersion;
@@ -31,6 +39,8 @@ public class RegisterMenuAddon {
 	private static int accesAmount;
 	private static ScriptEngineFactory engineFactory;
 	private static ScriptEngineManager engineManager;
+	private static ScriptEngine scriptEngine;
+	private final ServicesManager manager = Bukkit.getServer().getServicesManager();
 	private static RegisterEconomyHook registerEconomyHook;
 	private static RegisterPermissionHook registerPermissionHook;
 	private static RegisterNbtAPI nbtApi;
@@ -45,42 +55,27 @@ public class RegisterMenuAddon {
 	}
 
 	public RegisterMenuAddon(Plugin plugin, String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
-		if (makeOneFile) {
-			PLUGIN = plugin;
-			menuCache = new MenuCache("", name, shallGenerateDefultFiles);
-		} else {
-			PLUGIN = plugin;
-			menuCache = new MenuCache(name, "", shallGenerateDefultFiles);
-		}
-		setServerVersion(plugin);
-		nbtApi = new RegisterNbtAPI(plugin, false);
+		this(plugin, name, name, makeOneFile, shallGenerateDefultFiles);
 	}
 
 	public RegisterMenuAddon(Plugin plugin, String name, boolean makeOneFile) {
-		if (makeOneFile) {
-			PLUGIN = plugin;
-			menuCache = new MenuCache("", name, false);
-		} else {
-			PLUGIN = plugin;
-			menuCache = new MenuCache(name, "", false);
-		}
-		setServerVersion(plugin);
-		nbtApi = new RegisterNbtAPI(plugin, false);
+		this(plugin, name, name, makeOneFile, false);
 	}
 
-	public RegisterMenuAddon(Plugin plugin, String folderName, String filename, boolean shallGenerateDefultFiles) {
+	public RegisterMenuAddon(Plugin plugin, String folderName, String filename, boolean makeOneFile, boolean shallGenerateDefultFiles) {
 		PLUGIN = plugin;
-		menuCache = new MenuCache(folderName, filename, shallGenerateDefultFiles);
+		menuCache = new MenuCache(makeOneFile ? "" : folderName, filename, shallGenerateDefultFiles);
 		setServerVersion(plugin);
 		nbtApi = new RegisterNbtAPI(plugin, false);
+
 	}
 
 	public static String setPlaceholders(Player player, String string) {
 		return PlaceholderAPI.setPlaceholders(player, string);
 	}
 
-	public static List<String> setPlaceholders(Player player, List<String> string) {
-		return PlaceholderAPI.setPlaceholders(player, string);
+	public static List<String> setPlaceholders(Player player, List<String> list) {
+		return PlaceholderAPI.setPlaceholders(player, list);
 	}
 
 	public static RegisterNbtAPI getNbtApi() {
@@ -91,9 +86,55 @@ public class RegisterMenuAddon {
 		if (Bukkit.getPluginManager().getPlugin("NashornPlus") != null) {
 			engineManager = NashornPlusPlugin.getInstance().getEngineManager();
 			engineFactory = NashornPlusPlugin.getInstance().getEngineFactory();
-		}
+			if (engineManager != null) {
+				ScriptEngine scriptEng = engineManager.getEngineByName("Nashorn");
+				if (scriptEng == null) {
+					System.out.println("is null scriptEng ");
+					engineManager = new ScriptEngineManager(null);
+					scriptEng = engineManager.getEngineByName("Nashorn");
+				}
+				scriptEngine = scriptEng;
+			}
 
+		} else {
+			if (engineManager == null) {
+				if (this.manager.isProvidedFor(ScriptEngineManager.class)) {
+					RegisteredServiceProvider<ScriptEngineManager> provider = this.manager.getRegistration(ScriptEngineManager.class);
+					if (provider == null) {
+						getPLUGIN().getLogger().log(Level.WARNING, "ScriptEngineManager exist but registered service provider is null");
+						return;
+					}
+					engineManager = provider.getProvider();
+				} else {
+					engineManager = new ScriptEngineManager();
+					this.manager.register(ScriptEngineManager.class, engineManager, getPLUGIN(), ServicePriority.Highest);
+				}
+				ScriptEngine scriptEng = engineManager.getEngineByName("Nashorn");
+				if (scriptEng == null) {
+					engineManager = new ScriptEngineManager(null);
+					scriptEng = engineManager.getEngineByName("Nashorn");
+				}
+				if (scriptEng == null) {
+					System.out.println("is still null");
+					try {
+						Class<?> nashorn = Class.forName("org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory");
+						Constructor<?> constructor = nashorn.getDeclaredConstructor();
+						constructor.setAccessible(true);
+						Object scriptEngineFactory = constructor.newInstance();
+						if (scriptEngineFactory instanceof ScriptEngineFactory) {
+							ScriptEngineFactory engineFactory = (ScriptEngineFactory) scriptEngineFactory;
+							engineManager.registerEngineName("Nashorn", engineFactory);
+							scriptEng = engineManager.getEngineByName("Nashorn");
+						}
+					} catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+						e.printStackTrace();
+					}
+				}
+				scriptEngine = scriptEng;
+			}
+		}
 	}
+
 
 	public static RegisterEconomyHook getRegisterEconomyHook() {
 		return registerEconomyHook;
@@ -117,8 +158,14 @@ public class RegisterMenuAddon {
 		return engineFactory;
 	}
 
+	@Nullable
 	public static ScriptEngineManager getEngineManager() {
 		return engineManager;
+	}
+
+	@Nullable
+	public static ScriptEngine getScriptEngine() {
+		return scriptEngine;
 	}
 
 	public static DecimalFormat formatDubbleDecimal() {
@@ -138,7 +185,7 @@ public class RegisterMenuAddon {
 	}
 
 	/**
-	 * Get the menu cache, but not forget to make an instance of this class first.
+	 * GetCollections the menu cache, but not forget to make an instance of this class first.
 	 *
 	 * @return the menu cache instance.
 	 */

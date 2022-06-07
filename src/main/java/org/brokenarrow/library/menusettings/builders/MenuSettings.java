@@ -1,5 +1,7 @@
 package org.brokenarrow.library.menusettings.builders;
 
+import org.brokenarrow.library.menusettings.requirements.RequirementsLogic;
+
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +12,7 @@ public final class MenuSettings {
 	private final String menuTitle;
 	private final String fillSpace;
 	private final Map<List<Integer>, List<ButtonSettings>> itemSettings;
+	private final RequirementsLogic openRequirement;
 	private final Builder builder;
 
 	private MenuSettings(Builder builder) {
@@ -19,6 +22,7 @@ public final class MenuSettings {
 		this.menuTitle = builder.menuTitle;
 		this.fillSpace = builder.fillSpace;
 		this.itemSettings = builder.itemSettings;
+		this.openRequirement = builder.openRequirement;
 		this.builder = builder;
 	}
 
@@ -46,6 +50,10 @@ public final class MenuSettings {
 		return itemSettings;
 	}
 
+	public RequirementsLogic getOpenRequirement() {
+		return openRequirement;
+	}
+
 	public Builder getBuilder() {
 		return builder;
 	}
@@ -58,6 +66,7 @@ public final class MenuSettings {
 		private String menuTitle;
 		private String fillSpace;
 		private Map<List<Integer>, List<ButtonSettings>> itemSettings;
+		private RequirementsLogic openRequirement;
 
 		public Builder setMenuSize(int menuSize) {
 			this.menuSize = menuSize;
@@ -84,8 +93,13 @@ public final class MenuSettings {
 			return this;
 		}
 
-		public Builder setItemSetting(Map<List<Integer>, List<ButtonSettings>> itemSettings) {
+		public Builder setItemSettings(Map<List<Integer>, List<ButtonSettings>> itemSettings) {
 			this.itemSettings = itemSettings;
+			return this;
+		}
+
+		public Builder setOpenRequirement(RequirementsLogic openRequirement) {
+			this.openRequirement = openRequirement;
 			return this;
 		}
 

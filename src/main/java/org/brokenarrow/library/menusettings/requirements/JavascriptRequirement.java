@@ -1,12 +1,8 @@
 package org.brokenarrow.library.menusettings.requirements;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.ServicePriority;
-import org.bukkit.plugin.ServicesManager;
 
-import javax.script.ScriptEngineFactory;
+import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.util.logging.Level;
@@ -14,16 +10,15 @@ import java.util.logging.Level;
 import static org.brokenarrow.library.menusettings.RegisterMenuAddon.*;
 
 public class JavascriptRequirement extends Requirement {
-	private static ScriptEngineManager engine;
-	private final ScriptEngineFactory factory = getEngineFactory();
-	private final ServicesManager manager = Bukkit.getServer().getServicesManager();
+	private static final ScriptEngineManager engine = getEngineManager();
+	private static final ScriptEngine scriptEngine = getScriptEngine();
 
 	private final String expression;
 
 
 	public JavascriptRequirement(String expresion) {
 		this.expression = expresion;
-		if (engine == null && factory != null) {
+	/*	if (engine == null && factory != null) {
 			if (this.manager.isProvidedFor(ScriptEngineManager.class)) {
 				RegisteredServiceProvider<ScriptEngineManager> provider = this.manager.getRegistration(ScriptEngineManager.class);
 				if (provider == null) {
@@ -37,18 +32,21 @@ public class JavascriptRequirement extends Requirement {
 			}
 			engine.registerEngineName("javascript", this.factory);
 			engine.put("BukkitServer", Bukkit.getServer());
-		}
-		if (factory == null)
-			getPLUGIN().getLogger().log(Level.WARNING, "ScriptEngineFactory is null make sure you have install NashornPlus from github.You can´t run Javascript with out that plugin");
+		}*/
+		if (engine == null)
+			getPLUGIN().getLogger().log(Level.WARNING, "Script Engine Manager is null make sure you have install NashornPlus from https://github.com/broken1arrow/NashornPlusAPI/releases or add <' libraries: org.openjdk.nashorn:nashorn-core:15.4 '> to your plugin.yml");
 	}
 
 	@Override
 	boolean estimate(Player wiver) {
-		if (factory == null) return false;
+		if (engine == null || scriptEngine == null) {
+			getPLUGIN().getLogger().log(Level.WARNING, scriptEngine == null ? "Script Engine" : "Script Engine Manager" + " is null make sure you have install NashornPlus from https://github.com/broken1arrow/NashornPlusAPI/releases or add <' libraries: org.openjdk.nashorn:nashorn-core:15.4 '> to your plugin.yml");
+			return false;
+		}
 		String exp = setPlaceholders(wiver, this.expression);
 		try {
 			engine.put("BukkitPlayer", wiver);
-			Object result = engine.getEngineByName("javascript").eval(exp);
+			Object result = scriptEngine.eval(exp);
 			if (!(result instanceof Boolean)) {
 				getPLUGIN().getLogger().log(Level.WARNING, "This scrpit [" + this.expression + "] do not return boolean.");
 				return false;

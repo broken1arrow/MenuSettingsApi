@@ -82,15 +82,11 @@ public class ConvertToItemStack {
 		return itemStack;
 	}
 
-	public ItemStack checkString(String stringName) {
+	public ItemStack checkString(final String stringName) {
 		if (ServerVersion.olderThan(ServerVersion.v1_13)) {
 			ItemStack stack = createStack(stringName, 1);
 			if (stack != null)
 				return stack;
-		}
-		if (stringName.equals("WATER_BOTTLE")) {
-			stringName = "POTION";
-			
 		}
 		return new ItemStack(Enums.getIfPresent(Material.class, stringName).orNull() == null ? Material.AIR : Material.valueOf(stringName));
 	}
@@ -122,9 +118,6 @@ public class ConvertToItemStack {
 		}
 		if ((item.endsWith("_TERRACOTTA") || item.endsWith("_STAINED_CLAY")) && !item.endsWith("GLAZED_TERRACOTTA")) {
 			return new ItemStack(Material.valueOf("STAINED_CLAY"), amount, (short) color);
-		}
-		if (item.equals("WATER_BOTTLE")) {
-			return new ItemStack(Material.valueOf("POTION"), amount);
 		}
 		if (item.equals("TERRACOTTA")) {
 			return new ItemStack(Material.valueOf("HARD_CLAY"), amount, (short) 0);

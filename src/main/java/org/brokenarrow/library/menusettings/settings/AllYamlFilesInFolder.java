@@ -20,7 +20,7 @@ import static org.brokenarrow.library.menusettings.RegisterMenuAddon.getPLUGIN;
 
 
 /**
- * Get all files inside resorurses inside a folder and create if it not exist.
+ * GetCollections all files inside resorurses inside a folder and create if it not exist.
  */
 
 public abstract class AllYamlFilesInFolder {

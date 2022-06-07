@@ -21,6 +21,7 @@ public enum RequirementType {
 	STRING_IS_NOT_EQUALS(set("!string equals")),
 	STRING_IS_NOT_EQUAL_IGNORE_CASE(set("!string equals ignorecase")),
 	JAVASCRIPT(set("javascript", "js")),
+	INT_NOT_EQUALS_OUTPUT(set("!=")),
 	INT_EQUALS_OUTPUT(set("==")),
 	INT_GREATER_THAN_OUTPUT(set(">")),
 	INT_GREATER_THAN_OR_EQUALS_OUTPUT(set(">=")),

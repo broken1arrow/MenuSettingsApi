@@ -76,33 +76,49 @@ public class CreateItemStack {
 	 * @param itemWrapper will use this class to build the item.
 	 * @return CreateItemUtily class or class with air item (if item are null).
 	 */
-	public static CreateItemStack of(final ItemWrapper itemWrapper, Player player) {
+	public static CreateItemStack of(final Object item, final ItemWrapper itemWrapper, Player player) {
 		CreateItemStack createItemStack;
 		String icon = setPlaceholders(player, itemWrapper.getIcon());
 		String displayName = setPlaceholders(player, itemWrapper.getDisplayname());
 		List<String> lore = setPlaceholders(player, itemWrapper.getLore());
+		boolean isWater = icon.equalsIgnoreCase("water_bottle");
+		if (isWater) {
+			icon = "POTION";
+		}
 		if (itemWrapper.getMatrialColor() == null)
-			createItemStack = of(icon, displayName, lore);
+			createItemStack = of(item != null ? item : icon, displayName, lore);
 		else
-			createItemStack = of(icon, itemWrapper.getMatrialColor(), displayName, lore);
+			createItemStack = of(item != null ? item : icon, itemWrapper.getMatrialColor(), displayName, lore);
 
-		createItemStack.addEnchantments(itemWrapper.getEnchantments(), false);
-		createItemStack.addPattern(itemWrapper.getBannerPatterns());
-		createItemStack.setItemFlags(itemWrapper.getHideFlags());
-		createItemStack.setRgb(itemWrapper.getRbg());
-		createItemStack.addPortionEffects(itemWrapper.getPortionEffects());
+		createItemStack.setWaterBottle(isWater);
+		if (itemWrapper.getEnchantments() != null)
+			createItemStack.addEnchantments(itemWrapper.getEnchantments(), false);
+		if (itemWrapper.getBannerPatterns() != null)
+			createItemStack.addPattern(itemWrapper.getBannerPatterns());
+		if (itemWrapper.getHideFlags() != null)
+			createItemStack.setItemFlags(itemWrapper.getHideFlags());
+		if (itemWrapper.getRbg() != null)
+			createItemStack.setRgb(itemWrapper.getRbg());
+		if (itemWrapper.getPortionEffects() != null)
+			createItemStack.addPortionEffects(itemWrapper.getPortionEffects());
 		createItemStack.setGlow(itemWrapper.isGlow());
 		createItemStack.setUnbreakable(itemWrapper.isUnbreakable());
-		itemWrapper.getData();
-		itemWrapper.getCustomModeldata();
+		createItemStack.setData((short) itemWrapper.getData());
+		createItemStack.setCustomModeldata(itemWrapper.getCustomModeldata());
 
 
-		if (itemWrapper.getDynamicAmount() != null)
+		if (itemWrapper.getDynamicAmount() != null) {
 			try {
 				createItemStack.setAmoutOfItems(Integer.parseInt(setPlaceholders(player, itemWrapper.getDynamicAmount())));
 			} catch (NumberFormatException exception) {
 				exception.printStackTrace();
+			} finally {
+				createItemStack.setAmoutOfItems(itemWrapper.getAmount());
 			}
+		} else {
+			createItemStack.setAmoutOfItems(itemWrapper.getAmount());
+		}
+
 		return createItemStack;
 	}
 
@@ -482,6 +498,7 @@ public class CreateItemStack {
 	 * @return this class.
 	 */
 	public CreateItemStack setItemFlags(List<ItemFlag> itemFlags) {
+		Valid.checkNotNull(itemFlags, "flags list is null");
 		this.visibleItemFlags.addAll(itemFlags);
 		return this;
 	}
@@ -515,7 +532,7 @@ public class CreateItemStack {
 					itemMeta.setLore(translateColors(this.lore));
 				}
 				addItemMeta(itemMeta);
-				
+
 				if (this.getData() > 0)
 					itemstack.setDurability(this.getData());
 			}

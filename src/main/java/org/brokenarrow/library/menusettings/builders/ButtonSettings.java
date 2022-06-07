@@ -1,23 +1,24 @@
 package org.brokenarrow.library.menusettings.builders;
 
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
+import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.requirements.RequirementsLogic;
+import org.brokenarrow.library.menusettings.utillity.CreateItemStack;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import static org.brokenarrow.library.menusettings.utillity.ArmorSlots.getArmorPiece;
 
 public final class ButtonSettings {
 
 	private final int priority;
-	private final int refreshTimeWhenUpdateButton;
+	private final long refreshTimeWhenUpdateButton;
 	private final boolean updateButton;
-	private final boolean glow;
 	private final boolean refreshAllButtons;
-	private final String displayName;
 	private final String buttonName;
-	private final String slot;
-	private final String icon;
-	private final List<String> lore;
+	private final String checkArmor;
+	private final String checkHand;
 	private final ItemWrapper buttonItem;
 	private final RequirementsLogic viewRequirement;
 	private final RequirementsLogic clickrequirement;
@@ -38,13 +39,10 @@ public final class ButtonSettings {
 		this.priority = builder.priority;
 		this.refreshTimeWhenUpdateButton = builder.refreshTimeWhenUpdateButton;
 		this.updateButton = builder.updateButton;
-		this.glow = builder.glow;
 		this.refreshAllButtons = builder.refreshAllButtons;
-		this.displayName = builder.displayName;
 		this.buttonName = builder.buttonName;
-		this.slot = builder.slot;
-		this.icon = builder.icon;
-		this.lore = builder.lore;
+		this.checkArmor = builder.checkArmor;
+		this.checkHand = builder.checkHand;
 		this.buttonItem = builder.buttonItem;
 		this.viewRequirement = builder.viewRequirement;
 		this.clickrequirement = builder.clickrequirement;
@@ -66,7 +64,7 @@ public final class ButtonSettings {
 		return priority;
 	}
 
-	public int getRefreshTimeWhenUpdateButton() {
+	public long getRefreshTimeWhenUpdateButton() {
 		return refreshTimeWhenUpdateButton;
 	}
 
@@ -74,20 +72,12 @@ public final class ButtonSettings {
 		return updateButton;
 	}
 
-	public boolean isGlow() {
-		return glow;
-	}
-
 	public boolean isRefreshAllButtons() {
 		return refreshAllButtons;
 	}
 
-	public String getDisplayName() {
-		return displayName;
-	}
-
 	/**
-	 * Get name in this button.
+	 * GetCollections name in this button.
 	 *
 	 * @return name on the button.
 	 */
@@ -95,26 +85,39 @@ public final class ButtonSettings {
 		return buttonName;
 	}
 
-	public String getSlot() {
-		return slot;
+	public String getCheckArmor() {
+		return checkArmor;
 	}
 
-	public String getIcon() {
-		return icon;
-	}
-
-	public List<String> getLore() {
-		return lore;
+	public String getCheckHand() {
+		return checkHand;
 	}
 
 	public ItemWrapper getButtonItem() {
 		return buttonItem;
 	}
 
+	@Nullable
+	public ItemStack getItemStack(Player viewer) {
+		ItemWrapper itemWrapper = getButtonItem();
+		String icon = itemWrapper.getIcon();
+		Valid.checkBoolean(icon != null, "Your material is null, so can´t add this item to the menu " + ButtonSettings.class);
 
-	public ItemStack getItemStack() {
-		
-		return buttonItem;
+		ItemStack itemStack = null;
+		if (this.getCheckHand() != null) {
+			if (this.getCheckHand().equalsIgnoreCase("main_hand"))
+				if (viewer.getInventory().getItemInMainHand() != null) {
+					itemStack = viewer.getInventory().getItemInMainHand().clone();
+				}
+			if (this.getCheckHand().equalsIgnoreCase("off_hand"))
+				if (viewer.getInventory().getItemInOffHand() != null) {
+					itemStack = viewer.getInventory().getItemInOffHand().clone();
+				}
+		}
+		if (this.getCheckArmor() != null) {
+			itemStack = getArmorPiece(viewer, this.getCheckArmor());
+		}
+		return CreateItemStack.of(itemStack, itemWrapper, viewer).makeItemStack();
 	}
 
 	public RequirementsLogic getViewRequirement() {
@@ -175,15 +178,12 @@ public final class ButtonSettings {
 
 	public static class Builder {
 		private int priority;
-		private int refreshTimeWhenUpdateButton;
+		private long refreshTimeWhenUpdateButton;
 		private boolean updateButton;
-		private boolean glow;
 		private boolean refreshAllButtons;
-		private String displayName = "";
 		private String buttonName;
-		private String slot;
-		private String icon;
-		private List<String> lore;
+		public String checkArmor;
+		public String checkHand;
 		private ItemWrapper buttonItem;
 		private RequirementsLogic viewRequirement;
 		private RequirementsLogic clickrequirement;
@@ -204,7 +204,7 @@ public final class ButtonSettings {
 			return this;
 		}
 
-		public Builder setRefreshTimeWhenUpdateButton(int refreshTimeWhenUpdateButton) {
+		public Builder setRefreshTimeWhenUpdateButton(long refreshTimeWhenUpdateButton) {
 			this.refreshTimeWhenUpdateButton = refreshTimeWhenUpdateButton;
 			return this;
 		}
@@ -214,10 +214,6 @@ public final class ButtonSettings {
 			return this;
 		}
 
-		public Builder setGlow(boolean glow) {
-			this.glow = glow;
-			return this;
-		}
 
 		public Builder setRefreshAllButtons(boolean refreshAllButtons) {
 			this.refreshAllButtons = refreshAllButtons;
@@ -229,29 +225,19 @@ public final class ButtonSettings {
 			return this;
 		}
 
-		public Builder setDisplayName(String displayName) {
-			this.displayName = displayName;
-			return this;
-		}
-
 		public Builder setButtonName(String buttonName) {
 
 			this.buttonName = buttonName;
 			return this;
 		}
 
-		public Builder setSlot(String slot) {
-			this.slot = slot;
+		public Builder setCheckArmor(String checkArmor) {
+			this.checkArmor = checkArmor;
 			return this;
 		}
 
-		public Builder setIcon(String icon) {
-			this.icon = icon;
-			return this;
-		}
-
-		public Builder setLore(List<String> lore) {
-			this.lore = lore;
+		public Builder setCheckHand(String checkHand) {
+			this.checkHand = checkHand;
 			return this;
 		}
 
@@ -332,11 +318,6 @@ public final class ButtonSettings {
 				"priority=" + priority +
 				", updateButton=" + updateButton +
 				", refreshButton=" + refreshTimeWhenUpdateButton +
-				", glow=" + glow +
-				", displayname='" + displayName + '\'' +
-				", slot='" + slot + '\'' +
-				", icon='" + icon + '\'' +
-				", lore=" + lore +
 				", viewRequirement=" + viewRequirement +
 				", clickrequirement=" + clickrequirement +
 				", shiftRightClickRequirement=" + shiftRightClickRequirement +

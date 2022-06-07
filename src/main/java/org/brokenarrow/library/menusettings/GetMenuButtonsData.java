@@ -37,6 +37,20 @@ public class GetMenuButtonsData {
 		return wiver;
 	}
 
+	public boolean checkOpenRequirements(String permission) {
+		if (this.wiver != null && permission != null && !permission.isEmpty() && this.wiver.hasPermission(permission))
+			return true;
+		
+		if (menucache.getOpenRequirement() != null) {
+			if (!menucache.getOpenRequirement().estimate(this.wiver)) {
+				if (menucache.getOpenRequirement().getDenyCommands() != null)
+					menucache.getOpenRequirement().runClickActionTask(menucache.getOpenRequirement().getDenyCommands(), this.wiver);
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public boolean checkClickRequirements(ButtonSettings requirements, ClickType clickType) {
 		if (requirements == null)
 			return true;
@@ -96,7 +110,7 @@ public class GetMenuButtonsData {
 	}
 
 	/**
-	 * Get button data on current slot. It return data from {@link ButtonSettings}
+	 * GetCollections button data on current slot. It return data from {@link ButtonSettings}
 	 *
 	 * @param slot get the data from.
 	 * @return items settings or null.
