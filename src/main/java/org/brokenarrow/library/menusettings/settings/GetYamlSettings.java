@@ -46,6 +46,7 @@ public final class GetYamlSettings {
 			if (requirementList != null)
 				requirementsList.addAll(requirementList);
 		}
+		
 		List<String> denyCommands = this.getConfig().getStringList(path + "." + clickType + ".deny_commands");
 		boolean stopAtSuccess = this.getConfig().getBoolean(path + "." + clickType + ".stop_at_success");
 		int minimumRequirement = this.getConfig().getInt(path + "." + clickType + ".minimum_requirement");
@@ -92,7 +93,7 @@ public final class GetYamlSettings {
 		Map<String, Map<String, String>> portionsEffects = getMaps(path + ".Potion_effects");
 		Map<String, Map<String, String>> enchantments = getMaps(path + ".Enchantments");
 		Map<String, String> bannerPattern = getMap(path + ".Banner_pattern");
-		
+
 		builder.setDisplayname(displayName)
 				.setLore(lore)
 				.setAmount(amountOfItems)

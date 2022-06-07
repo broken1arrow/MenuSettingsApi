@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.ClickType;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.brokenarrow.library.menusettings.RegisterMenuAddon.setPlaceholders;
 
@@ -33,14 +34,32 @@ public class GetMenuButtonsData {
 		return menucache;
 	}
 
+	/**
+	 * Get all settings for menu button´s. Return a map with slots every button shall be placed.
+	 *
+	 * @return map with all items settings.
+	 */
+	public Map<List<Integer>, List<ButtonSettings>> getItemSettings() {
+		return menucache.getItemSettings();
+	}
+
+	/**
+	 * Get list of all slots some are set.
+	 *
+	 * @return list of slots buttons is placed.
+	 */
+	public List<Integer> getSlots() {
+		return menucache.getItemSettings().keySet().stream().flatMap(List::stream).collect(Collectors.toList());
+	}
+
 	public Player getWiver() {
 		return wiver;
 	}
 
-	public boolean checkOpenRequirements(String permission) {
-		if (this.wiver != null && permission != null && !permission.isEmpty() && this.wiver.hasPermission(permission))
+	public boolean checkOpenRequirements(String bypassPermission) {
+		if (this.wiver != null && bypassPermission != null && !bypassPermission.isEmpty() && this.wiver.hasPermission(bypassPermission))
 			return true;
-		
+
 		if (menucache.getOpenRequirement() != null) {
 			if (!menucache.getOpenRequirement().estimate(this.wiver)) {
 				if (menucache.getOpenRequirement().getDenyCommands() != null)

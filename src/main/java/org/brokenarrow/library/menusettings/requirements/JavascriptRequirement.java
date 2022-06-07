@@ -34,13 +34,13 @@ public class JavascriptRequirement extends Requirement {
 			engine.put("BukkitServer", Bukkit.getServer());
 		}*/
 		if (engine == null)
-			getPLUGIN().getLogger().log(Level.WARNING, "Script Engine Manager is null make sure you have install NashornPlus from https://github.com/broken1arrow/NashornPlusAPI/releases or add <' libraries: org.openjdk.nashorn:nashorn-core:15.4 '> to your plugin.yml");
+			getPLUGIN().getLogger().log(Level.WARNING, "Script Engine Manager is null make sure you have install NashornPlus from https://github.com/broken1arrow/NashornPlusAPI/releases or add <' libraries: -org.openjdk.nashorn:nashorn-core:15.4 '> to your plugin.yml");
 	}
 
 	@Override
 	boolean estimate(Player wiver) {
 		if (engine == null || scriptEngine == null) {
-			getPLUGIN().getLogger().log(Level.WARNING, scriptEngine == null ? "Script Engine" : "Script Engine Manager" + " is null make sure you have install NashornPlus from https://github.com/broken1arrow/NashornPlusAPI/releases or add <' libraries: org.openjdk.nashorn:nashorn-core:15.4 '> to your plugin.yml");
+			getPLUGIN().getLogger().log(Level.WARNING, scriptEngine == null ? "Script Engine" : "Script Engine Manager" + " is null make sure you have install NashornPlus from https://github.com/broken1arrow/NashornPlusAPI/releases or add <' libraries: -org.openjdk.nashorn:nashorn-core:15.4 '> to your plugin.yml");
 			return false;
 		}
 		String exp = setPlaceholders(wiver, this.expression);
@@ -48,7 +48,7 @@ public class JavascriptRequirement extends Requirement {
 			engine.put("BukkitPlayer", wiver);
 			Object result = scriptEngine.eval(exp);
 			if (!(result instanceof Boolean)) {
-				getPLUGIN().getLogger().log(Level.WARNING, "This scrpit [" + this.expression + "] do not return boolean.");
+				getPLUGIN().getLogger().log(Level.WARNING, "This script [" + this.expression + "] do not return boolean.");
 				return false;
 			} else {
 				return (boolean) result;

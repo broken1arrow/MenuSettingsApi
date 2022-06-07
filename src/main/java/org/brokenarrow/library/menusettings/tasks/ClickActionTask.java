@@ -22,7 +22,7 @@ public class ClickActionTask {
 	private final String execute;
 	private String delay;
 	private String chance;
-
+	
 
 	public ClickActionTask(CommandActionType actionType, String execute) {
 		this.actionType = actionType;

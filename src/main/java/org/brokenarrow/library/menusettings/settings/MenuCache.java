@@ -36,10 +36,10 @@ public class MenuCache extends AllYamlFilesInFolder {
 		ConfigurationSection configurationSection = getCustomConfig().getConfigurationSection("Menus");
 
 		if (configurationSection == null) return;
-
-		Map<List<Integer>, List<ButtonSettings>> buttonsCache = new HashMap<>();
+		
 		for (String key : configurationSection.getKeys(false)) {
 			if (key == null) continue;
+			Map<List<Integer>, List<ButtonSettings>> buttonsCache = new HashMap<>();
 
 			if (getFolderName() != null && !getFolderName().isEmpty())
 				menuCache.put(getFileName(file.getName()), chacheYamlData(buttonsCache, key));
@@ -55,8 +55,10 @@ public class MenuCache extends AllYamlFilesInFolder {
 		int menuSize = config.getInt("Menus." + key + ".Menu_Size");
 		String menuTitle = config.getString("Menus." + key + ".Menu_Title");
 		String fillSpace = config.getString("Menus." + key + ".FillSpace");
+		String sound = config.getString("Menus." + key + ".Sound");
 		boolean updateButtons = config.getBoolean("Menus." + key + ".Update_Buttons");
 		int delay = config.getInt("Menus." + key + ".Global_Buttons_Delay");
+
 
 		ConfigurationSection sectionOfButtons = config.getConfigurationSection("Menus." + key + ".Menu_Items");
 		if (sectionOfButtons != null)
@@ -64,7 +66,7 @@ public class MenuCache extends AllYamlFilesInFolder {
 				List<ButtonSettings> buttonSettings = new ArrayList<>();
 				String path = "Menus." + key + ".Menu_Items." + button;
 
-				int priority = config.getInt(path + ".Priority");
+				int priority = config.getInt(path + ".Priority", 1);
 				boolean refreshButtons = config.getBoolean(path + "Refresh_buttons");
 				boolean updateButton = config.getBoolean(path + ".Update_Button");
 				long updateButtondelay = config.getLong(path + ".Update_Button_delay");
@@ -109,6 +111,7 @@ public class MenuCache extends AllYamlFilesInFolder {
 				.setMenuSize(menuSize)
 				.setGlobalDelay(delay)
 				.setMenuTitle(menuTitle)
+				.setSound(sound)
 				.setOpenRequirement(yamlSettings.checkRequirements("Menus." + key, "Open_requirement"))
 				.setUpdateButtons(updateButtons);
 

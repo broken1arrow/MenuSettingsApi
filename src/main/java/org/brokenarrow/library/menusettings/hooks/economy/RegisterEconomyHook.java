@@ -12,14 +12,7 @@ public class RegisterEconomyHook {
 			provider = new VaultEconomy();
 		}
 	}
-
-	public void checkeconomyHock() {
-		if (Bukkit.getServer().getPluginManager().getPlugin("Vault") != null) {
-			provider = new VaultEconomy();
-		}
-
-	}
-
+	
 	public PriceProvider getProvider() {
 		return provider;
 	}

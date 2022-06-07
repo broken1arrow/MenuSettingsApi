@@ -64,20 +64,38 @@ public final class ButtonSettings {
 		return priority;
 	}
 
-	public long getRefreshTimeWhenUpdateButton() {
+	/**
+	 * This method you get the time between each update this button shall update. Is used with
+	 * {@link #isUpdateButton()} if that are true it will updated the button.
+	 *
+	 * @return amount of seconds between every update.
+	 */
+	public long getRefreshButtonTime() {
 		return refreshTimeWhenUpdateButton;
 	}
 
+	/**
+	 * This method is used for check if the buttion shall update
+	 * when menu is open time bewteen every update are used with {@link #getRefreshButtonTime()}.
+	 *
+	 * @return true if it shall update the button.
+	 */
 	public boolean isUpdateButton() {
 		return updateButton;
 	}
 
+	/**
+	 * This method is used for update all buttons when clicking
+	 * on a button/item inside the menu.
+	 *
+	 * @return true if it shall refresh all buttons.
+	 */
 	public boolean isRefreshAllButtons() {
 		return refreshAllButtons;
 	}
 
 	/**
-	 * GetCollections name in this button.
+	 * Get name on this button.
 	 *
 	 * @return name on the button.
 	 */
@@ -97,9 +115,16 @@ public final class ButtonSettings {
 		return buttonItem;
 	}
 
+	/**
+	 * Get the item from {@link ItemWrapper} will create
+	 * the item with the settings from the ItemWrapper class.
+	 *
+	 * @param viewer some open the menu.
+	 * @return itemstack with the set values from ItemWrapper class.
+	 */
 	@Nullable
 	public ItemStack getItemStack(Player viewer) {
-		ItemWrapper itemWrapper = getButtonItem();
+		ItemWrapper itemWrapper = this.getButtonItem();
 		String icon = itemWrapper.getIcon();
 		Valid.checkBoolean(icon != null, "Your material is null, so can´t add this item to the menu " + ButtonSettings.class);
 
@@ -311,13 +336,17 @@ public final class ButtonSettings {
 		}
 	}
 
-
 	@Override
 	public String toString() {
 		return "ButtonSettings{" +
 				"priority=" + priority +
+				", refreshTimeWhenUpdateButton=" + refreshTimeWhenUpdateButton +
 				", updateButton=" + updateButton +
-				", refreshButton=" + refreshTimeWhenUpdateButton +
+				", refreshAllButtons=" + refreshAllButtons +
+				", buttonName='" + buttonName + '\'' +
+				", checkArmor='" + checkArmor + '\'' +
+				", checkHand='" + checkHand + '\'' +
+				", buttonItem=" + buttonItem +
 				", viewRequirement=" + viewRequirement +
 				", clickrequirement=" + clickrequirement +
 				", shiftRightClickRequirement=" + shiftRightClickRequirement +

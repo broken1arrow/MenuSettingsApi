@@ -2,6 +2,7 @@ package org.brokenarrow.library.menusettings;
 
 import de.tr7zw.changeme.nbtapi.metodes.RegisterNbtAPI;
 import me.clip.placeholderapi.PlaceholderAPI;
+import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.hooks.economy.PriceProvider;
 import org.brokenarrow.library.menusettings.hooks.economy.RegisterEconomyHook;
 import org.brokenarrow.library.menusettings.hooks.permission.PermissionProvider;
@@ -13,6 +14,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mineacademy.nashornplus.NashornPlusPlugin;
 
@@ -35,8 +37,8 @@ public class RegisterMenuAddon {
 	private static Plugin PLUGIN;
 	private static MenuCache menuCache;
 	private static DecimalFormat decimalFormat;
-	private static final RegisterMenuAddon instance = new RegisterMenuAddon();
-	private static int accesAmount;
+	private static RegisterMenuAddon instance;
+
 	private static ScriptEngineFactory engineFactory;
 	private static ScriptEngineManager engineManager;
 	private static ScriptEngine scriptEngine;
@@ -44,15 +46,6 @@ public class RegisterMenuAddon {
 	private static RegisterEconomyHook registerEconomyHook;
 	private static RegisterPermissionHook registerPermissionHook;
 	private static RegisterNbtAPI nbtApi;
-
-	private RegisterMenuAddon() {
-		accesAmount++;
-		if (accesAmount > 0)
-			System.out.println("acces amoiunt " + accesAmount);
-		registerNashorn();
-		registerEconomyHook = new RegisterEconomyHook();
-		registerPermissionHook = new RegisterPermissionHook();
-	}
 
 	public RegisterMenuAddon(Plugin plugin, String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
 		this(plugin, name, name, makeOneFile, shallGenerateDefultFiles);
@@ -63,11 +56,14 @@ public class RegisterMenuAddon {
 	}
 
 	public RegisterMenuAddon(Plugin plugin, String folderName, String filename, boolean makeOneFile, boolean shallGenerateDefultFiles) {
+		instance = this;
 		PLUGIN = plugin;
 		menuCache = new MenuCache(makeOneFile ? "" : folderName, filename, shallGenerateDefultFiles);
 		setServerVersion(plugin);
 		nbtApi = new RegisterNbtAPI(plugin, false);
-
+		registerNashorn();
+		registerEconomyHook = new RegisterEconomyHook();
+		registerPermissionHook = new RegisterPermissionHook();
 	}
 
 	public static String setPlaceholders(Player player, String string) {
@@ -135,25 +131,27 @@ public class RegisterMenuAddon {
 		}
 	}
 
-
-	public static RegisterEconomyHook getRegisterEconomyHook() {
+	@NotNull
+	public RegisterEconomyHook getRegisterEconomyHook() {
 		return registerEconomyHook;
 	}
 
 	public static PriceProvider getEconomyProvider() {
-		checkBoolean(registerEconomyHook == null, "economyProvider is null, so you can't add or remove money from players");
+		checkBoolean(registerEconomyHook.getProvider() == null, "economyProvider is null, so you can't add or remove money from players");
 		return registerEconomyHook.getProvider();
 	}
 
-	public static RegisterPermissionHook getRegisterPermissionHook() {
+	@NotNull
+	public RegisterPermissionHook getRegisterPermissionHook() {
 		return registerPermissionHook;
 	}
 
 	public static PermissionProvider getPermissionProvider() {
-		checkBoolean(registerEconomyHook == null, "permissionProvider is null, so you can't set or remove permissions from players");
+		checkBoolean(registerEconomyHook.getProvider() == null, "permissionProvider is null, so you can't set or remove permissions from players");
 		return registerPermissionHook.getProvider();
 	}
 
+	@Nullable
 	public static ScriptEngineFactory getEngineFactory() {
 		return engineFactory;
 	}
@@ -180,12 +178,13 @@ public class RegisterMenuAddon {
 		return PLUGIN;
 	}
 
-	static RegisterMenuAddon getInstance() {
+	protected static RegisterMenuAddon getInstance() {
+		Valid.checkNotNull(instance + "You have not instantiate this class, you need to do new RegisterMenuAddon()");
 		return instance;
 	}
 
 	/**
-	 * GetCollections the menu cache, but not forget to make an instance of this class first.
+	 * Get the menu cache, but not forget to make an instance of this class first.
 	 *
 	 * @return the menu cache instance.
 	 */
