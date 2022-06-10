@@ -14,7 +14,7 @@ public class InputOutputRequirement extends Requirement {
 		this.type = type;
 		this.input = input;
 		this.output = output;
-		
+
 	}
 
 
@@ -45,6 +45,8 @@ public class InputOutputRequirement extends Requirement {
 					return false;
 				}
 				switch (this.type) {
+					case INT_NOT_EQUALS_OUTPUT:
+						return inputInt != outputInt;
 					case INT_EQUALS_OUTPUT:
 						return inputInt == outputInt;
 					case INT_GREATER_THAN_OUTPUT:

@@ -45,6 +45,7 @@ public final class GetCollections {
 		for (String itemFlag : itemFlags) {
 			if (itemFlag == null) continue;
 			try {
+				itemFlag = itemFlag.toUpperCase();
 				ItemFlag flag = ItemFlag.valueOf(itemFlag);
 				itemFlagList.add(flag);
 			} catch (IllegalArgumentException exception) {
@@ -61,11 +62,15 @@ public final class GetCollections {
 			String pattern = petterns.getKey();
 			String color = petterns.getValue();
 
-			if (pattern != null)
-				if (color != null)
-					enchantmentsMap.add(new Pattern(DyeColor.valueOf(color), PatternType.valueOf(pattern)));
-				else
+			if (pattern != null) {
+				pattern = pattern.toUpperCase();
+				if (color != null) {
+					color = color.toUpperCase();
+					DyeColor dyeColor = DyeColor.valueOf(color);
+					enchantmentsMap.add(new Pattern(dyeColor, PatternType.valueOf(pattern)));
+				} else
 					enchantmentsMap.add(new Pattern(DyeColor.WHITE, PatternType.valueOf(pattern)));
+			}
 		}
 		return enchantmentsMap;
 	}
@@ -73,10 +78,12 @@ public final class GetCollections {
 	public static Map<Enchantment, Tuple<Integer, Boolean>> getEnchantments(Map<String, Map<String, String>> enchantmentList) {
 		if (enchantmentList == null || enchantmentList.isEmpty()) return null;
 		Map<Enchantment, Tuple<Integer, Boolean>> enchantmentsMap = new HashMap<>();
-
+		System.out.println("enchantmentList " + enchantmentList);
 		for (Map.Entry<String, Map<String, String>> stringMapEntry : enchantmentList.entrySet()) {
 			Valid.checkNotNull(stringMapEntry.getKey(), "Enchantment is null. Should always return a value");
-			Enchantment enchantment = Enchantment.getByKey(NamespacedKey.fromString(stringMapEntry.getKey()));
+			Enchantment enchantment = Enchantment.getByKey(NamespacedKey.fromString(stringMapEntry.getKey().toLowerCase()));
+			System.out.println("Enchantment " + enchantment);
+
 			Map<String, String> enchantOptions = stringMapEntry.getValue();
 			String enchantmentLevel = enchantOptions.get("level");
 			int level = enchantmentLevel == null ? 1 : Integer.parseInt(enchantmentLevel);
@@ -92,11 +99,15 @@ public final class GetCollections {
 	public static List<PotionEffect> getPotionEffects(Map<String, Map<String, String>> portionsEffects) {
 		if (portionsEffects == null || portionsEffects.isEmpty()) return null;
 		List<PotionEffect> potionEffectList = new ArrayList<>();
-
+		System.out.println("portionsEffects " + portionsEffects);
 		for (Map.Entry<String, Map<String, String>> potionEffect : portionsEffects.entrySet()) {
 			Valid.checkNotNull(potionEffect.getKey(), "Portion effects is null. Should always return a value");
 			PotionEffectType potionEffectType = PotionEffectType.getByName(potionEffect.getKey());
+
+			System.out.println("portionsEffects potionEffectType  " + potionEffectType);
+
 			Map<String, String> potionEffectValue = potionEffect.getValue();
+			System.out.println("portionsEffects value  " + potionEffectValue);
 			if (potionEffectType != null)
 				potionEffectList.add(new PotionEffect(potionEffectType, Integer.parseInt(potionEffectValue.get("duration")), Integer.parseInt(potionEffectValue.get("amplifier"))));
 		}

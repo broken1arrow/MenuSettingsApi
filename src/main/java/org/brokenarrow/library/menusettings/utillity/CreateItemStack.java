@@ -40,8 +40,10 @@ public class CreateItemStack {
 	private final List<String> lore;
 	private final Map<Enchantment, Tuple<Integer, Boolean>> enchantments = new HashMap<>();
 	private final List<ItemFlag> visibleItemFlags = new ArrayList<>();
+	private final List<ItemFlag> flagsToHide = new ArrayList<>();
 	private final List<Pattern> pattern = new ArrayList<>();
 	private final List<PotionEffect> portionEffects = new ArrayList<>();
+	private final List<FireworkEffect> fireworkEffects = new ArrayList<>();
 	private String itemMetaKey;
 	private Object itemMetaValue;
 	private Map<String, Object> itemMetaMap;
@@ -55,7 +57,10 @@ public class CreateItemStack {
 	private boolean showEnchantments;
 	private boolean waterBottle;
 	private boolean unbreakable;
+	private boolean keepAmount;
+	private boolean keepOldMeta = true;
 	private static ConvertToItemStack convertItems;
+
 
 	private CreateItemStack(final Bulider bulider) {
 		if (convertItems == null)
@@ -78,9 +83,13 @@ public class CreateItemStack {
 	 */
 	public static CreateItemStack of(final Object item, final ItemWrapper itemWrapper, Player player) {
 		CreateItemStack createItemStack;
+		String displayName = null;
+		List<String> lore = null;
 		String icon = setPlaceholders(player, itemWrapper.getIcon());
-		String displayName = setPlaceholders(player, itemWrapper.getDisplayname());
-		List<String> lore = setPlaceholders(player, itemWrapper.getLore());
+		if (itemWrapper.getDisplayname() != null)
+			displayName = setPlaceholders(player, itemWrapper.getDisplayname());
+		if (itemWrapper.getLore() != null)
+			lore = setPlaceholders(player, itemWrapper.getLore());
 		boolean isWater = icon.equalsIgnoreCase("water_bottle");
 		if (isWater) {
 			icon = "POTION";
@@ -89,18 +98,18 @@ public class CreateItemStack {
 			createItemStack = of(item != null ? item : icon, displayName, lore);
 		else
 			createItemStack = of(item != null ? item : icon, itemWrapper.getMatrialColor(), displayName, lore);
-
 		createItemStack.setWaterBottle(isWater);
 		if (itemWrapper.getEnchantments() != null)
 			createItemStack.addEnchantments(itemWrapper.getEnchantments(), false);
 		if (itemWrapper.getBannerPatterns() != null)
 			createItemStack.addPattern(itemWrapper.getBannerPatterns());
 		if (itemWrapper.getHideFlags() != null)
-			createItemStack.setItemFlags(itemWrapper.getHideFlags());
+			createItemStack.setFlagsToHide(itemWrapper.getHideFlags());
 		if (itemWrapper.getRbg() != null)
-			createItemStack.setRgb(itemWrapper.getRbg());
+			createItemStack.setRgb(setPlaceholders(player, itemWrapper.getRbg()));
 		if (itemWrapper.getPortionEffects() != null)
 			createItemStack.addPortionEffects(itemWrapper.getPortionEffects());
+		createItemStack.setFireworkEffects(new ArrayList<>());
 		createItemStack.setGlow(itemWrapper.isGlow());
 		createItemStack.setUnbreakable(itemWrapper.isUnbreakable());
 		createItemStack.setData((short) itemWrapper.getData());
@@ -268,10 +277,21 @@ public class CreateItemStack {
 		return this;
 	}
 
+	/**
+	 * Get pattern for the banner.
+	 *
+	 * @return list of patterns.
+	 */
 	public List<Pattern> getPattern() {
 		return pattern;
 	}
 
+	/**
+	 * Add one or several patterns.
+	 *
+	 * @param patterns to add to the list.
+	 * @return this class.
+	 */
 	public CreateItemStack addPattern(Pattern... patterns) {
 		if (patterns == null || patterns.length < 1) return this;
 
@@ -279,16 +299,33 @@ public class CreateItemStack {
 		return this;
 	}
 
+	/**
+	 * Add list of patterns (if it exist old patterns in the list, will the new ones be added ontop).
+	 *
+	 * @param pattern list some contains patterns.
+	 * @return this class.
+	 */
 	public CreateItemStack addPattern(List<Pattern> pattern) {
 
 		this.pattern.addAll(pattern);
 		return this;
 	}
 
+	/**
+	 * Get enchantments for this item.
+	 *
+	 * @return map with enchantment level and if it shall ignore level reestriction.
+	 */
 	public Map<Enchantment, Tuple<Integer, Boolean>> getEnchantments() {
 		return enchantments;
 	}
 
+	/**
+	 * Check if it water Bottle. Becuse
+	 * only exist matrial portion, so need this method.
+	 *
+	 * @return true if it a water Bottle item.
+	 */
 	public boolean isWaterBottle() {
 		return waterBottle;
 	}
@@ -296,6 +333,66 @@ public class CreateItemStack {
 	public CreateItemStack setWaterBottle(boolean waterBottle) {
 		this.waterBottle = waterBottle;
 		return this;
+	}
+
+	/**
+	 * If it shall keep the old amount of items (if you modify old itemstack).
+	 *
+	 * @return true if you keep old amunt.
+	 */
+	public boolean isKeepAmount() {
+		return keepAmount;
+	}
+
+	/**
+	 * Set if you want to keep old amount.
+	 *
+	 * @param keepAmount set it to true if you want keep old amount.
+	 * @return
+	 */
+	public CreateItemStack setKeepAmount(boolean keepAmount) {
+		this.keepAmount = keepAmount;
+		return this;
+	}
+
+	/**
+	 * if it shall keep old medatada (only work if you modify old itemstack).
+	 * Defult it will keep the meta.
+	 *
+	 * @return true if you keep old meta.
+	 */
+	public boolean isKeepOldMeta() {
+		return keepOldMeta;
+	}
+
+	/**
+	 * Set if it shall keep the old metadata or not.
+	 * Defult it will keep the meta.
+	 *
+	 * @param keepOldMeta set to false if you not want to keep old metadata.
+	 * @return this class.
+	 */
+	public CreateItemStack setKeepOldMeta(boolean keepOldMeta) {
+		this.keepOldMeta = keepOldMeta;
+		return this;
+	}
+
+	/**
+	 * Get list of firework effects
+	 *
+	 * @return list of efects set on this item.
+	 */
+	public List<FireworkEffect> getFireworkEffects() {
+		return fireworkEffects;
+	}
+
+	/**
+	 * Add firework effects on this item.
+	 *
+	 * @param fireworkEffects list of effects you want to add.
+	 */
+	public void setFireworkEffects(List<FireworkEffect> fireworkEffects) {
+		fireworkEffects.addAll(fireworkEffects);
 	}
 
 	/**
@@ -333,7 +430,7 @@ public class CreateItemStack {
 	public CreateItemStack addEnchantments(Map<Enchantment, Tuple<Integer, Boolean>> enchantmentMap, boolean override) {
 		Valid.checkNotNull(enchantmentMap, "this map is null");
 		if (enchantmentMap.isEmpty())
-			getPLUGIN().getLogger().log(Level.INFO, "This map is empty so no values vill be added");
+			getPLUGIN().getLogger().log(Level.INFO, "This map is empty so no enchantments vill be added");
 
 		enchantmentMap.forEach((key, value) -> {
 			if (!override)
@@ -408,49 +505,137 @@ public class CreateItemStack {
 		return this;
 	}
 
+	/**
+	 * if this item is unbreakable or not
+	 *
+	 * @return true if the item is unbreakable.
+	 */
 	public boolean isUnbreakable() {
 		return unbreakable;
 	}
 
+	/**
+	 * Set if you can break the item or not.
+	 *
+	 * @param unbreakable true if the tool shall not break
+	 * @return this class.
+	 */
 	public CreateItemStack setUnbreakable(boolean unbreakable) {
 		this.unbreakable = unbreakable;
 		return this;
 	}
 
+	/**
+	 * Old methoid to set data on a item.
+	 *
+	 * @return number.
+	 */
 	public short getData() {
 		return data;
 	}
 
+	/**
+	 * Set data on a item, it only suport short
+	 * so is a limit of how high you can set it.
+	 *
+	 * @param data the number you want to set.
+	 * @return this class.
+	 */
 	public CreateItemStack setData(short data) {
 		this.data = data;
 		return this;
 	}
 
+	/**
+	 * Get Custom Modeldata on the item. use this insted of set data on a item.
+	 *
+	 * @return Modeldata number.
+	 */
+
 	public int getCustomModeldata() {
 		return customModeldata;
 	}
 
+	/**
+	 * Set Custom Modeldata on a item. will work on newer minecraft versions.
+	 *
+	 * @param customModeldata number.
+	 * @return this class.
+	 */
 	public CreateItemStack setCustomModeldata(int customModeldata) {
 		this.customModeldata = customModeldata;
 		return this;
 	}
 
+	/**
+	 * Get all portions effects for this item.
+	 *
+	 * @return list of portions effects.
+	 */
 	public List<PotionEffect> getPortionEffects() {
 		return portionEffects;
 	}
 
-	public void addPortionEffects(PotionEffect... potionEffects) {
+	/**
+	 * Add one or several portions effects to list.
+	 *
+	 * @param potionEffects you want to set on the item.
+	 * @return this class.
+	 */
+	public CreateItemStack addPortionEffects(PotionEffect... potionEffects) {
+		if (potionEffects.length == 0) return this;
+
 		portionEffects.addAll(Arrays.asList(potionEffects));
+		return this;
 	}
 
-	public void addPortionEffects(List<PotionEffect> potionEffects) {
+	/**
+	 * Add a list of effects to the list. If it exist old effects this will add the effects ontop of the old ones.
+	 *
+	 * @param potionEffects list of effects you want to add.
+	 * @return this class.
+	 */
+	public CreateItemStack addPortionEffects(List<PotionEffect> potionEffects) {
+		if (potionEffects.isEmpty()) {
+			getPLUGIN().getLogger().log(Level.INFO, "This list of portion effects is empty so no values vill be added");
+			return this;
+		}
+
 		portionEffects.addAll(potionEffects);
+		return this;
 	}
 
+	/**
+	 * Set a list of effects to the list. If it exist old effects in the list, this will be removed.
+	 *
+	 * @param potionEffects list of effects you want to set.
+	 * @return this class.
+	 */
+	public CreateItemStack setPortionEffects(List<PotionEffect> potionEffects) {
+		if (potionEffects.isEmpty()) {
+			getPLUGIN().getLogger().log(Level.INFO, "This list of portion effects is empty so no values vill be added");
+			return this;
+		}
+		portionEffects.clear();
+		portionEffects.addAll(potionEffects);
+		return this;
+	}
+
+	/**
+	 * Get the rbg colors, used to dye lether armor,potions and fierworks.
+	 *
+	 * @return string with the colors, like this #,#,#.
+	 */
 	public String getRgb() {
 		return rgb;
 	}
 
+	/**
+	 * Set the 3 colors auto.
+	 *
+	 * @param rgb string need to be formated like this #,#,#.
+	 * @return this class.
+	 */
 	public CreateItemStack setRgb(String rgb) {
 		this.rgb = rgb;
 
@@ -468,14 +653,29 @@ public class CreateItemStack {
 		return this;
 	}
 
+	/**
+	 * Get red color
+	 *
+	 * @return color number.
+	 */
 	public int getRed() {
 		return red;
 	}
 
+	/**
+	 * Get greencolor
+	 *
+	 * @return color number.
+	 */
 	public int getGreen() {
 		return green;
 	}
 
+	/**
+	 * Get blue color
+	 *
+	 * @return color number.
+	 */
 	public int getBlue() {
 		return blue;
 	}
@@ -492,7 +692,7 @@ public class CreateItemStack {
 	}
 
 	/**
-	 * Hide one or several metadata values on a itemstack.
+	 * Don´t hide one or several metadata values on a itemstack.
 	 *
 	 * @param itemFlags add one or several flags you not want to hide.
 	 * @return this class.
@@ -501,6 +701,27 @@ public class CreateItemStack {
 		Valid.checkNotNull(itemFlags, "flags list is null");
 		this.visibleItemFlags.addAll(itemFlags);
 		return this;
+	}
+
+	/**
+	 * Hide one or several metadata values on a itemstack.
+	 *
+	 * @param itemFlags add one or several flags you want to hide.
+	 * @return this class.
+	 */
+	public CreateItemStack setFlagsToHide(List<ItemFlag> itemFlags) {
+		Valid.checkNotNull(itemFlags, "flags list is null");
+		this.flagsToHide.addAll(itemFlags);
+		return this;
+	}
+
+	/**
+	 * Get the list of flags set on this item.
+	 *
+	 * @return list of flags.
+	 */
+	public List<ItemFlag> getFlagsToHide() {
+		return flagsToHide;
 	}
 
 	/**
@@ -514,6 +735,9 @@ public class CreateItemStack {
 		RegisterNbtAPI nbtApi = getNbtApi();
 
 		if (itemstack != null && itemstack.getType() != Material.AIR) {
+			if (!this.keepOldMeta)
+				itemstack = new ItemStack(itemstack.getType());
+
 			if (nbtApi != null)
 				if (this.itemMetaMap != null) {
 					for (final Map.Entry<String, Object> entitys : this.itemMetaMap.entrySet()) {
@@ -537,7 +761,8 @@ public class CreateItemStack {
 					itemstack.setDurability(this.getData());
 			}
 			itemstack.setItemMeta(itemMeta);
-			itemstack.setAmount(this.amoutOfItems == 0 ? 1 : this.amoutOfItems);
+			if (!this.keepAmount)
+				itemstack.setAmount(this.amoutOfItems == 0 ? 1 : this.amoutOfItems);
 		}
 		return itemstack != null ? itemstack : new ItemStack(Material.AIR);
 	}
@@ -601,14 +826,6 @@ public class CreateItemStack {
 
 	private ItemStack checkTypeOfItem(Object object) {
 		return getConvertItems().checkItem(object);
-	/*	if (object instanceof ItemStack)
-			return (ItemStack) object;
-		else if (object instanceof Material)
-			return new ItemStack((Material) object);
-		else if (object instanceof String)
-			return new ItemStack(Enums.getIfPresent(Material.class, (String) object).orNull() == null ? Material.AIR : Material.valueOf((String) object));
-
-		return null;*/
 	}
 
 	private void addItemMeta(final ItemMeta itemMeta) {
@@ -619,10 +836,17 @@ public class CreateItemStack {
 		addBottleEffects(itemMeta);
 		addUnbreakableMeta(itemMeta);
 		addCustomModelData(itemMeta);
+
+		if (isShowEnchantments() || !this.getFlagsToHide().isEmpty() || this.isGlow())
+			hideEnchantments(itemMeta);
 	}
 
 	private void hideEnchantments(final ItemMeta itemMeta) {
-		itemMeta.addItemFlags(Arrays.stream(ItemFlag.values()).filter(itemFlag -> !visibleItemFlags.contains(itemFlag)).toArray(ItemFlag[]::new));
+		if (!this.getFlagsToHide().isEmpty()) {
+			itemMeta.addItemFlags(this.getFlagsToHide().toArray(new ItemFlag[0]));
+		} else {
+			itemMeta.addItemFlags(Arrays.stream(ItemFlag.values()).filter(itemFlag -> !visibleItemFlags.contains(itemFlag)).toArray(ItemFlag[]::new));
+		}
 	}
 
 	public boolean addEnchantments(final ItemMeta itemMeta) {
@@ -636,12 +860,12 @@ public class CreateItemStack {
 				Tuple<Integer, Boolean> level = enchant.getValue();
 				haveEnchant = itemMeta.addEnchant(enchant.getKey(), level.getFirst() <= 0 ? 1 : level.getFirst(), level.getSecond());
 			}
-			if (isShowEnchantments())
+			if (isShowEnchantments() || !this.getFlagsToHide().isEmpty())
 				hideEnchantments(itemMeta);
 			return haveEnchant;
 		} else if (this.isGlow()) {
-			if (!isShowEnchantments() || !visibleItemFlags.isEmpty())
-				hideEnchantments(itemMeta);
+			/*if (!isShowEnchantments() || !visibleItemFlags.isEmpty())
+				hideEnchantments(itemMeta);*/
 			return itemMeta.addEnchant(Enchantment.SILK_TOUCH, 1, false);
 		}
 		return false;
@@ -677,10 +901,13 @@ public class CreateItemStack {
 				potionMeta.setBasePotionData(potionData);
 				return;
 			}
-			if (getPortionEffects() == null || getPortionEffects().isEmpty())
+			if (getPortionEffects() == null || getPortionEffects().isEmpty()) {
 				return;
-			if (getRgb() == null || (getRed() < 0 && getGreen() < 0 && getBlue() < 0))
+			}
+			if (getRgb() == null || (getRed() < 0 && getGreen() < 0 && getBlue() < 0)) {
+				getLogger(Level.WARNING, "You have not set colors correctly, you have set this: " + getRgb() + " should be in this format Rgb: #,#,#");
 				return;
+			}
 			potionMeta.setColor(Color.fromBGR(getBlue(), getGreen(), getRed()));
 			getPortionEffects().forEach((portionEffect) -> potionMeta.addCustomEffect(portionEffect, true));
 
@@ -692,8 +919,22 @@ public class CreateItemStack {
 			return;
 
 		if (itemMeta instanceof FireworkEffectMeta) {
+			if (getRgb() == null || (getRed() < 0 && getGreen() < 0 && getBlue() < 0)) {
+				getLogger(Level.WARNING, "You have not set colors correctly, you have set this: " + getRgb() + " should be in this format Rgb: #,#,#");
+				return;
+			}
 			FireworkEffectMeta fireworkEffectMeta = (FireworkEffectMeta) itemMeta;
-			fireworkEffectMeta.setEffect(FireworkEffect.builder().withColor(Color.fromBGR(getBlue(), getGreen(), getRed())).build());
+			FireworkEffect.Builder builder = FireworkEffect.builder();
+			builder.withColor(Color.fromBGR(getBlue(), getGreen(), getRed()));
+			if (this.getFireworkEffects() != null && !this.getFireworkEffects().isEmpty()) {
+				this.getFireworkEffects().get(0).getFadeColors();
+				builder.flicker(false)
+						.with(FireworkEffect.Type.BURST)
+						.trail(true)
+						.withFade();
+			}
+
+			fireworkEffectMeta.setEffect(builder.build());
 		}
 	}
 

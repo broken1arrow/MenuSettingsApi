@@ -178,6 +178,10 @@ public class RegisterMenuAddon {
 		return PLUGIN;
 	}
 
+	public static void getLogger(Level level, String messsage) {
+		PLUGIN.getLogger().log(level, messsage);
+	}
+
 	protected static RegisterMenuAddon getInstance() {
 		Valid.checkNotNull(instance + "You have not instantiate this class, you need to do new RegisterMenuAddon()");
 		return instance;

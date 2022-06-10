@@ -46,7 +46,7 @@ public final class GetYamlSettings {
 			if (requirementList != null)
 				requirementsList.addAll(requirementList);
 		}
-		
+
 		List<String> denyCommands = this.getConfig().getStringList(path + "." + clickType + ".deny_commands");
 		boolean stopAtSuccess = this.getConfig().getBoolean(path + "." + clickType + ".stop_at_success");
 		int minimumRequirement = this.getConfig().getInt(path + "." + clickType + ".minimum_requirement");
@@ -108,7 +108,9 @@ public final class GetYamlSettings {
 				.setUnbreakable(unbreakable)
 				.setPortionEffects(getPotionEffects(portionsEffects))
 				.setEnchantments(getEnchantments(enchantments))
-				.setBannerPatterns(getPattern(bannerPattern));
+				.setBannerPatterns(getPattern(bannerPattern))
+				.setFireworkEffects(new ArrayList<>());
+
 		if (addItemChecks)
 			builder.setItemChecks(getItemChecks(path));
 		return builder.build();

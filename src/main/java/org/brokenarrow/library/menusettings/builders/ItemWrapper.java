@@ -1,6 +1,7 @@
 package org.brokenarrow.library.menusettings.builders;
 
 import org.brokenarrow.library.menusettings.utillity.Tuple;
+import org.bukkit.FireworkEffect;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -20,6 +21,7 @@ public final class ItemWrapper {
 	private final String dynamicAmount;
 	private final List<String> lore;
 	private final List<PotionEffect> portionEffects;
+	private final List<FireworkEffect> fireworkEffects;
 	private final List<Pattern> bannerPatterns;
 	private final Map<Enchantment, Tuple<Integer, Boolean>> enchantments;
 	private final List<ItemFlag> hideFlags;
@@ -41,6 +43,7 @@ public final class ItemWrapper {
 		this.dynamicAmount = builder.dynamicAmount;
 		this.lore = builder.lore;
 		this.portionEffects = builder.portionEffects;
+		this.fireworkEffects = builder.fireworkEffects;
 		this.bannerPatterns = builder.bannerPatterns;
 		this.enchantments = builder.enchantments;
 		this.hideFlags = builder.hideFlags;
@@ -88,6 +91,11 @@ public final class ItemWrapper {
 	@Nullable
 	public List<PotionEffect> getPortionEffects() {
 		return portionEffects;
+	}
+	
+	@Nullable
+	public List<FireworkEffect> getFireworkEffects() {
+		return fireworkEffects;
 	}
 
 	@Nullable
@@ -147,6 +155,7 @@ public final class ItemWrapper {
 		private String dynamicAmount;
 		private List<String> lore;
 		private List<PotionEffect> portionEffects;
+		private List<FireworkEffect> fireworkEffects;
 		private List<Pattern> bannerPatterns;
 		private List<ItemFlag> hideFlags;
 		private Map<Enchantment, Tuple<Integer, Boolean>> enchantments;
@@ -189,6 +198,11 @@ public final class ItemWrapper {
 
 		public Builder setPortionEffects(List<PotionEffect> portionEffects) {
 			this.portionEffects = portionEffects;
+			return this;
+		}
+
+		public Builder setFireworkEffects(List<FireworkEffect> fireworkEffects) {
+			this.fireworkEffects = fireworkEffects;
 			return this;
 		}
 
