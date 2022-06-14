@@ -114,7 +114,7 @@ public final class GetCollections {
 		return potionEffectList;
 	}
 
-	public static List<Integer> getSlot(String slots) {
+	public static List<Integer> parseSlotsFromString(String slots) {
 		List<Integer> slotList = new ArrayList<>();
 
 		if (slots == null || slots.equals(""))
@@ -136,6 +136,11 @@ public final class GetCollections {
 		} catch (NumberFormatException e) {
 			throw new NumberFormatException("can not parse this " + slots + " as numbers.");
 		}
+		if (!slotList.isEmpty())
+			return slotList.stream()
+					.filter(Objects::nonNull)
+					.sorted(Comparator.comparing(Integer::intValue))
+					.collect(Collectors.toList());
 		return slotList;
 	}
 
