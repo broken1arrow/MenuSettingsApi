@@ -1,6 +1,6 @@
 package org.brokenarrow.library.menusettings.clickactions;
 
-public enum ClickRequiermentType {
+public enum ClickRequirementType {
 	OPEN_REQUIREMENT("Open_requirement"),
 	VIEW_REQUIREMENT("View_requirement"),
 	LEFT_CLICK_REQUIREMENT("Left_click_requirement"),
@@ -12,14 +12,14 @@ public enum ClickRequiermentType {
 
 	private final String requirementType;
 
-	ClickRequiermentType(String requirementType) {
+	ClickRequirementType(String requirementType) {
 		this.requirementType = requirementType;
 	}
 
-	public static ClickRequiermentType getType(String string) {
-		ClickRequiermentType[] requirementTypes = values();
+	public static ClickRequirementType getType(String string) {
+		ClickRequirementType[] requirementTypes = values();
 
-		for (ClickRequiermentType type : requirementTypes) {
+		for (ClickRequirementType type : requirementTypes) {
 			if (type.getRequirementType().equals(string))
 				return type;
 		}

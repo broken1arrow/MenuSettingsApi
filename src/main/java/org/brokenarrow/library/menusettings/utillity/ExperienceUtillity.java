@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Locale;
 
-public class ExperiensUtillity {
+public class ExperienceUtillity {
 
 
 	public static void setExp(Player player, String amount) {
