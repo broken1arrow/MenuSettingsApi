@@ -19,6 +19,7 @@ public final class ButtonSettings {
 	private final String buttonName;
 	private final String checkArmor;
 	private final String checkHand;
+	private final String openMenu;
 	private final ItemWrapper buttonItem;
 	private final RequirementsLogic viewRequirement;
 	private final RequirementsLogic clickrequirement;
@@ -43,6 +44,7 @@ public final class ButtonSettings {
 		this.buttonName = builder.buttonName;
 		this.checkArmor = builder.checkArmor;
 		this.checkHand = builder.checkHand;
+		this.openMenu = builder.openMenu;
 		this.buttonItem = builder.buttonItem;
 		this.viewRequirement = builder.viewRequirement;
 		this.clickrequirement = builder.clickrequirement;
@@ -103,6 +105,16 @@ public final class ButtonSettings {
 		return buttonName;
 	}
 
+	/**
+	 * Get name on next menu or previous menu is button open.
+	 *
+	 * @return name on the menu.
+	 */
+	@Nullable
+	public String getOpenMenu() {
+		return openMenu;
+	}
+
 	public String getCheckArmor() {
 		return checkArmor;
 	}
@@ -130,11 +142,12 @@ public final class ButtonSettings {
 
 		ItemStack itemStack = null;
 		if (this.getCheckHand() != null) {
-			if (this.getCheckHand().equalsIgnoreCase("main_hand"))
+			final String itemhand = this.getCheckHand().toLowerCase();
+			if (itemhand.equals("main_hand"))
 				if (viewer.getInventory().getItemInMainHand() != null) {
 					itemStack = viewer.getInventory().getItemInMainHand().clone();
 				}
-			if (this.getCheckHand().equalsIgnoreCase("off_hand"))
+			if (itemhand.equals("off_hand"))
 				if (viewer.getInventory().getItemInOffHand() != null) {
 					itemStack = viewer.getInventory().getItemInOffHand().clone();
 				}
@@ -209,6 +222,7 @@ public final class ButtonSettings {
 		private String buttonName;
 		public String checkArmor;
 		public String checkHand;
+		private String openMenu;
 		private ItemWrapper buttonItem;
 		private RequirementsLogic viewRequirement;
 		private RequirementsLogic clickrequirement;
@@ -263,6 +277,11 @@ public final class ButtonSettings {
 
 		public Builder setCheckHand(String checkHand) {
 			this.checkHand = checkHand;
+			return this;
+		}
+
+		public Builder setOpenMenu(String openMenu) {
+			this.openMenu = openMenu;
 			return this;
 		}
 
@@ -346,6 +365,7 @@ public final class ButtonSettings {
 				", buttonName='" + buttonName + '\'' +
 				", checkArmor='" + checkArmor + '\'' +
 				", checkHand='" + checkHand + '\'' +
+				", openMenu='" + openMenu + '\'' +
 				", buttonItem=" + buttonItem +
 				", viewRequirement=" + viewRequirement +
 				", clickrequirement=" + clickrequirement +

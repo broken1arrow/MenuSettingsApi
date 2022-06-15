@@ -1,6 +1,6 @@
 package org.brokenarrow.library.menusettings.requirements;
 
-import org.brokenarrow.library.menusettings.clickactions.ClickRequiermentType;
+import org.brokenarrow.library.menusettings.clickactions.ClickRequirementType;
 import org.brokenarrow.library.menusettings.tasks.ClickActionTask;
 import org.bukkit.entity.Player;
 
@@ -12,7 +12,7 @@ public abstract class Requirement {
 	private boolean optional;
 	private List<ClickActionTask> denyCommands;
 	private List<ClickActionTask> successCommands;
-	private ClickRequiermentType clickRequiermentType;
+	private ClickRequirementType clickRequirementType;
 	private ClickActionTask clickActionTask;
 
 	public Requirement() {
@@ -51,12 +51,12 @@ public abstract class Requirement {
 		return successCommands;
 	}
 
-	public ClickRequiermentType getClickRequiermentType() {
-		return clickRequiermentType;
+	public ClickRequirementType getClickRequiermentType() {
+		return clickRequirementType;
 	}
 
-	public void setClickRequiermentType(ClickRequiermentType clickRequiermentType) {
-		this.clickRequiermentType = clickRequiermentType;
+	public void setClickRequiermentType(ClickRequirementType clickRequirementType) {
+		this.clickRequirementType = clickRequirementType;
 
 	}
 

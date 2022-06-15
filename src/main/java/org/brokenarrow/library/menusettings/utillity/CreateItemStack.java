@@ -5,10 +5,9 @@ import de.tr7zw.changeme.nbtapi.metodes.RegisterNbtAPI;
 import org.broken.lib.rbg.TextTranslator;
 import org.brokenarrow.library.menusettings.builders.ItemWrapper;
 import org.brokenarrow.library.menusettings.exceptions.Valid;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
+import org.bukkit.block.Banner;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -43,7 +42,8 @@ public class CreateItemStack {
 	private final List<ItemFlag> flagsToHide = new ArrayList<>();
 	private final List<Pattern> pattern = new ArrayList<>();
 	private final List<PotionEffect> portionEffects = new ArrayList<>();
-	private final List<FireworkEffect> fireworkEffects = new ArrayList<>();
+	private FireworkEffect fireworkEffect;
+	private DyeColor bannerBaseColor;
 	private String itemMetaKey;
 	private Object itemMetaValue;
 	private Map<String, Object> itemMetaMap;
@@ -109,11 +109,13 @@ public class CreateItemStack {
 			createItemStack.setRgb(setPlaceholders(player, itemWrapper.getRbg()));
 		if (itemWrapper.getPortionEffects() != null)
 			createItemStack.addPortionEffects(itemWrapper.getPortionEffects());
-		createItemStack.setFireworkEffects(new ArrayList<>());
+		createItemStack.setFireworkEffect(itemWrapper.getFireworkEffects());
 		createItemStack.setGlow(itemWrapper.isGlow());
 		createItemStack.setUnbreakable(itemWrapper.isUnbreakable());
 		createItemStack.setData((short) itemWrapper.getData());
 		createItemStack.setCustomModeldata(itemWrapper.getCustomModeldata());
+		DyeColor dyeColor = Enums.getIfPresent(DyeColor.class, "WHITE").orNull();
+		createItemStack.setBannerBaseColor(dyeColor);
 
 
 		if (itemWrapper.getDynamicAmount() != null) {
@@ -378,21 +380,42 @@ public class CreateItemStack {
 	}
 
 	/**
-	 * Get list of firework effects
+	 * Get Firework effect.
 	 *
 	 * @return list of efects set on this item.
 	 */
-	public List<FireworkEffect> getFireworkEffects() {
-		return fireworkEffects;
+	public FireworkEffect getFireworkEffect() {
+		return fireworkEffect;
 	}
 
 	/**
-	 * Add firework effects on this item.
+	 * Set firework effects on this item.
 	 *
-	 * @param fireworkEffects list of effects you want to add.
+	 * @param fireworkEffect list of effects you want to add.
 	 */
-	public void setFireworkEffects(List<FireworkEffect> fireworkEffects) {
-		fireworkEffects.addAll(fireworkEffects);
+	public void setFireworkEffect(FireworkEffect fireworkEffect) {
+		this.fireworkEffect = fireworkEffect;
+	}
+
+	/**
+	 * Get the base color for the banner (the color befor add patterns).
+	 *
+	 * @return the color.
+	 */
+
+	public DyeColor getBannerBaseColor() {
+		return bannerBaseColor;
+	}
+
+	/**
+	 * Set the base color for the banner.
+	 *
+	 * @param bannerBaseColor the color.
+	 * @return this class.
+	 */
+	public CreateItemStack setBannerBaseColor(DyeColor bannerBaseColor) {
+		this.bannerBaseColor = bannerBaseColor;
+		return this;
 	}
 
 	/**
@@ -836,7 +859,7 @@ public class CreateItemStack {
 		addBottleEffects(itemMeta);
 		addUnbreakableMeta(itemMeta);
 		addCustomModelData(itemMeta);
-
+		blockStateMeta(itemMeta);
 		if (isShowEnchantments() || !this.getFlagsToHide().isEmpty() || this.isGlow())
 			hideEnchantments(itemMeta);
 	}
@@ -871,14 +894,30 @@ public class CreateItemStack {
 		return false;
 	}
 
+	private void blockStateMeta(final ItemMeta itemMeta) {
+		if (itemMeta instanceof BlockStateMeta) {
+			BlockState blockState = ((BlockStateMeta) itemMeta).getBlockState();
+			if (blockState instanceof Banner) {
+				if (this.getPattern() == null || this.getPattern().isEmpty())
+					return;
+				Banner banner = ((Banner) blockState);
+				banner.setBaseColor(bannerBaseColor);
+				banner.setPatterns(this.getPattern());
+				banner.update();
+				((BlockStateMeta) itemMeta).setBlockState(blockState);
+			}
+		}
+	}
+
 	private void addBannerPatterns(final ItemMeta itemMeta) {
-		if (getPattern() == null || getPattern().isEmpty())
+		if (this.getPattern() == null || this.getPattern().isEmpty())
 			return;
 
 		if (itemMeta instanceof BannerMeta) {
 			BannerMeta bannerMeta = (BannerMeta) itemMeta;
-			bannerMeta.setPatterns(getPattern());
+			bannerMeta.setPatterns(this.getPattern());
 		}
+
 	}
 
 	private void addLeatherArmorColors(final ItemMeta itemMeta) {
@@ -924,17 +963,14 @@ public class CreateItemStack {
 				return;
 			}
 			FireworkEffectMeta fireworkEffectMeta = (FireworkEffectMeta) itemMeta;
-			FireworkEffect.Builder builder = FireworkEffect.builder();
-			builder.withColor(Color.fromBGR(getBlue(), getGreen(), getRed()));
-			if (this.getFireworkEffects() != null && !this.getFireworkEffects().isEmpty()) {
-				this.getFireworkEffects().get(0).getFadeColors();
-				builder.flicker(false)
-						.with(FireworkEffect.Type.BURST)
-						.trail(true)
-						.withFade();
+			if (this.getFireworkEffect() != null) {
+				FireworkEffect effect = this.getFireworkEffect();
+				if (effect.getColors() == null)
+					fireworkEffectMeta.setEffect(effect);
+			} else {
+				FireworkEffect.Builder builder = FireworkEffect.builder().withColor(Color.fromBGR(getBlue(), getGreen(), getRed()));
+				fireworkEffectMeta.setEffect(builder.build());
 			}
-
-			fireworkEffectMeta.setEffect(builder.build());
 		}
 	}
 

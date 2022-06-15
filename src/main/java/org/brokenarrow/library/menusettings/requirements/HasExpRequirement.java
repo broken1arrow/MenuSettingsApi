@@ -3,7 +3,7 @@ package org.brokenarrow.library.menusettings.requirements;
 import org.bukkit.entity.Player;
 
 import static org.brokenarrow.library.menusettings.RegisterMenuAddon.setPlaceholders;
-import static org.brokenarrow.library.menusettings.utillity.ExperiensUtillity.getPlayerExp;
+import static org.brokenarrow.library.menusettings.utillity.ExperienceUtillity.getPlayerExp;
 
 public class HasExpRequirement extends Requirement {
 

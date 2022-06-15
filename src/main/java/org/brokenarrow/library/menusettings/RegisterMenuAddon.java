@@ -47,18 +47,30 @@ public class RegisterMenuAddon {
 	private static RegisterPermissionHook registerPermissionHook;
 	private static RegisterNbtAPI nbtApi;
 
-	public RegisterMenuAddon(Plugin plugin, String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
-		this(plugin, name, name, makeOneFile, shallGenerateDefultFiles);
-	}
-
+	/**
+	 * Register this api, this will load yml files and register plugin hooks.
+	 * Also set shallGenerateDefultFiles to false.
+	 *
+	 * @param plugin      your main class.
+	 * @param name        file name or folder name (if you set up 1 menu for every file).
+	 * @param makeOneFile true if you use only one file.
+	 */
 	public RegisterMenuAddon(Plugin plugin, String name, boolean makeOneFile) {
-		this(plugin, name, name, makeOneFile, false);
+		this(plugin, name, makeOneFile, false);
 	}
 
-	public RegisterMenuAddon(Plugin plugin, String folderName, String filename, boolean makeOneFile, boolean shallGenerateDefultFiles) {
+	/**
+	 * Register this api, this will load yml files and register plugin hooks.
+	 *
+	 * @param plugin                   your main class.
+	 * @param name                     file name or folder name (if you set up 1 menu for every file).
+	 * @param makeOneFile              true if you use only one file.
+	 * @param shallGenerateDefultFiles if it shall also add files from your resources if they not exist.
+	 */
+	public RegisterMenuAddon(Plugin plugin, String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
 		instance = this;
 		PLUGIN = plugin;
-		menuCache = new MenuCache(makeOneFile ? "" : folderName, filename, shallGenerateDefultFiles);
+		menuCache = new MenuCache(makeOneFile ? "" : name, !makeOneFile ? "" : name, shallGenerateDefultFiles);
 		setServerVersion(plugin);
 		nbtApi = new RegisterNbtAPI(plugin, false);
 		registerNashorn();
@@ -122,7 +134,10 @@ public class RegisterMenuAddon {
 							engineManager.registerEngineName("Nashorn", engineFactory);
 							scriptEng = engineManager.getEngineByName("Nashorn");
 						}
-					} catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+					} catch (ClassNotFoundException exception) {
+						getLogger(Level.WARNING, "can´t find Nashorn engine, javascript will not work.");
+						return;
+					} catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
 						e.printStackTrace();
 					}
 				}

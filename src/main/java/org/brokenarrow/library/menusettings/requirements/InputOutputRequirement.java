@@ -36,27 +36,27 @@ public class InputOutputRequirement extends Requirement {
 			case STRING_IS_NOT_EQUAL_IGNORE_CASE:
 				return !input.equalsIgnoreCase(output);
 			default:
-				int inputInt;
-				int outputInt;
+				double inputDouble;
+				double outputDouble;
 				try {
-					inputInt = Integer.parseInt(input);
-					outputInt = Integer.parseInt(output);
+					inputDouble = Double.parseDouble(input);
+					outputDouble = Double.parseDouble(output);
 				} catch (NumberFormatException exception) {
 					return false;
 				}
 				switch (this.type) {
-					case INT_NOT_EQUALS_OUTPUT:
-						return inputInt != outputInt;
-					case INT_EQUALS_OUTPUT:
-						return inputInt == outputInt;
-					case INT_GREATER_THAN_OUTPUT:
-						return inputInt > outputInt;
-					case INT_GREATER_THAN_OR_EQUALS_OUTPUT:
-						return inputInt >= outputInt;
-					case INT_LESS_THAN_OR_EQUALS_OUTPUT:
-						return inputInt <= outputInt;
-					case INT_LESS_THAN_OUTPUT:
-						return inputInt < outputInt;
+					case INPUT_NOT_EQUALS_OUTPUT:
+						return inputDouble != outputDouble;
+					case INPUT_EQUALS_OUTPUT:
+						return inputDouble == outputDouble;
+					case INPUT_GREATER_THAN_OUTPUT:
+						return inputDouble > outputDouble;
+					case INPUT_GREATER_THAN_OR_EQUALS_OUTPUT:
+						return inputDouble >= outputDouble;
+					case INPUT_LESS_THAN_OR_EQUALS_OUTPUT:
+						return inputDouble <= outputDouble;
+					case INPUT_LESS_THAN_OUTPUT:
+						return inputDouble < outputDouble;
 					default:
 						return false;
 				}

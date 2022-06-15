@@ -106,11 +106,9 @@ public abstract class AllYamlFilesInFolder {
 		save(null);
 	}
 
-	public boolean removeFile(String filename, String extension) {
-		if (extension.startsWith("."))
-			extension = extension.substring(1);
+	public boolean removeFile(String filename) {
 
-		final File dataFolder = new File(getParent(), filename + "." + extension);
+		final File dataFolder = new File(getParent(), filename + "." + getExtension());
 		return dataFolder.delete();
 	}
 
@@ -130,7 +128,7 @@ public abstract class AllYamlFilesInFolder {
 					}
 				} else {
 					for (File file : dataFolders) {
-						if (getFileName(file.getName()).equals(fileToSave)) {
+						if (getNameOfFile(file.getName()).equals(fileToSave)) {
 							saveDataToFile(file);
 							return;
 						}
@@ -144,29 +142,50 @@ public abstract class AllYamlFilesInFolder {
 	}
 
 	public String getName() {
-		if (this.folderName != null && !this.folderName.isEmpty())
-			return this.folderName;
+		if (!isFolderNameEmpty())
+			return this.getFolderName();
 		else
-			return this.fileName;
+			return this.getFileName();
 	}
 
 	public String getFolderName() {
 		return folderName;
 	}
 
-	public File[] getAllFiles() {
-		Set<String> map = new HashSet<>();
-		List<String> filenamesFromDir = null;
-		try {
-			filenamesFromDir = getFilenamesForDirnameFromCP(getName());
+	/**
+	 * check if the folder name is empty or null.
+	 *
+	 * @return true if folder name is empty or null.
+	 */
+	public boolean isFolderNameEmpty() {
+		return this.getFolderName() == null || this.getFolderName().isEmpty();
+	}
 
-		} catch (URISyntaxException | IOException e) {
-			e.printStackTrace();
-		}
+	/**
+	 * check if the file name is empty or null.
+	 *
+	 * @return true if file name is empty or null.
+	 */
+	public boolean isFileNameEmpty() {
+		return this.getFileName() == null || this.getFileName().isEmpty();
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public File[] getAllFiles() {
 		File[] files = getYamlFiles(getName());
 
 		if (this.shallGenerateFiles) {
+			Set<String> map = new HashSet<>();
+			List<String> filenamesFromDir = null;
+			try {
+				filenamesFromDir = getFilenamesForDirnameFromCP(getName());
 
+			} catch (URISyntaxException | IOException e) {
+				e.printStackTrace();
+			}
 			if (filenamesFromDir == null) return null;
 
 			if (files != null && files.length > 0) {
@@ -175,7 +194,7 @@ public abstract class AllYamlFilesInFolder {
 				}
 
 				for (String file : filenamesFromDir) {
-					if (map.contains(getFileName(file))) {
+					if (map.contains(getNameOfFile(file))) {
 
 						File outFile = new File(getParent(), file);
 						if (!outFile.exists())
@@ -210,7 +229,7 @@ public abstract class AllYamlFilesInFolder {
 	public boolean checkFolderExist(String fileToSave, File[] dataFolders) {
 		if (fileToSave != null)
 			for (File file : dataFolders) {
-				String fileName = getFileName(file.getName());
+				String fileName = getNameOfFile(file.getName());
 				if (fileName.equals(fileToSave))
 					return true;
 			}
@@ -218,16 +237,15 @@ public abstract class AllYamlFilesInFolder {
 	}
 
 	public String getParent() {
-		if (this.fileName != null && !this.fileName.isEmpty())
+		if (!isFileNameEmpty())
 			return this.plugin.getDataFolder().getPath();
 		else
-			return this.plugin.getDataFolder() + "/" + this.folderName;
+			return this.plugin.getDataFolder() + "/" + this.getFolderName();
 	}
 
 	public File[] getYamlFiles(String directory) {
-
-		if (this.fileName != null && !this.fileName.isEmpty() && directory.equals(this.fileName))
-			return new File(this.plugin.getDataFolder() + "").listFiles(file -> !file.isDirectory() && file.getName().equals(this.fileName));
+		if (!this.isFileNameEmpty() && directory.equals(this.getFileName()))
+			return new File(this.plugin.getDataFolder() + "").listFiles(file -> !file.isDirectory() && file.getName().equals(this.getFileName()));
 
 		final File dataFolder = new File(this.plugin.getDataFolder(), directory);
 		if (!dataFolder.exists() && !directory.isEmpty())
@@ -236,7 +254,7 @@ public abstract class AllYamlFilesInFolder {
 		return dataFolder.listFiles(file -> !file.isDirectory() && file.getName().endsWith("." + getExtension()));
 	}
 
-	public String getFileName(String path) {
+	public String getNameOfFile(String path) {
 		Valid.checkBoolean(path != null && !path.isEmpty(), "The given path must not be empty!");
 		int pos;
 
@@ -260,8 +278,8 @@ public abstract class AllYamlFilesInFolder {
 
 		URL url = this.plugin.getClass().getClassLoader().getResource(directoryName);
 
-
-		System.out.println("url.getProtocol()  ttttttttt" + url);
+		System.out.println("directoryName " + directoryName);
+		System.out.println("url.getProtocol()  ttttttttt == " + url);
 		if (url != null) {
 			if (url.getProtocol().equals("file")) {
 				File file = Paths.get(url.toURI()).toFile();
@@ -275,7 +293,7 @@ public abstract class AllYamlFilesInFolder {
 				}
 			} else if (url.getProtocol().equals("jar")) {
 
-				String dirname = this.fileName != null && !this.fileName.isEmpty() ? directoryName : directoryName + "/";
+				String dirname = !this.isFileNameEmpty() ? directoryName : directoryName + "/";
 				String path = url.getPath();
 				String jarPath = path.substring(5, path.indexOf("!"));
 				try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, StandardCharsets.UTF_8.name()))) {
@@ -284,7 +302,7 @@ public abstract class AllYamlFilesInFolder {
 						JarEntry entry = entries.nextElement();
 						String name = entry.getName();
 						//System.out.println("name " + name + "entry " + entry + jarPath);
-						if (this.fileName != null && !this.fileName.isEmpty() && name.startsWith(this.fileName)) {
+						if (!this.isFileNameEmpty() && name.startsWith(this.getFileName())) {
 							filenames.add(name);
 						} else if (name.startsWith(dirname) && !dirname.equals(name)) {
 							URL resource = this.plugin.getClass().getClassLoader().getResource(name);

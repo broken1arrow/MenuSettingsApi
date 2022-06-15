@@ -12,7 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static org.broken.lib.rbg.TextTranslator.toSpigotFormat;
 import static org.brokenarrow.library.menusettings.RegisterMenuAddon.*;
 import static org.brokenarrow.library.menusettings.clickactions.CommandActionType.TAKE_EXP;
-import static org.brokenarrow.library.menusettings.utillity.ExperiensUtillity.setExp;
+import static org.brokenarrow.library.menusettings.utillity.ExperienceUtillity.setExp;
 
 
 public class ClickActionTask {
@@ -22,7 +22,7 @@ public class ClickActionTask {
 	private final String execute;
 	private String delay;
 	private String chance;
-	
+
 
 	public ClickActionTask(CommandActionType actionType, String execute) {
 		this.actionType = actionType;

@@ -21,7 +21,6 @@ public final class ItemWrapper {
 	private final String dynamicAmount;
 	private final List<String> lore;
 	private final List<PotionEffect> portionEffects;
-	private final List<FireworkEffect> fireworkEffects;
 	private final List<Pattern> bannerPatterns;
 	private final Map<Enchantment, Tuple<Integer, Boolean>> enchantments;
 	private final List<ItemFlag> hideFlags;
@@ -33,6 +32,7 @@ public final class ItemWrapper {
 	private final boolean glow;
 	private final boolean unbreakable;
 	private final ItemChecks itemChecks;
+	private final FireworkEffect fireworkEffects;
 	private final Builder builder;
 
 	private ItemWrapper(Builder builder) {
@@ -92,9 +92,9 @@ public final class ItemWrapper {
 	public List<PotionEffect> getPortionEffects() {
 		return portionEffects;
 	}
-	
+
 	@Nullable
-	public List<FireworkEffect> getFireworkEffects() {
+	public FireworkEffect getFireworkEffects() {
 		return fireworkEffects;
 	}
 
@@ -155,7 +155,6 @@ public final class ItemWrapper {
 		private String dynamicAmount;
 		private List<String> lore;
 		private List<PotionEffect> portionEffects;
-		private List<FireworkEffect> fireworkEffects;
 		private List<Pattern> bannerPatterns;
 		private List<ItemFlag> hideFlags;
 		private Map<Enchantment, Tuple<Integer, Boolean>> enchantments;
@@ -164,6 +163,7 @@ public final class ItemWrapper {
 		private int data = -1;
 		private boolean glow;
 		private boolean unbreakable;
+		private FireworkEffect fireworkEffects;
 		private ItemChecks itemChecks;
 
 		public Builder setDisplayname(String displayname) {
@@ -201,7 +201,7 @@ public final class ItemWrapper {
 			return this;
 		}
 
-		public Builder setFireworkEffects(List<FireworkEffect> fireworkEffects) {
+		public Builder setFireworkEffects(FireworkEffect fireworkEffects) {
 			this.fireworkEffects = fireworkEffects;
 			return this;
 		}

@@ -3,8 +3,10 @@ package org.brokenarrow.library.menusettings.settings;
 import org.brokenarrow.library.menusettings.builders.ItemChecks;
 import org.brokenarrow.library.menusettings.builders.ItemWrapper;
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
-import org.brokenarrow.library.menusettings.clickactions.ClickRequiermentType;
+import org.brokenarrow.library.menusettings.clickactions.ClickRequirementType;
 import org.brokenarrow.library.menusettings.requirements.*;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -30,6 +32,25 @@ public final class GetYamlSettings {
 		if (!commans.isEmpty())
 			return new ClickActionHandler(formatCommands(commans));
 		return null;
+	}
+
+	public FireworkEffect getFireWorksEffect(String path) {
+		FileConfiguration config = getConfig();
+		path = path + ".FireWork_effect";
+		List<Color> listOfColors = getColors(config.getStringList(path + ".Colors"));
+		List<Color> listOfFadeColors = getColors(config.getStringList(path + ".Fade_colors"));
+		String type = config.getString(path + ".Type");
+		boolean flicker = config.getBoolean(path + ".Flicker");
+		boolean trail = config.getBoolean(path + ".Trail");
+		FireworkEffect.Type fireworkEffectType = getFireworkEffectType(type);
+		FireworkEffect.Builder builder = FireworkEffect.builder()
+				.withColor(listOfColors)
+				.withFade(listOfFadeColors)
+				.with(fireworkEffectType != null ? fireworkEffectType : FireworkEffect.Type.BALL)
+				.flicker(flicker)
+				.trail(trail);
+
+		return builder.build();
 	}
 
 	public RequirementsLogic checkRequirements(String path, String clickType) {
@@ -109,7 +130,7 @@ public final class GetYamlSettings {
 				.setPortionEffects(getPotionEffects(portionsEffects))
 				.setEnchantments(getEnchantments(enchantments))
 				.setBannerPatterns(getPattern(bannerPattern))
-				.setFireworkEffects(new ArrayList<>());
+				.setFireworkEffects(getFireWorksEffect(path));
 
 		if (addItemChecks)
 			builder.setItemChecks(getItemChecks(path));
@@ -181,7 +202,7 @@ public final class GetYamlSettings {
 		String amount = this.getConfig().getString(path + ".amount");
 
 		boolean useLevel = this.getConfig().getBoolean(path + ".level");
-		ClickRequiermentType clickRequiermentType = ClickRequiermentType.getType(clicktype);
+		ClickRequirementType clickRequirementType = ClickRequirementType.getType(clicktype);
 		RequirementType requirementType = RequirementType.getType(type);
 
 		if (requirementType == null) return null;
@@ -228,12 +249,12 @@ public final class GetYamlSettings {
 			case STRING_NOT_CONTAINS:
 			case STRING_IS_NOT_EQUALS:
 			case STRING_IS_NOT_EQUAL_IGNORE_CASE:
-			case INT_EQUALS_OUTPUT:
-			case INT_NOT_EQUALS_OUTPUT:
-			case INT_GREATER_THAN_OUTPUT:
-			case INT_GREATER_THAN_OR_EQUALS_OUTPUT:
-			case INT_LESS_THAN_OR_EQUALS_OUTPUT:
-			case INT_LESS_THAN_OUTPUT:
+			case INPUT_EQUALS_OUTPUT:
+			case INPUT_NOT_EQUALS_OUTPUT:
+			case INPUT_GREATER_THAN_OUTPUT:
+			case INPUT_GREATER_THAN_OR_EQUALS_OUTPUT:
+			case INPUT_LESS_THAN_OR_EQUALS_OUTPUT:
+			case INPUT_LESS_THAN_OUTPUT:
 				rec = new InputOutputRequirement(requirementType, input, output);
 				break;
 			case CUSTOM:
@@ -242,8 +263,8 @@ public final class GetYamlSettings {
 		if (rec != null) {
 			boolean optionalRequirement = this.getConfig().getBoolean(path + ".optional_requirement");
 			rec.setOptional(optionalRequirement);
-			if (clickRequiermentType != null)
-				rec.setClickRequiermentType(clickRequiermentType);
+			if (clickRequirementType != null)
+				rec.setClickRequiermentType(clickRequirementType);
 
 			rec.setSuccessCommands(formatCommands(successCommands));
 			rec.setDenyCommands(formatCommands(denyCommands));

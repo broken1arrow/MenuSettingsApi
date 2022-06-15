@@ -5,7 +5,9 @@ import org.brokenarrow.library.menusettings.clickactions.CommandActionType;
 import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.tasks.ClickActionTask;
 import org.brokenarrow.library.menusettings.utillity.Tuple;
+import org.bukkit.Color;
 import org.bukkit.DyeColor;
+import org.bukkit.FireworkEffect;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
@@ -15,8 +17,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static org.brokenarrow.library.menusettings.RegisterMenuAddon.getLogger;
 
 public final class GetCollections {
 
@@ -75,14 +80,32 @@ public final class GetCollections {
 		return enchantmentsMap;
 	}
 
+	public static List<Color> getColors(List<String> colors) {
+		if (colors == null || colors.isEmpty()) return new ArrayList<>();
+		List<Color> colorList = new ArrayList<>(colors.size());
+		for (String color : colors) {
+			String[] colorSplit = color.split(",");
+			Valid.checkBoolean(colorSplit.length < 4, "rgb is not format correcly. Should be formated like this 'r,b,g'. Example '20,15,47'.");
+			try {
+
+				int red = Integer.parseInt(colorSplit[0]);
+				int green = Integer.parseInt(colorSplit[2]);
+				int blue = Integer.parseInt(colorSplit[1]);
+				colorList.add(Color.fromRGB(red, green, blue));
+			} catch (NumberFormatException exception) {
+				getLogger(Level.WARNING, "you don´t use numbers or not format rgb correcly. Your input: " + color);
+				exception.printStackTrace();
+			}
+		}
+		return colorList;
+	}
+
 	public static Map<Enchantment, Tuple<Integer, Boolean>> getEnchantments(Map<String, Map<String, String>> enchantmentList) {
 		if (enchantmentList == null || enchantmentList.isEmpty()) return null;
 		Map<Enchantment, Tuple<Integer, Boolean>> enchantmentsMap = new HashMap<>();
-		System.out.println("enchantmentList " + enchantmentList);
 		for (Map.Entry<String, Map<String, String>> stringMapEntry : enchantmentList.entrySet()) {
 			Valid.checkNotNull(stringMapEntry.getKey(), "Enchantment is null. Should always return a value");
 			Enchantment enchantment = Enchantment.getByKey(NamespacedKey.fromString(stringMapEntry.getKey().toLowerCase()));
-			System.out.println("Enchantment " + enchantment);
 
 			Map<String, String> enchantOptions = stringMapEntry.getValue();
 			String enchantmentLevel = enchantOptions.get("level");
@@ -99,15 +122,11 @@ public final class GetCollections {
 	public static List<PotionEffect> getPotionEffects(Map<String, Map<String, String>> portionsEffects) {
 		if (portionsEffects == null || portionsEffects.isEmpty()) return null;
 		List<PotionEffect> potionEffectList = new ArrayList<>();
-		System.out.println("portionsEffects " + portionsEffects);
 		for (Map.Entry<String, Map<String, String>> potionEffect : portionsEffects.entrySet()) {
 			Valid.checkNotNull(potionEffect.getKey(), "Portion effects is null. Should always return a value");
 			PotionEffectType potionEffectType = PotionEffectType.getByName(potionEffect.getKey());
-
-			System.out.println("portionsEffects potionEffectType  " + potionEffectType);
-
 			Map<String, String> potionEffectValue = potionEffect.getValue();
-			System.out.println("portionsEffects value  " + potionEffectValue);
+
 			if (potionEffectType != null)
 				potionEffectList.add(new PotionEffect(potionEffectType, Integer.parseInt(potionEffectValue.get("duration")), Integer.parseInt(potionEffectValue.get("amplifier"))));
 		}
@@ -152,6 +171,17 @@ public final class GetCollections {
 			sortedButtons.put(entry.getKey(), value);
 		}
 		return sortedButtons;
+	}
+
+	public static FireworkEffect.Type getFireworkEffectType(String string) {
+		FireworkEffect.Type[] types = FireworkEffect.Type.values();
+		string = string.toUpperCase();
+		
+		for (FireworkEffect.Type type : types) {
+			if (type.name().equals(string))
+				return type;
+		}
+		return null;
 	}
 
 }
