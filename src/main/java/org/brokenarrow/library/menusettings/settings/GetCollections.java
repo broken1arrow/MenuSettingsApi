@@ -18,12 +18,15 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.brokenarrow.library.menusettings.RegisterMenuAddon.getLogger;
 
 public final class GetCollections {
+	public static final java.util.regex.Pattern DELAY_MATCH = java.util.regex.Pattern.compile("<delay=([^<>]+)>", java.util.regex.Pattern.CASE_INSENSITIVE);
+	public static final java.util.regex.Pattern CHANCE_MATCH = java.util.regex.Pattern.compile("<chance=([^<>]+)>", java.util.regex.Pattern.CASE_INSENSITIVE);
 
 	public static List<ClickActionTask> formatCommands(List<String> comands) {
 		if (comands == null || comands.isEmpty()) return null;
@@ -35,15 +38,25 @@ public final class GetCollections {
 				command = command.replace(commandType.getIdentifier(), "");
 				if (command.startsWith(" "))
 					command = command.trim();
-				ClickActionTask action = new ClickActionTask(commandType, command);
-				action.setChance("-1");
-				action.setDelay("-1");
+				ClickActionTask action = new ClickActionTask(commandType);
+
+				Matcher delay = DELAY_MATCH.matcher(command);
+				if (delay.find()) {
+					action.setDelay(delay.group(1));
+					command = command.replace(delay.group(), "");
+				}
+				Matcher chance = CHANCE_MATCH.matcher(command);
+				if (chance.find()) {
+					action.setChance(chance.group(1));
+					command = command.replace(chance.group(), "");
+				}
+				action.setExecutable(command);
 				list.add(action);
 			}
 		}
 		return list;
 	}
-
+	
 	public static List<ItemFlag> getItemFlags(List<String> itemFlags) {
 		if (itemFlags == null || itemFlags.isEmpty()) return null;
 		List<ItemFlag> itemFlagList = new ArrayList<>();
@@ -176,7 +189,7 @@ public final class GetCollections {
 	public static FireworkEffect.Type getFireworkEffectType(String string) {
 		FireworkEffect.Type[] types = FireworkEffect.Type.values();
 		string = string.toUpperCase();
-		
+
 		for (FireworkEffect.Type type : types) {
 			if (type.name().equals(string))
 				return type;

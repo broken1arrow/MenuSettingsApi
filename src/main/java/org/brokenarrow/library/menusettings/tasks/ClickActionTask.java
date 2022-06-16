@@ -1,13 +1,13 @@
 package org.brokenarrow.library.menusettings.tasks;
 
-import com.google.common.base.Enums;
-import me.clip.placeholderapi.PlaceholderAPI;
 import org.brokenarrow.library.menusettings.clickactions.CommandActionType;
+import org.brokenarrow.library.menusettings.utillity.SoundUtillity;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
 
 import static org.broken.lib.rbg.TextTranslator.toSpigotFormat;
 import static org.brokenarrow.library.menusettings.RegisterMenuAddon.*;
@@ -17,21 +17,19 @@ import static org.brokenarrow.library.menusettings.utillity.ExperienceUtillity.s
 
 public class ClickActionTask {
 
-
 	private final CommandActionType actionType;
-	private final String execute;
+	private String executable;
 	private String delay;
 	private String chance;
 
 
-	public ClickActionTask(CommandActionType actionType, String execute) {
+	public ClickActionTask(CommandActionType actionType) {
 		this.actionType = actionType;
-		this.execute = execute;
 	}
 
 	public void task(Player player) {
 		if (player == null) return;
-		String executable = PlaceholderAPI.setPlaceholders(player, this.execute);
+		String executable = setPlaceholders(player, this.getExecutable());
 
 		switch (this.actionType) {
 			case CONSOLE:
@@ -40,7 +38,10 @@ public class ClickActionTask {
 			case PLAYER:
 				player.chat("/" + executable);
 				break;
+			case PLACEHOLDER:
+				setPlaceholders(player, executable);
 			case PLAYER_COMMAND_EVENT:
+				Bukkit.getPluginManager().callEvent(new PlayerCommandPreprocessEvent(player, "/" + executable));
 				break;
 			case MESSAGE:
 				player.sendMessage(toSpigotFormat(executable));
@@ -60,11 +61,10 @@ public class ClickActionTask {
 			case BROADCAST_SOUND:
 			case BROADCAST_WORLD_SOUND:
 			case PLAY_SOUND:
-				Sound sound = null;
-				float volume = 1.0F;
-				float pitch = 1.0F;
-
-				sound = Enums.getIfPresent(Sound.class, executable.toUpperCase()).orNull();
+				SoundUtillity soundU = new SoundUtillity(executable);
+				Sound sound = soundU.getSound();
+				float volume = soundU.getVolume();
+				float pitch = soundU.getPitch();
 
 				if (sound == null) return;
 
@@ -73,7 +73,10 @@ public class ClickActionTask {
 						p.playSound(p.getLocation(), sound, volume, pitch);
 					}
 				} else if (this.actionType == CommandActionType.BROADCAST_WORLD_SOUND) {
-					player.getWorld().playSound(player.getLocation(), sound, volume, pitch);
+					for (Player p : Bukkit.getOnlinePlayers()) {
+						if (player.getWorld().getName().equals(p.getWorld().getName()))
+							player.getWorld().playSound(p.getLocation(), sound, volume, pitch);
+					}
 				} else {
 					player.playSound(player.getLocation(), sound, volume, pitch);
 				}
@@ -102,8 +105,8 @@ public class ClickActionTask {
 	}
 
 	public long formatDelay(Player wiver) {
-		if (this.delay == null || this.delay.isEmpty()) return -1;
-		String delayTranslated = setPlaceholders(wiver, this.delay);
+		if (this.getDelay() == null || this.getDelay().isEmpty()) return -1;
+		String delayTranslated = setPlaceholders(wiver, this.getDelay());
 
 		try {
 			return Long.parseLong(delayTranslated);
@@ -113,26 +116,36 @@ public class ClickActionTask {
 	}
 
 	public boolean checkChance(Player wiver) {
-		if (this.chance == null) {
+		if (this.getChance() == null) {
 			return true;
 		} else {
-			String chanceTranslated = setPlaceholders(wiver, this.chance);
-			double chance = 0.0D;
+			String chanceTranslated = setPlaceholders(wiver, this.getChance());
+			double chance;
 			try {
 				chance = Double.parseDouble(chanceTranslated);
 			} catch (NumberFormatException ignored) {
+				getLogger(Level.WARNING, "Your set chance, is not valid format, your input " + chanceTranslated + ". use numbers only. " +
+						"This will now return false and the command/action will not be executed");
+				return false;
 			}
 			if (chance == -1) {
 				return true;
 			}
-			if (chance >= 100.0D) {
+			if (chance >= 100.0) {
 				return true;
 			} else {
-				double random = ThreadLocalRandom.current().nextDouble() * 100.0D;
-				random = Double.parseDouble(formatDubbleDecimal().format(random));
+				double random = Double.parseDouble(formatDubbleDecimal().format(getRandomUntility().randomDouble()));
 				return random <= chance;
 			}
 		}
+	}
+
+	public String getExecutable() {
+		return executable;
+	}
+
+	public void setExecutable(String executable) {
+		this.executable = executable;
 	}
 
 	public String getDelay() {

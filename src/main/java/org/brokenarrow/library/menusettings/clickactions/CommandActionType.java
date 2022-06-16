@@ -17,7 +17,8 @@ public enum CommandActionType {
 	TAKE_EXP("[takeexp]"),
 	GIVE_EXP("[giveexp]"),
 	TAKE_PERM("[takepermission]"),
-	GIVE_PERM("[givepermission]");
+	GIVE_PERM("[givepermission]"),
+	PLACEHOLDER("[placeholder]");
 	private final String identifier;
 
 	CommandActionType(String identifier) {

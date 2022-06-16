@@ -153,7 +153,7 @@ public final class ButtonSettings {
 				}
 		}
 		if (this.getCheckArmor() != null) {
-			itemStack = getArmorPiece(viewer, this.getCheckArmor());
+			itemStack = getArmorPiece(viewer, this.getCheckArmor().toLowerCase());
 		}
 		return CreateItemStack.of(itemStack, itemWrapper, viewer).makeItemStack();
 	}

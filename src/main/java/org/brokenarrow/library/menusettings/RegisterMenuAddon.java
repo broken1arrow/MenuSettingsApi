@@ -8,6 +8,7 @@ import org.brokenarrow.library.menusettings.hooks.economy.RegisterEconomyHook;
 import org.brokenarrow.library.menusettings.hooks.permission.PermissionProvider;
 import org.brokenarrow.library.menusettings.hooks.permission.RegisterPermissionHook;
 import org.brokenarrow.library.menusettings.settings.MenuCache;
+import org.brokenarrow.library.menusettings.utillity.RandomUntility;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -46,6 +47,7 @@ public class RegisterMenuAddon {
 	private static RegisterEconomyHook registerEconomyHook;
 	private static RegisterPermissionHook registerPermissionHook;
 	private static RegisterNbtAPI nbtApi;
+	private static final RandomUntility randomUntility = new RandomUntility();
 
 	/**
 	 * Register this api, this will load yml files and register plugin hooks.
@@ -76,6 +78,7 @@ public class RegisterMenuAddon {
 		registerNashorn();
 		registerEconomyHook = new RegisterEconomyHook();
 		registerPermissionHook = new RegisterPermissionHook();
+
 	}
 
 	public static String setPlaceholders(Player player, String string) {
@@ -154,6 +157,10 @@ public class RegisterMenuAddon {
 	public static PriceProvider getEconomyProvider() {
 		checkBoolean(registerEconomyHook.getProvider() == null, "economyProvider is null, so you can't add or remove money from players");
 		return registerEconomyHook.getProvider();
+	}
+
+	public static RandomUntility getRandomUntility() {
+		return randomUntility;
 	}
 
 	@NotNull

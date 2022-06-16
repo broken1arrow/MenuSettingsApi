@@ -6,7 +6,6 @@ import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.potion.PotionEffect;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -113,27 +112,22 @@ public final class ItemWrapper {
 		return hideFlags;
 	}
 
-	@NotNull
 	public int getAmount() {
 		return amount;
 	}
 
-	@NotNull
 	public int getCustomModeldata() {
 		return customModeldata;
 	}
 
-	@NotNull
 	public int getData() {
 		return data;
 	}
 
-	@NotNull
 	public boolean isGlow() {
 		return glow;
 	}
 
-	@NotNull
 	public boolean isUnbreakable() {
 		return unbreakable;
 	}
