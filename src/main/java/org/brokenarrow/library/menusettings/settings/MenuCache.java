@@ -88,7 +88,7 @@ public class MenuCache extends AllYamlFilesInFolder {
 						.setRefreshTimeWhenUpdateButton(updateButtondelay)
 						.setPriority(priority)
 						.setButtonName(button)
-						.setOpenMenu(menuToOpen)
+						.setOpenNewMenu(menuToOpen)
 						.setCheckArmor(itemfromarmorslot)
 						.setCheckHand(itemfromhand)
 						.setClickrequirement(yamlSettings.checkRequirements(path, "Click_requirement"))

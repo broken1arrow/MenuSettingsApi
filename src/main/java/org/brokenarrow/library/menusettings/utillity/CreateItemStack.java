@@ -17,6 +17,7 @@ import org.bukkit.inventory.meta.*;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -384,6 +385,7 @@ public class CreateItemStack {
 	 *
 	 * @return list of efects set on this item.
 	 */
+	@Nullable
 	public FireworkEffect getFireworkEffect() {
 		return fireworkEffect;
 	}
@@ -954,20 +956,16 @@ public class CreateItemStack {
 	}
 
 	private void addFireworkEffect(final ItemMeta itemMeta) {
-		if (getRgb() == null || (getRed() < 0 && getGreen() < 0 && getBlue() < 0))
-			return;
 
 		if (itemMeta instanceof FireworkEffectMeta) {
-			if (getRgb() == null || (getRed() < 0 && getGreen() < 0 && getBlue() < 0)) {
-				getLogger(Level.WARNING, "You have not set colors correctly, you have set this: " + getRgb() + " should be in this format Rgb: #,#,#");
-				return;
-			}
 			FireworkEffectMeta fireworkEffectMeta = (FireworkEffectMeta) itemMeta;
 			if (this.getFireworkEffect() != null) {
-				FireworkEffect effect = this.getFireworkEffect();
-				if (effect.getColors() == null)
-					fireworkEffectMeta.setEffect(effect);
+				fireworkEffectMeta.setEffect(this.getFireworkEffect());
 			} else {
+				if (getRgb() == null || (getRed() < 0 && getGreen() < 0 && getBlue() < 0)) {
+					getLogger(Level.WARNING, "You have not set colors correctly, you have set this: " + getRgb() + " should be in this format Rgb: #,#,#");
+					return;
+				}
 				FireworkEffect.Builder builder = FireworkEffect.builder().withColor(Color.fromBGR(getBlue(), getGreen(), getRed()));
 				fireworkEffectMeta.setEffect(builder.build());
 			}

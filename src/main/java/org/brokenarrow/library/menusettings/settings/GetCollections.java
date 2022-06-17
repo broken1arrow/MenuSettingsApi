@@ -56,7 +56,7 @@ public final class GetCollections {
 		}
 		return list;
 	}
-	
+
 	public static List<ItemFlag> getItemFlags(List<String> itemFlags) {
 		if (itemFlags == null || itemFlags.isEmpty()) return null;
 		List<ItemFlag> itemFlagList = new ArrayList<>();
@@ -187,6 +187,7 @@ public final class GetCollections {
 	}
 
 	public static FireworkEffect.Type getFireworkEffectType(String string) {
+		if (string == null) return null;
 		FireworkEffect.Type[] types = FireworkEffect.Type.values();
 		string = string.toUpperCase();
 

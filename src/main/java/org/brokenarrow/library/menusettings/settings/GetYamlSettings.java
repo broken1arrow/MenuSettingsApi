@@ -35,13 +35,14 @@ public final class GetYamlSettings {
 	}
 
 	public FireworkEffect getFireWorksEffect(String path) {
-		FileConfiguration config = getConfig();
 		path = path + ".FireWork_effect";
-		List<Color> listOfColors = getColors(config.getStringList(path + ".Colors"));
+		System.out.println("path " + path);
+		if (!this.config.contains(path)) return null;
+		List<Color> listOfColors = getColors(this.config.getStringList(path + ".Colors"));
 		List<Color> listOfFadeColors = getColors(config.getStringList(path + ".Fade_colors"));
-		String type = config.getString(path + ".Type");
-		boolean flicker = config.getBoolean(path + ".Flicker");
-		boolean trail = config.getBoolean(path + ".Trail");
+		String type = this.config.getString(path + ".Type");
+		boolean flicker = this.config.getBoolean(path + ".Flicker");
+		boolean trail = this.config.getBoolean(path + ".Trail");
 		FireworkEffect.Type fireworkEffectType = getFireworkEffectType(type);
 		FireworkEffect.Builder builder = FireworkEffect.builder()
 				.withColor(listOfColors)

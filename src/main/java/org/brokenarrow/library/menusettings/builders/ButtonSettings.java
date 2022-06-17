@@ -19,7 +19,7 @@ public final class ButtonSettings {
 	private final String buttonName;
 	private final String checkArmor;
 	private final String checkHand;
-	private final String openMenu;
+	private final String openNewMenu;
 	private final ItemWrapper buttonItem;
 	private final RequirementsLogic viewRequirement;
 	private final RequirementsLogic clickrequirement;
@@ -44,7 +44,7 @@ public final class ButtonSettings {
 		this.buttonName = builder.buttonName;
 		this.checkArmor = builder.checkArmor;
 		this.checkHand = builder.checkHand;
-		this.openMenu = builder.openMenu;
+		this.openNewMenu = builder.openNewMenu;
 		this.buttonItem = builder.buttonItem;
 		this.viewRequirement = builder.viewRequirement;
 		this.clickrequirement = builder.clickrequirement;
@@ -111,8 +111,8 @@ public final class ButtonSettings {
 	 * @return name on the menu.
 	 */
 	@Nullable
-	public String getOpenMenu() {
-		return openMenu;
+	public String getNextMenu() {
+		return openNewMenu;
 	}
 
 	public String getCheckArmor() {
@@ -222,7 +222,7 @@ public final class ButtonSettings {
 		private String buttonName;
 		public String checkArmor;
 		public String checkHand;
-		private String openMenu;
+		private String openNewMenu;
 		private ItemWrapper buttonItem;
 		private RequirementsLogic viewRequirement;
 		private RequirementsLogic clickrequirement;
@@ -280,8 +280,8 @@ public final class ButtonSettings {
 			return this;
 		}
 
-		public Builder setOpenMenu(String openMenu) {
-			this.openMenu = openMenu;
+		public Builder setOpenNewMenu(String openNewMenu) {
+			this.openNewMenu = openNewMenu;
 			return this;
 		}
 
@@ -365,7 +365,7 @@ public final class ButtonSettings {
 				", buttonName='" + buttonName + '\'' +
 				", checkArmor='" + checkArmor + '\'' +
 				", checkHand='" + checkHand + '\'' +
-				", openMenu='" + openMenu + '\'' +
+				", openMenu='" + openNewMenu + '\'' +
 				", buttonItem=" + buttonItem +
 				", viewRequirement=" + viewRequirement +
 				", clickrequirement=" + clickrequirement +
