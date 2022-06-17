@@ -162,7 +162,7 @@ public final class ButtonSettings {
 		return viewRequirement;
 	}
 
-	public RequirementsLogic getClickrequirement() {
+	public RequirementsLogic getClickRequirement() {
 		return clickrequirement;
 	}
 

@@ -22,6 +22,11 @@ public class MenuCache extends AllYamlFilesInFolder {
 		super(folder, filename, shallGenerateDefultFiles);
 	}
 
+	/**
+	 * Cache for all menu data.
+	 *
+	 * @return map with menu name and menuSettings.
+	 */
 	public Map<String, MenuSettings> getMenuCache() {
 		return menuCache;
 	}
