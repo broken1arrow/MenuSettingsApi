@@ -84,37 +84,7 @@ public class GetMenuButtonsData {
 		} else {
 			if (checkShiftClickRequirements(requirements, clickType)) return true;
 			if (checkRightAndLeftClickRequirements(requirements, clickType)) return true;
-		/*	if (clickType.isShiftClick() && clickType.isLeftClick() && requirements.getShiftLeftClickActionHandler() != null) {
-				if (requirements.getShiftLeftClickRequirement() != null && !requirements.getShiftLeftClickRequirement().estimate(this.wiver)) {
-					requirements.getShiftLeftClickRequirement().runClickActionTask(requirements.getLeftClickRequirement().getDenyCommands(), this.wiver);
-					return false;
-				}
-				requirements.getShiftLeftClickActionHandler().runClickActionTask(this.wiver);
-				return true;
-			} else if (clickType.isShiftClick() && clickType.isRightClick() && requirements.getShiftRightClickActionHandler() != null) {
-				if (requirements.getShiftRightClickRequirement() != null && !requirements.getShiftRightClickRequirement().estimate(this.wiver)) {
-					requirements.getShiftRightClickRequirement().runClickActionTask(requirements.getShiftRightClickRequirement().getDenyCommands(), this.wiver);
-					return false;
-				}
-				requirements.getShiftRightClickActionHandler().runClickActionTask(this.wiver);
-				return true;
-			}*/
-			/*else if (clickType.isRightClick() && requirements.getRightClickActionHandler() != null) {
-				if (requirements.getRightClickRequirement() != null && !requirements.getRightClickRequirement().estimate(this.wiver)) {
-					requirements.getShiftRightClickRequirement().runClickActionTask(requirements.getShiftRightClickRequirement().getDenyCommands(), this.wiver);
-					return false;
-				}
-				requirements.getRightClickActionHandler().runClickActionTask(this.wiver);
-				return true;
-
-			} else if (clickType.isLeftClick() && requirements.getLeftClickActionHandler() != null) {
-				if (requirements.getLeftClickRequirement() != null && !requirements.getLeftClickRequirement().estimate(this.wiver)) {
-					requirements.getLeftClickRequirement().runClickActionTask(requirements.getLeftClickRequirement().getDenyCommands(), this.wiver);
-					return false;
-				}
-				requirements.getLeftClickActionHandler().runClickActionTask(this.wiver);
-				return true;
-			} */
+			
 			else if (clickType == ClickType.MIDDLE && requirements.getMiddleClickActionHandler() != null) {
 				if (requirements.getMiddleClickRequirement() != null && !requirements.getMiddleClickRequirement().estimate(this.wiver)) {
 					requirements.getShiftRightClickRequirement().runClickActionTask(requirements.getShiftRightClickRequirement().getDenyCommands(), this.wiver);
