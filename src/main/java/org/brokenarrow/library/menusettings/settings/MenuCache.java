@@ -48,6 +48,7 @@ public class MenuCache extends AllYamlFilesInFolder {
 			String path = "Menus.";
 			if (getCustomConfig().contains("Menus." + key + ".Menu_Items"))
 				path = "Menus." + key;
+			
 			if (getFolderName() != null && !getFolderName().isEmpty())
 				menuCache.put(getNameOfFile(file.getName()), chacheYamlData(buttonsCache, path));
 			else
@@ -76,7 +77,7 @@ public class MenuCache extends AllYamlFilesInFolder {
 		if (sectionOfButtons != null)
 			for (String button : sectionOfButtons.getKeys(false)) {
 				List<ButtonSettings> buttonSettings = new ArrayList<>();
-				String buttonPath = path + button;
+				String buttonPath = path + "." + button;
 
 				int priority = config.getInt(buttonPath + ".Priority", 1);
 				boolean refreshButtons = config.getBoolean(buttonPath + "Refresh_buttons");
