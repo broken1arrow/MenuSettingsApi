@@ -4,9 +4,12 @@ import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
 import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.requirements.RequirementsLogic;
 import org.brokenarrow.library.menusettings.utillity.CreateItemStack;
+import org.brokenarrow.library.menusettings.utillity.SkullCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 import static org.brokenarrow.library.menusettings.utillity.ArmorSlots.getArmorPiece;
 
@@ -137,7 +140,7 @@ public final class ButtonSettings {
 	@Nullable
 	public ItemStack getItemStack(Player viewer) {
 		ItemWrapper itemWrapper = this.getButtonItem();
-		String icon = itemWrapper.getIcon();
+		final String icon = itemWrapper.getIcon();
 		Valid.checkBoolean(icon != null, "Your material is null, so can´t add this item to the menu " + ButtonSettings.class);
 
 		ItemStack itemStack = null;
@@ -155,6 +158,16 @@ public final class ButtonSettings {
 		if (this.getCheckArmor() != null) {
 			itemStack = getArmorPiece(viewer, this.getCheckArmor().toLowerCase());
 		}
+		if (icon.startsWith("uuid="))
+			itemStack = SkullCreator.itemFromUuid(UUID.fromString(icon.replaceFirst("uuid=", "")));
+		else if (icon.startsWith("base64="))
+			itemStack = SkullCreator.itemFromBase64(icon.replaceFirst("base64=", ""));
+		else if (icon.startsWith("url="))
+			itemStack = SkullCreator.itemFromUrl(icon.replaceFirst("url=", ""));
+		else if (icon.startsWith("Player_Skull=") && viewer != null) {
+			itemStack = SkullCreator.itemFromUuid(viewer.getUniqueId());
+		}
+
 		return CreateItemStack.of(itemStack, itemWrapper, viewer).makeItemStack();
 	}
 

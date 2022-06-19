@@ -36,7 +36,7 @@ public final class GetYamlSettings {
 
 	public FireworkEffect getFireWorksEffect(String path) {
 		path = path + ".FireWork_effect";
-		System.out.println("path " + path);
+
 		if (!this.config.contains(path)) return null;
 		List<Color> listOfColors = getColors(this.config.getStringList(path + ".Colors"));
 		List<Color> listOfFadeColors = getColors(config.getStringList(path + ".Fade_colors"));
@@ -98,7 +98,7 @@ public final class GetYamlSettings {
 		return requirementsLogic;
 	}
 
-	public ItemWrapper addItem(String path, boolean addItemChecks) {
+	public ItemWrapper getItem(String path, boolean addItemChecks) {
 		ItemWrapper.Builder builder = new ItemWrapper.Builder();
 		boolean unbreakable = this.getConfig().getBoolean(path + ".Unbreakable");
 		boolean glow = this.getConfig().getBoolean(path + ".Glow");
@@ -106,7 +106,7 @@ public final class GetYamlSettings {
 		String displayName = this.getConfig().getString(path + ".Display_name");
 		String materialColor = this.getConfig().getString(path + ".Material_color");
 		String rpg = this.getConfig().getString(path + ".Rpg");
-		String dynamicAmount = this.getConfig().getString(path + ".Dynamic_Amount");
+		String dynamicAmount = this.getConfig().getString(path + ".Dynamic_amount");
 		int amountOfItems = this.getConfig().getInt(path + ".Amount", 1);
 		int data = this.getConfig().getInt(path + ".Data", -1);
 		int modeldata = this.getConfig().getInt(path + ".Modeldata", -1);
@@ -229,7 +229,7 @@ public final class GetYamlSettings {
 				break;
 			case HAS_ITEM:
 			case DO_NOT_HAVE_ITEM:
-				rec = new HasItemRequirement(addItem(path + ".item", true), requirementType == DO_NOT_HAVE_ITEM);
+				rec = new HasItemRequirement(getItem(path + ".item", true), requirementType == DO_NOT_HAVE_ITEM);
 				break;
 			case HAS_EXPERIENCE:
 			case DO_NOT_HAVE_EXPERIENCE:

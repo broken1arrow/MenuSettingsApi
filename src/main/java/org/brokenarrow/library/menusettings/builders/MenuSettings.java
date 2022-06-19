@@ -1,14 +1,21 @@
 package org.brokenarrow.library.menusettings.builders;
 
 import org.brokenarrow.library.menusettings.requirements.RequirementsLogic;
+import org.brokenarrow.library.menusettings.utillity.GuiTypeUtillity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+
+import static org.brokenarrow.library.menusettings.RegisterMenuAddon.setPlaceholders;
 
 public final class MenuSettings {
 	private final int menuSize;
 	private final int globalDelay;
 	private final boolean updateButtons;
+	private final String menuType;
 	private final String menuTitle;
 	private final String fillSpace;
 	private final String sound;
@@ -17,6 +24,7 @@ public final class MenuSettings {
 	private final Builder builder;
 
 	private MenuSettings(Builder builder) {
+		this.menuType = builder.menuType;
 		this.menuSize = builder.menuSize;
 		this.globalDelay = builder.globalDelay;
 		this.updateButtons = builder.updateButtons;
@@ -26,6 +34,29 @@ public final class MenuSettings {
 		this.itemSettings = builder.itemSettings;
 		this.openRequirement = builder.openRequirement;
 		this.builder = builder;
+	}
+
+	/**
+	 * get inventory string name, will not translate placeholders.
+	 *
+	 * @return type of inventory or null.
+	 */
+	@Nullable
+	public String getMenuType() {
+		return menuType;
+	}
+
+	/**
+	 * Get type of inventory. will also translate placeholders.
+	 *
+	 * @param player some open menu.
+	 * @return type of inventory or null.
+	 */
+
+	@Nullable
+	public InventoryType getMenuType(Player player) {
+		GuiTypeUtillity type = new GuiTypeUtillity(setPlaceholders(player, this.getMenuType()));
+		return type.getInventoryType();
 	}
 
 	public int getMenuSize() {
@@ -69,11 +100,17 @@ public final class MenuSettings {
 		private int menuSize;
 		private int globalDelay;
 		private boolean updateButtons;
+		private String menuType;
 		private String menuTitle;
 		private String fillSpace;
 		private String sound;
 		private Map<List<Integer>, List<ButtonSettings>> itemSettings;
 		private RequirementsLogic openRequirement;
+
+		public Builder setMenuType(String menuType) {
+			this.menuType = menuType;
+			return this;
+		}
 
 		public Builder setMenuSize(int menuSize) {
 			this.menuSize = menuSize;
@@ -126,6 +163,7 @@ public final class MenuSettings {
 				"menuSize=" + menuSize +
 				", globalDelay=" + globalDelay +
 				", updateButtons=" + updateButtons +
+				", menuTyppe='" + menuType + '\'' +
 				", menuTitle='" + menuTitle + '\'' +
 				", fillSpace='" + fillSpace + '\'' +
 				", sound='" + sound + '\'' +

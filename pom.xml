@@ -9,6 +9,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <source>8</source>
         <target>8</target>
     </properties>
@@ -93,6 +94,12 @@
             <groupId>com.github.broken1arrow</groupId>
             <artifactId>NashornPlusAPI</artifactId>
             <version>0.12</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mojang</groupId>
+            <artifactId>authlib</artifactId>
+            <version>1.5.25</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

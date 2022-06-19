@@ -60,34 +60,38 @@ public class MenuCache extends AllYamlFilesInFolder {
 
 		FileConfiguration config = getCustomConfig();
 		GetYamlSettings yamlSettings = new GetYamlSettings(config);
+		String menuType = config.getString(key + ".Menu_Type");
 		int menuSize = config.getInt(key + ".Menu_Size");
 		String menuTitle = config.getString(key + ".Menu_Title");
 		String fillSpace = config.getString(key + ".FillSpace");
 		String sound = config.getString(key + ".Sound");
 		boolean updateButtons = config.getBoolean(key + ".Update_Buttons");
-		int delay = config.getInt(key + ".Global_Buttons_Delay");
+		int delay = config.getInt(key + ".Update_buttons_delay");
 
+		String path = key + ".Menu_Items";
+		if (!config.contains(path))
+			path = "Menu_Items";
 
-		ConfigurationSection sectionOfButtons = config.getConfigurationSection(key + ".Menu_Items");
+		ConfigurationSection sectionOfButtons = config.getConfigurationSection(path);
 		if (sectionOfButtons != null)
 			for (String button : sectionOfButtons.getKeys(false)) {
 				List<ButtonSettings> buttonSettings = new ArrayList<>();
-				String path = key + ".Menu_Items." + button;
+				String buttonPath = path + button;
 
-				int priority = config.getInt(path + ".Priority", 1);
-				boolean refreshButtons = config.getBoolean(path + "Refresh_buttons");
-				boolean updateButton = config.getBoolean(path + ".Update_Button");
-				long updateButtondelay = config.getLong(path + ".Update_Button_delay");
+				int priority = config.getInt(buttonPath + ".Priority", 1);
+				boolean refreshButtons = config.getBoolean(buttonPath + "Refresh_buttons");
+				boolean updateButton = config.getBoolean(buttonPath + ".Update_Button");
+				long updateButtondelay = config.getLong(buttonPath + ".Update_Button_delay");
 
-				String slot = config.getString(path + ".Slot");
+				String slot = config.getString(buttonPath + ".Slot");
 
-				String itemfromarmorslot = config.getString(path + ".Item_from_armor_slot");
-				String itemfromhand = config.getString(path + ".Item_from_hand");
-				String menuToOpen = config.getString(path + ".Menu_to_open");
+				String itemfromarmorslot = config.getString(buttonPath + ".Item_from_armor_slot");
+				String itemfromhand = config.getString(buttonPath + ".Item_from_hand");
+				String menuToOpen = config.getString(buttonPath + ".Menu_to_open");
 
 
 				ButtonSettings.Builder builder = new ButtonSettings.Builder()
-						.setButtonItem(yamlSettings.addItem(path, false))
+						.setButtonItem(yamlSettings.getItem(buttonPath, false))
 						.setUpdateButton(updateButton)
 						.setRefreshAllButtons(refreshButtons)
 						.setRefreshTimeWhenUpdateButton(updateButtondelay)
@@ -96,19 +100,19 @@ public class MenuCache extends AllYamlFilesInFolder {
 						.setOpenNewMenu(menuToOpen)
 						.setCheckArmor(itemfromarmorslot)
 						.setCheckHand(itemfromhand)
-						.setClickrequirement(yamlSettings.checkRequirements(path, "Click_requirement"))
-						.setLeftClickRequirement(yamlSettings.checkRequirements(path, "Left_click_requirement"))
-						.setRightClickRequirement(yamlSettings.checkRequirements(path, "Right_click_requirement"))
-						.setMiddleClickRequirement(yamlSettings.checkRequirements(path, "Middle_click_requirement"))
-						.setShiftLeftClickRequirement(yamlSettings.checkRequirements(path, "Shift_left_click_requirement"))
-						.setShiftRightClickRequirement(yamlSettings.checkRequirements(path, "Shift_right_click_requirement"))
-						.setViewRequirement(yamlSettings.checkRequirements(path, "View_requirement"))
-						.setClickActionHandler(yamlSettings.checkCommands(path, "Click_commands"))
-						.setLeftClickActionHandler(yamlSettings.checkCommands(path, "Left_click_commands"))
-						.setRightClickActionHandler(yamlSettings.checkCommands(path, "Right_click_commands"))
-						.setMiddleClickActionHandler(yamlSettings.checkCommands(path, "Middle_click_commands"))
-						.setShiftLeftClickActionHandler(yamlSettings.checkCommands(path, "Left_shift_click_commands"))
-						.setShiftRightClickActionHandler(yamlSettings.checkCommands(path, "Right_shift_click_commands"));
+						.setClickrequirement(yamlSettings.checkRequirements(buttonPath, "Click_requirement"))
+						.setLeftClickRequirement(yamlSettings.checkRequirements(buttonPath, "Left_click_requirement"))
+						.setRightClickRequirement(yamlSettings.checkRequirements(buttonPath, "Right_click_requirement"))
+						.setMiddleClickRequirement(yamlSettings.checkRequirements(buttonPath, "Middle_click_requirement"))
+						.setShiftLeftClickRequirement(yamlSettings.checkRequirements(buttonPath, "Shift_left_click_requirement"))
+						.setShiftRightClickRequirement(yamlSettings.checkRequirements(buttonPath, "Shift_right_click_requirement"))
+						.setViewRequirement(yamlSettings.checkRequirements(buttonPath, "View_requirement"))
+						.setClickActionHandler(yamlSettings.checkCommands(buttonPath, "Click_commands"))
+						.setLeftClickActionHandler(yamlSettings.checkCommands(buttonPath, "Left_click_commands"))
+						.setRightClickActionHandler(yamlSettings.checkCommands(buttonPath, "Right_click_commands"))
+						.setMiddleClickActionHandler(yamlSettings.checkCommands(buttonPath, "Middle_click_commands"))
+						.setShiftLeftClickActionHandler(yamlSettings.checkCommands(buttonPath, "Left_shift_click_commands"))
+						.setShiftRightClickActionHandler(yamlSettings.checkCommands(buttonPath, "Right_shift_click_commands"));
 				List<Integer> slotsList = parseSlotsFromString(slot);
 
 				List<ButtonSettings> oldbuttonsCache = buttonsCache.get(slotsList);
@@ -122,6 +126,7 @@ public class MenuCache extends AllYamlFilesInFolder {
 			}
 
 		MenuSettings.Builder builder = new MenuSettings.Builder()
+				.setMenuType(menuType)
 				.setFillSpace(fillSpace)
 				.setItemSettings(sortList(buttonsCache))
 				.setMenuSize(menuSize)
