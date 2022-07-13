@@ -10,6 +10,7 @@ public class RegisterPermissionHook {
 		if (Bukkit.getServer().getPluginManager().getPlugin("Vault") != null) {
 			provider = new VaultPermission();
 		}
+
 	}
 
 	public void checkPermHock() {
