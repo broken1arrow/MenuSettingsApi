@@ -19,6 +19,7 @@ public final class ButtonSettings {
 	private final long refreshTimeWhenUpdateButton;
 	private final boolean updateButton;
 	private final boolean refreshAllButtons;
+	private boolean refreshClickedButton;
 	private final String buttonName;
 	private final String checkArmor;
 	private final String checkHand;
@@ -44,6 +45,7 @@ public final class ButtonSettings {
 		this.refreshTimeWhenUpdateButton = builder.refreshTimeWhenUpdateButton;
 		this.updateButton = builder.updateButton;
 		this.refreshAllButtons = builder.refreshAllButtons;
+		this.refreshClickedButton = builder.refreshClickedButton;
 		this.buttonName = builder.buttonName;
 		this.checkArmor = builder.checkArmor;
 		this.checkHand = builder.checkHand;
@@ -97,6 +99,15 @@ public final class ButtonSettings {
 	 */
 	public boolean isRefreshAllButtons() {
 		return refreshAllButtons;
+	}
+
+	/**
+	 * Refrech only one button, insted of all buttons.
+	 *
+	 * @return true if it shall refresh only clicked button.
+	 */
+	public boolean isRefreshClickedButton() {
+		return refreshClickedButton;
 	}
 
 	/**
@@ -232,6 +243,7 @@ public final class ButtonSettings {
 		private long refreshTimeWhenUpdateButton;
 		private boolean updateButton;
 		private boolean refreshAllButtons;
+		private boolean refreshClickedButton;
 		private String buttonName;
 		public String checkArmor;
 		public String checkHand;
@@ -269,6 +281,11 @@ public final class ButtonSettings {
 
 		public Builder setRefreshAllButtons(boolean refreshAllButtons) {
 			this.refreshAllButtons = refreshAllButtons;
+			return this;
+		}
+
+		public Builder setRefreshClickedButton(boolean refreshClickedButton) {
+			this.refreshClickedButton = refreshClickedButton;
 			return this;
 		}
 
