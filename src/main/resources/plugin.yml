@@ -3,3 +3,6 @@ version: ${project.version}
 main: ${main.class}
 author: broken
 api-version: 1.13
+
+libraries:
+  - org.openjdk.nashorn:nashorn-core:15.4
