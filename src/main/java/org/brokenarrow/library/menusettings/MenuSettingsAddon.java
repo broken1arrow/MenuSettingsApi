@@ -90,7 +90,7 @@ public final class MenuSettingsAddon extends JavaPlugin {
 	 * @return the MenuDataRegister some contains all methods needed.
 	 */
 	public MenuDataRegister registerPlugin(Plugin plugin, BukkitAudiences audiences, String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
-		MenuCache menuCache = new MenuCache(plugin, makeOneFile ? "" : name, makeOneFile, shallGenerateDefultFiles);
+		MenuCache menuCache = new MenuCache(plugin, name, makeOneFile, shallGenerateDefultFiles);
 		menuDataRegister.addMenuCache(plugin, menuCache);
 		menuDataRegister.setAudiences((audiences != null ? audiences : net.kyori.adventure.platform.bukkit.BukkitAudiences.create(this)));
 

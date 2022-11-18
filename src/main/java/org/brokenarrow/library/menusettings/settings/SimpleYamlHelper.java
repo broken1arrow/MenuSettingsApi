@@ -50,8 +50,7 @@ public abstract class SimpleYamlHelper {
 	}
 
 	public SimpleYamlHelper(@NotNull Plugin plugin, final String name, final boolean singelFile, final boolean shallGenerateFiles) {
-		if (plugin == null)
-			throw new RuntimeException("You have not set the plugin, becuse it is null");
+		if (plugin == null) throw new RuntimeException("You have not set the plugin, becuse it is null");
 		this.plugin = plugin;
 		this.dataFolder = this.plugin.getDataFolder();
 		this.singelFile = singelFile;
@@ -79,11 +78,13 @@ public abstract class SimpleYamlHelper {
 	 */
 	public String checkIfFileHasExtension(final String name) {
 		Valid.checkBoolean(name != null && !name.isEmpty(), "The given path must not be empty!");
-		if (!isSingelFile())
-			return name;
+		if (!isSingelFile()) return name;
 		final int pos = name.lastIndexOf(".");
-		if (pos == -1)
-			this.setExtension(name.substring(pos));
+		if (pos > 0) this.setExtension(name.substring(pos));
+		else {
+			this.setExtension("yml");
+			return name + ".yml";
+		}
 		return name;
 	}
 
@@ -97,8 +98,7 @@ public abstract class SimpleYamlHelper {
 			return "yml";
 		} else {
 			String extension = this.extension;
-			if (extension.startsWith("."))
-				extension = extension.substring(1);
+			if (extension.startsWith(".")) extension = extension.substring(1);
 			return extension;
 		}
 	}
@@ -126,22 +126,20 @@ public abstract class SimpleYamlHelper {
 	}
 
 	public void load(final File[] files) throws IOException, InvalidConfigurationException {
-		if (files != null)
-			for (final File file : files) {
-				if (file == null) continue;
-				if (getCustomConfigFile() == null) {
-					this.customConfigFile = file;
-				}
-				if (!file.exists()) {
-					this.plugin.saveResource(file.getName(), false);
-				}
-				if (this.firstLoad) {
-					this.customConfig = YamlConfiguration.loadConfiguration(file);
-					this.firstLoad = false;
-				} else
-					this.customConfig.load(file);
-				loadSettingsFromYaml(file);
+		if (files != null) for (final File file : files) {
+			if (file == null) continue;
+			if (getCustomConfigFile() == null) {
+				this.customConfigFile = file;
 			}
+			if (!file.exists()) {
+				this.plugin.saveResource(file.getName(), false);
+			}
+			if (this.firstLoad) {
+				this.customConfig = YamlConfiguration.loadConfiguration(file);
+				this.firstLoad = false;
+			} else this.customConfig.load(file);
+			loadSettingsFromYaml(file);
+		}
 	}
 
 	public File getDataFolder() {
@@ -183,10 +181,9 @@ public abstract class SimpleYamlHelper {
 						}
 					}
 				}
-			} else
-				for (final File file : listOfFiles) {
-					saveData(file);
-				}
+			} else for (final File file : listOfFiles) {
+				saveData(file);
+			}
 		}
 	}
 
@@ -258,8 +255,7 @@ public abstract class SimpleYamlHelper {
 
 		if (this.shallGenerateFiles) {
 			final List<String> filenamesFromDir = getFilenamesForDirnameFromCP(getName());
-			if (filenamesFromDir != null)
-				filesFromResource = new HashSet<>(filenamesFromDir);
+			if (filenamesFromDir != null) filesFromResource = new HashSet<>(filenamesFromDir);
 		}
 		return getFilesInPluginFolder(getName());
 	}
@@ -269,12 +265,10 @@ public abstract class SimpleYamlHelper {
 	}
 
 	public boolean checkFolderExist(final String fileToSave, final File[] dataFolders) {
-		if (fileToSave != null)
-			for (final File file : dataFolders) {
-				final String fileName = getNameOfFile(file.getName());
-				if (fileName.equals(fileToSave))
-					return true;
-			}
+		if (fileToSave != null) for (final File file : dataFolders) {
+			final String fileName = getNameOfFile(file.getName());
+			if (fileName.equals(fileToSave)) return true;
+		}
 		return false;
 	}
 
@@ -301,13 +295,11 @@ public abstract class SimpleYamlHelper {
 	public File[] getFilesInPluginFolder(final String directory) {
 		if (isSingelFile()) {
 			final File checkFile = new File(this.getDataFolder(), this.getName());
-			if (!checkFile.exists() && this.shallGenerateFiles)
-				createMissingFile();
+			if (!checkFile.exists() && this.shallGenerateFiles) createMissingFile();
 			return new File(checkFile.getParent()).listFiles(file -> !file.isDirectory() && file.getName().equals(getName(this.getName())));
 		}
 		final File dataFolder = new File(this.getDataFolder(), directory);
-		if (!dataFolder.exists() && !directory.isEmpty())
-			dataFolder.mkdirs();
+		if (!dataFolder.exists() && !directory.isEmpty()) dataFolder.mkdirs();
 		if (this.filesFromResource != null)
 			createMissingFiles(dataFolder.listFiles(file -> !file.isDirectory() && file.getName().endsWith("." + getExtension())));
 
@@ -318,17 +310,13 @@ public abstract class SimpleYamlHelper {
 		Valid.checkBoolean(path != null && !path.isEmpty(), "The given path must not be empty!");
 		int pos;
 
-		if (path.lastIndexOf("/") == -1)
-			pos = path.lastIndexOf("\\");
-		else
-			pos = path.lastIndexOf("/");
-		if (pos > 0)
-			path = path.substring(pos + 1);
+		if (path.lastIndexOf("/") == -1) pos = path.lastIndexOf("\\");
+		else pos = path.lastIndexOf("/");
+		if (pos > 0) path = path.substring(pos + 1);
 
 		pos = path.lastIndexOf(".");
 
-		if (pos > 0)
-			path = path.substring(0, pos);
+		if (pos > 0) path = path.substring(0, pos);
 		return path;
 	}
 
@@ -336,13 +324,10 @@ public abstract class SimpleYamlHelper {
 		Valid.checkBoolean(path != null && !path.isEmpty(), "The given path must not be empty!");
 		final int pos;
 
-		if (path.lastIndexOf("/") == -1)
-			pos = path.lastIndexOf("\\");
-		else
-			pos = path.lastIndexOf("/");
+		if (path.lastIndexOf("/") == -1) pos = path.lastIndexOf("\\");
+		else pos = path.lastIndexOf("/");
 
-		if (pos > 0)
-			path = path.substring(pos + 1);
+		if (pos > 0) path = path.substring(pos + 1);
 
 		return path;
 	}
@@ -497,8 +482,7 @@ public abstract class SimpleYamlHelper {
 
 	private static class Valid extends RuntimeException {
 		public static void checkBoolean(final boolean b, final String s) {
-			if (!b)
-				throw new CatchExceptions(s);
+			if (!b) throw new CatchExceptions(s);
 		}
 
 		private static class CatchExceptions extends RuntimeException {
