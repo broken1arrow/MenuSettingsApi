@@ -2,7 +2,7 @@ package org.brokenarrow.library.menusettings.requirements;
 
 import org.bukkit.entity.Player;
 
-import static org.brokenarrow.library.menusettings.RegisterMenuAddon.setPlaceholders;
+import static org.brokenarrow.library.menusettings.MenuSettingsAddon.setPlaceholders;
 
 public class InputOutputRequirement extends Requirement {
 

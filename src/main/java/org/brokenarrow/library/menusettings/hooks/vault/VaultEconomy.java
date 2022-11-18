@@ -27,7 +27,7 @@ public class VaultEconomy implements PriceProvider {
 			return false;
 		}
 		RegisteredServiceProvider<Economy> rspEconomy = getServer().getServicesManager().getRegistration(Economy.class);
-
+		
 		if (rspEconomy == null) {
 			return false;
 		}
@@ -90,7 +90,7 @@ public class VaultEconomy implements PriceProvider {
 	public OfflinePlayer getOfflinePlayer(UUID uuid) {
 		return Bukkit.getOfflinePlayer(uuid);
 	}
-	
+
 	@Override
 	public Economy getEcon() {
 		return econ;

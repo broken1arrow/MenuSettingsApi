@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-import static org.brokenarrow.library.menusettings.RegisterMenuAddon.getPLUGIN;
+import static org.brokenarrow.library.menusettings.MenuSettingsAddon.getPLUGIN;
 
 
 public class RequirementsLogic {

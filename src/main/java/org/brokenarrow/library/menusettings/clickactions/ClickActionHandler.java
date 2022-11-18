@@ -1,12 +1,12 @@
 package org.brokenarrow.library.menusettings.clickactions;
 
 import org.brokenarrow.library.menusettings.tasks.ClickActionTask;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-import static org.brokenarrow.library.menusettings.RegisterMenuAddon.getPLUGIN;
+import static org.brokenarrow.library.menusettings.utillity.RunTimedTask.runTask;
+import static org.brokenarrow.library.menusettings.utillity.RunTimedTask.runTaskLater;
 
 
 public class ClickActionHandler {
@@ -24,9 +24,10 @@ public class ClickActionHandler {
 			if (clickAction.checkChance(wiver)) {
 				long delay = clickAction.formatDelay(wiver);
 				if (delay > 0)
-					Bukkit.getScheduler().runTaskLater(getPLUGIN(), () -> clickAction.task(wiver), delay);
+					runTaskLater(delay, false, () -> clickAction.task(wiver));
 				else
-					Bukkit.getScheduler().runTask(getPLUGIN(), () -> clickAction.task(wiver));
+					runTask(false, () -> clickAction.task(wiver));
+
 			}
 		}
 	}

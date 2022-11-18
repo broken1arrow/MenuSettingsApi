@@ -4,6 +4,8 @@ import org.brokenarrow.library.menusettings.builders.ButtonSettings;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,12 +16,12 @@ import java.util.Map;
 import static org.brokenarrow.library.menusettings.settings.GetCollections.parseSlotsFromString;
 import static org.brokenarrow.library.menusettings.settings.GetCollections.sortList;
 
-public class MenuCache extends AllYamlFilesInFolder {
+public class MenuCache extends SimpleYamlHelper {
 
 	Map<String, MenuSettings> menuCache = new HashMap<>();
 
-	public MenuCache(String folder, String filename, boolean shallGenerateDefultFiles) {
-		super(folder, filename, shallGenerateDefultFiles);
+	public MenuCache(@NotNull Plugin plugin, String name, boolean singelfile, boolean shallGenerateDefultFiles) {
+		super(plugin, name, singelfile, shallGenerateDefultFiles);
 	}
 
 	/**
@@ -49,7 +51,7 @@ public class MenuCache extends AllYamlFilesInFolder {
 			if (getCustomConfig().contains("Menus." + key + ".Menu_Items"))
 				path = "Menus." + key;
 
-			if (getFolderName() != null && !getFolderName().isEmpty())
+			if (!isSingelFile())
 				menuCache.put(getNameOfFile(file.getName()), chacheYamlData(buttonsCache, path));
 			else
 				menuCache.put(key, chacheYamlData(buttonsCache, path));

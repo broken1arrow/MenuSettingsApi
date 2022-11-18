@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import static org.brokenarrow.library.menusettings.RegisterMenuAddon.setPlaceholders;
+import static org.brokenarrow.library.menusettings.MenuSettingsAddon.setPlaceholders;
 import static org.brokenarrow.library.menusettings.utillity.CreateItemStack.formatColors;
 
 public class HasItemRequirement extends Requirement {

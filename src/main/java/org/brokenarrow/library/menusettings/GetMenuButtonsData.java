@@ -4,8 +4,10 @@ import org.brokenarrow.library.menusettings.builders.ButtonSettings;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
 import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.requirements.RequirementsLogic;
+import org.brokenarrow.library.menusettings.settings.MenuCache;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.brokenarrow.library.menusettings.RegisterMenuAddon.setPlaceholders;
+import static org.brokenarrow.library.menusettings.MenuSettingsAddon.setPlaceholders;
 
 /**
  * This help class, help you get both buttons and requirements needed for open menu or click on a item.
@@ -24,7 +26,7 @@ public final class GetMenuButtonsData {
 	private final MenuSettings menuSettings;
 	private final Player wiver;
 	private final String menuName;
-	private final RegisterMenuAddon registerMenuAddon = RegisterMenuAddon.getInstance();
+	private final MenuDataRegister menuDataRegister = MenuDataRegister.getInstance();
 
 	/**
 	 * Create new instance of this class and use the methods inside.
@@ -34,11 +36,12 @@ public final class GetMenuButtonsData {
 	 * @param player   the player some have the menu open.
 	 */
 
-	public GetMenuButtonsData(@NotNull final String menuName, @NotNull final Player player) {
-		Valid.checkNotNull(this.registerMenuAddon, "RegisterMenuAddon class is not registed.");
-		Valid.checkNotNull(this.registerMenuAddon.getMenuCache(), "menu chache is null, so can't load the settings");
+	public GetMenuButtonsData(@NotNull Plugin plugin, @NotNull final String menuName, @NotNull final Player player) {
+		Valid.checkNotNull(this.menuDataRegister, "MenuSettingsAddon class is not registed.");
+		MenuCache menuCache = this.menuDataRegister.getMenuCache(plugin);
+		Valid.checkNotNull(menuCache, "the plugin is not registed, so can't load the settings");
 		this.menuName = menuName;
-		Map<String, MenuSettings> menu = this.registerMenuAddon.getMenuCache().getMenuCache();
+		Map<String, MenuSettings> menu = menuCache.getMenuCache();
 		if (menu != null) {
 			this.menuSettings = menu.get(menuName);
 		} else

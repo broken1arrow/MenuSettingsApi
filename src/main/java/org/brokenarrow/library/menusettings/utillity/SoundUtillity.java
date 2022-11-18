@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.logging.Level;
 
-import static org.brokenarrow.library.menusettings.RegisterMenuAddon.getLogger;
+import static org.brokenarrow.library.menusettings.MenuSettingsAddon.getLogger;
 
 public final class SoundUtillity {
 	private Sound sound;

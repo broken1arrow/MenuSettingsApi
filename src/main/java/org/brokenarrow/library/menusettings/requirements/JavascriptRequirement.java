@@ -1,5 +1,6 @@
 package org.brokenarrow.library.menusettings.requirements;
 
+import org.brokenarrow.library.menusettings.MenuDataRegister;
 import org.bukkit.entity.Player;
 
 import javax.script.ScriptEngine;
@@ -7,11 +8,13 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.util.logging.Level;
 
-import static org.brokenarrow.library.menusettings.RegisterMenuAddon.*;
+import static org.brokenarrow.library.menusettings.MenuSettingsAddon.getPLUGIN;
+import static org.brokenarrow.library.menusettings.MenuSettingsAddon.setPlaceholders;
 
 public class JavascriptRequirement extends Requirement {
-	private static final ScriptEngineManager engine = getEngineManager();
-	private static final ScriptEngine scriptEngine = getScriptEngine();
+	private static final MenuDataRegister MENU_DATA_REGISTER = MenuDataRegister.getInstance();
+	private static final ScriptEngineManager engine = MENU_DATA_REGISTER.getEngineManager();
+	private static final ScriptEngine scriptEngine = MENU_DATA_REGISTER.getScriptEngine();
 
 	private final String expression;
 

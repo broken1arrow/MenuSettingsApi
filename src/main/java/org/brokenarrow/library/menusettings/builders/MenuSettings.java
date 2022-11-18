@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 
-import static org.brokenarrow.library.menusettings.RegisterMenuAddon.setPlaceholders;
+import static org.brokenarrow.library.menusettings.MenuSettingsAddon.setPlaceholders;
 
 public final class MenuSettings {
 	private final int menuSize;

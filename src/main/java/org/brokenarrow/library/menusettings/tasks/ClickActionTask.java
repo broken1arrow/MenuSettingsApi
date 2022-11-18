@@ -1,5 +1,10 @@
 package org.brokenarrow.library.menusettings.tasks;
 
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.title.Title;
+import org.brokenarrow.library.menusettings.MenuDataRegister;
 import org.brokenarrow.library.menusettings.clickactions.CommandActionType;
 import org.brokenarrow.library.menusettings.utillity.SoundUtillity;
 import org.bukkit.Bukkit;
@@ -10,9 +15,11 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import java.util.logging.Level;
 
 import static org.broken.lib.rbg.TextTranslator.toSpigotFormat;
-import static org.brokenarrow.library.menusettings.RegisterMenuAddon.*;
+import static org.brokenarrow.library.menusettings.MenuSettingsAddon.getLogger;
+import static org.brokenarrow.library.menusettings.MenuSettingsAddon.setPlaceholders;
 import static org.brokenarrow.library.menusettings.clickactions.CommandActionType.TAKE_EXP;
 import static org.brokenarrow.library.menusettings.utillity.ExperienceUtillity.setExp;
+import static org.brokenarrow.library.menusettings.utillity.RunTimedTask.runTaskLater;
 
 
 public class ClickActionTask {
@@ -21,7 +28,7 @@ public class ClickActionTask {
 	private String executable;
 	private String delay;
 	private String chance;
-
+	private final MenuDataRegister menuDataRegister = MenuDataRegister.getInstance();
 
 	public ClickActionTask(CommandActionType actionType) {
 		this.actionType = actionType;
@@ -31,12 +38,38 @@ public class ClickActionTask {
 		if (player == null) return;
 		String executable = setPlaceholders(player, this.getExecutable());
 
+
 		switch (this.actionType) {
 			case CONSOLE:
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), executable);
 				break;
 			case PLAYER:
 				player.chat("/" + executable);
+				break;
+			case MINI_MESSAGE:
+				menuDataRegister.getAudiences().player(player).sendMessage(MiniMessage.miniMessage().deserialize(executable));
+				break;
+			case MINI_BROADCAST:
+				menuDataRegister.getAudiences().all().sendMessage(MiniMessage.miniMessage().deserialize(executable));
+				break;
+			case MINI_BOSSBAR:
+				BossBar bossBar = BossBar.bossBar(MiniMessage.miniMessage().deserialize(executable), 0, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
+				menuDataRegister.getAudiences().player(player).showBossBar(bossBar);
+				runTaskLater(20 * 5, false, () -> menuDataRegister.getAudiences().player(player).hideBossBar(bossBar));
+				break;
+			case MINI_ACTIONBAR:
+				menuDataRegister.getAudiences().player(player).sendActionBar(MiniMessage.miniMessage().deserialize(executable));
+				break;
+			case MINI_TITLE:
+				String[] splited = null;
+				if (executable.contains("|"))
+					splited = executable.split("\\|");
+				String message = splited != null ? splited[0] : executable;
+				String submessage = splited != null && splited.length == 2 ? splited[1] : "";
+				final Component mainTitle = MiniMessage.miniMessage().deserialize(message);
+				final Component subtitle = MiniMessage.miniMessage().deserialize(submessage);
+				final Title title = Title.title(mainTitle, subtitle);
+				menuDataRegister.getAudiences().player(player).showTitle(title);
 				break;
 			case PLACEHOLDER:
 				setPlaceholders(player, executable);
@@ -83,10 +116,10 @@ public class ClickActionTask {
 
 				break;
 			case TAKE_MONEY:
-				getEconomyProvider().withdrawAmont(player.getUniqueId(), Double.parseDouble(executable));
+				menuDataRegister.getEconomyProvider().withdrawAmont(player.getUniqueId(), Double.parseDouble(executable));
 				break;
 			case GIVE_MONEY:
-				getEconomyProvider().depositAmont(player.getUniqueId(), Double.parseDouble(executable));
+				menuDataRegister.getEconomyProvider().depositAmont(player.getUniqueId(), Double.parseDouble(executable));
 				break;
 			case TAKE_EXP:
 			case GIVE_EXP:
@@ -96,10 +129,10 @@ public class ClickActionTask {
 				setExp(player, executable);
 				break;
 			case TAKE_PERM:
-				getPermissionProvider().setPermission(player, executable);
+				menuDataRegister.getPermissionProvider().setPermission(player, executable);
 				break;
 			case GIVE_PERM:
-				getPermissionProvider().removePermission(player, executable);
+				menuDataRegister.getPermissionProvider().removePermission(player, executable);
 				break;
 		}
 	}
@@ -134,7 +167,7 @@ public class ClickActionTask {
 			if (chance >= 100.0) {
 				return true;
 			} else {
-				double random = Double.parseDouble(formatDubbleDecimal().format(getRandomUntility().randomDouble()));
+				double random = Double.parseDouble(menuDataRegister.getDecimalFormat().format(menuDataRegister.getRandomUntility().randomDouble()));
 				return random <= chance;
 			}
 		}

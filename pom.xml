@@ -12,6 +12,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <source>8</source>
         <target>8</target>
+        <main.class>org.brokenarrow.library.menusettings.MenuSettingsAddon</main.class>
     </properties>
 
     <repositories>
@@ -77,12 +78,24 @@
             <version>2.11.0</version>
             <scope>compile</scope>
         </dependency>
-        <!--       <dependency>
-                   <groupId>org.openjdk.nashorn</groupId>
-                   <artifactId>nashorn-core</artifactId>
-                   <version>15.4</version>
-                   <scope>provided</scope>
-               </dependency>-->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-api</artifactId>
+            <version>4.11.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-platform-bukkit</artifactId>
+            <version>4.1.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-minimessage</artifactId>
+            <version>4.11.0</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>com.github.broken1arrow</groupId>
             <artifactId>NashornPlusAPI</artifactId>
@@ -129,33 +142,6 @@
                 </configuration>
             </plugin>
 
-
-            <!--     <plugin>
-                     <groupId>org.apache.maven.plugins</groupId>
-                     <artifactId>maven-install-plugin</artifactId>
-                     <version>2.4</version>
-                     <executions>
-                         <execution>
-                             <phase>initialize</phase>
-                             <goals>
-                                 <goal>install-file</goal>
-                             </goals>
-                             <configuration>
-                                 <file>H:/PluginsJarUseForAPI/Foundation-5.12.7.jar</file>
-                                 <groupId>com.fundation.id</groupId>
-                                 <artifactId>fundation</artifactId>
-                                 <version>5.12.7</version>
-                                 <packaging>jar</packaging>
-                             </configuration>
-                         </execution>
-                     </executions>
-                 </plugin>-->
-
-
-            <!--
-                        The second plugin is the shade plugin, packaging every library with
-                        the "compile" scope (see dependencies)
-                        -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -184,11 +170,14 @@
                                 <includes>
                                     <include>broken_MenuAPI:*</include>
                                     <include>com.github.broken1arrow.Item-NBT-API:item-nbt-api:*</include>
-                                    <!--                   <include>org.openjdk.nashorn:*</include>
-                                                       <include>org.ow2.asm:*</include>-->
-                                    <!-- <include>broken_NBT:*</include>-->
+                                    <include>net.kyori:*</include>
                                     <include>com.github.broken1arrow:*</include>
                                 </includes>
+                                <excludes>
+                                    <exclude>net.kyori:adventure-platform-fabric</exclude>
+                                    <exclude>net.kyori:adventure-text-serializer-gson-legacy</exclude>
+                                    <exclude>net.kyori:adventure-inventory</exclude>
+                                </excludes>
                             </artifactSet>
                             <relocations>
                                 <!-- <relocation>
@@ -199,26 +188,20 @@
                                     <pattern>org.brokenarrow.menu</pattern>
                                     <shadedPattern>${project.groupId}.${project.artifactId}.MenuAPI</shadedPattern>
                                 </relocation>
-                                <!--                                <relocation>
-                                                                    <pattern>org.openjdk.nashorn.api</pattern>
-                                                                    <shadedPattern>${project.groupId}.${project.artifactId}.nashorn</shadedPattern>
-                                                                </relocation>
-                                                                <relocation>
-                                                                    <pattern>org.openjdk.nashorn.internal</pattern>
-                                                                    <shadedPattern>${project.groupId}.${project.artifactId}.nashorn</shadedPattern>
-                                                                </relocation>
-                                                                <relocation>
-                                                                    <pattern>org.objectweb.asm</pattern>
-                                                                    <shadedPattern>${project.groupId}.${project.artifactId}.asm</shadedPattern>
-                                                                </relocation>
-                                                                <relocation>
-                                                                    <pattern>org.openjdk.nashorn.tools</pattern>
-                                                                    <shadedPattern>${project.groupId}.${project.artifactId}.nashorn</shadedPattern>
-                                                                </relocation>-->
+                                <relocation>
+                                    <pattern>net.kyori</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.minimsg</shadedPattern>
+                                    <excludes>
+                                        <exclude>net.kyori:adventure-nbt</exclude>
+                                        <exclude>net.kyori:adventure-nbt-api</exclude>
+                                        <exclude>net.kyori:adventure-inventory</exclude>
+                                    </excludes>
+                                </relocation>
                                 <relocation>
                                     <pattern>de.tr7zw</pattern>
                                     <shadedPattern>${project.groupId}.${project.artifactId}.nbt</shadedPattern>
                                 </relocation>
+
                                 <relocation>
                                     <pattern>org.broken.lib</pattern>
                                     <shadedPattern>${project.groupId}.${project.artifactId}.rbglib</shadedPattern>

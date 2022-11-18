@@ -3,9 +3,14 @@ package org.brokenarrow.library.menusettings.utillity;
 import com.google.common.base.Enums;
 import de.tr7zw.changeme.nbtapi.metodes.RegisterNbtAPI;
 import org.broken.lib.rbg.TextTranslator;
+import org.brokenarrow.library.menusettings.MenuDataRegister;
 import org.brokenarrow.library.menusettings.builders.ItemWrapper;
 import org.brokenarrow.library.menusettings.exceptions.Valid;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Banner;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.banner.Pattern;
@@ -13,16 +18,25 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.*;
+import org.bukkit.inventory.meta.BannerMeta;
+import org.bukkit.inventory.meta.BlockStateMeta;
+import org.bukkit.inventory.meta.FireworkEffectMeta;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
-import static org.brokenarrow.library.menusettings.RegisterMenuAddon.*;
+import static org.brokenarrow.library.menusettings.MenuSettingsAddon.*;
 
 /**
  * Create items and also count number of items of
@@ -30,7 +44,7 @@ import static org.brokenarrow.library.menusettings.RegisterMenuAddon.*;
  */
 
 public class CreateItemStack {
-
+	private final MenuDataRegister menuDataRegister = MenuDataRegister.getInstance();
 	private final ItemStack itemStack;
 	private final Material matrial;
 	private final String stringItem;
@@ -757,7 +771,7 @@ public class CreateItemStack {
 	 */
 	public ItemStack makeItemStack() {
 		ItemStack itemstack = checkTypeOfItem();
-		RegisterNbtAPI nbtApi = getNbtApi();
+		RegisterNbtAPI nbtApi = menuDataRegister.getNbtApi();
 
 		if (itemstack != null && itemstack.getType() != Material.AIR) {
 			if (!this.keepOldMeta)
@@ -800,7 +814,7 @@ public class CreateItemStack {
 	 */
 	public ItemStack[] makeItemStackArray() {
 		ItemStack itemstack = null;
-		RegisterNbtAPI nbtApi = getNbtApi();
+		RegisterNbtAPI nbtApi = menuDataRegister.getNbtApi();
 		final List<ItemStack> list = new ArrayList<>();
 
 		if (this.itemArray != null)

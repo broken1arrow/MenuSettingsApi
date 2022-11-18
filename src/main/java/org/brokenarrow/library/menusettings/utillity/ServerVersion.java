@@ -58,7 +58,7 @@ public enum ServerVersion {
 			secondNumber = secondString.substring(0, secondString.lastIndexOf("-"));
 		}
 		float version = Float.parseFloat(firstNumber + "." + secondNumber);
-		if (version < 18)
+		if (version < 20)
 			currentServerVersion = (float) Math.floor(version);
 		else
 			currentServerVersion = version;

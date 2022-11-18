@@ -16,13 +16,18 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.brokenarrow.library.menusettings.RegisterMenuAddon.getLogger;
+import static org.brokenarrow.library.menusettings.MenuSettingsAddon.getLogger;
 
 public final class GetCollections {
 	public static final java.util.regex.Pattern DELAY_MATCH = java.util.regex.Pattern.compile("<delay=([^<>]+)>", java.util.regex.Pattern.CASE_INSENSITIVE);
