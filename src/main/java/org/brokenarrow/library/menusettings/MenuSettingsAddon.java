@@ -46,6 +46,7 @@ public final class MenuSettingsAddon extends JavaPlugin {
 			PLUGIN.getLogger().log(Level.WARNING, "You has not added PlaceholderAPI in plugins folder. The api will not work as it should (no placeholders will be translated)");
 		this.getLogger().log(Level.INFO, "Has check if PlaceholderAPI is enable and exist.");
 		this.getLogger().log(Level.INFO, "Has finish loading. To use the api, dont forget register in onEnable method in your plugin.");
+		menuDataRegister.setAudiences((net.kyori.adventure.platform.bukkit.BukkitAudiences.create(this)));
 	}
 
 	@Override
@@ -92,8 +93,7 @@ public final class MenuSettingsAddon extends JavaPlugin {
 	public MenuDataRegister registerPlugin(Plugin plugin, BukkitAudiences audiences, String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
 		MenuCache menuCache = new MenuCache(plugin, name, makeOneFile, shallGenerateDefultFiles);
 		menuDataRegister.addMenuCache(plugin, menuCache);
-		menuDataRegister.setAudiences((audiences != null ? audiences : net.kyori.adventure.platform.bukkit.BukkitAudiences.create(this)));
-
+		
 		return menuDataRegister;
 	}
 
