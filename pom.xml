@@ -6,7 +6,7 @@
 
     <groupId>org.lib</groupId>
     <artifactId>MenuSettingsApi</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.4-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -57,12 +57,12 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.9.0</version>
+            <version>2.10.1</version>
         </dependency>
         <dependency>
             <groupId>com.github.broken1arrow</groupId>
             <artifactId>RBG-Gradients</artifactId>
-            <version>0.16</version>
+            <version>0.24</version>
             <scope>compile</scope>
         </dependency>
 
@@ -81,19 +81,19 @@
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-api</artifactId>
-            <version>4.11.0</version>
+            <version>4.13.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-platform-bukkit</artifactId>
-            <version>4.1.1</version>
+            <version>4.3.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
-            <version>4.11.0</version>
+            <version>4.13.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
