@@ -6,12 +6,16 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
 import org.brokenarrow.library.menusettings.MenuDataRegister;
 import org.brokenarrow.library.menusettings.clickactions.CommandActionType;
+import org.brokenarrow.library.menusettings.utillity.SkullCreator;
 import org.brokenarrow.library.menusettings.utillity.SoundUtillity;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import static org.broken.lib.rbg.TextTranslator.toSpigotFormat;
@@ -133,6 +137,27 @@ public class ClickActionTask {
 				break;
 			case GIVE_PERM:
 				menuDataRegister.getPermissionProvider().removePermission(player, executable);
+				break;
+			case GIVE_SKULL:
+				ItemStack itemStack = null;
+				if (executable.startsWith("uuid="))
+					itemStack = SkullCreator.itemFromUuid(UUID.fromString(executable.replaceFirst("uuid=", "")));
+				else if (executable.startsWith("base64="))
+					itemStack = SkullCreator.itemFromBase64(executable.replaceFirst("base64=", ""));
+				else if (executable.startsWith("url="))
+					itemStack = SkullCreator.itemFromUrl(executable.replaceFirst("url=", ""));
+				else if (executable.startsWith("player_skull=")) {
+					itemStack = SkullCreator.itemFromUuid(player.getUniqueId());
+				}
+				if (itemStack != null) {
+					Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(itemStack);
+					if (!leftOvers.isEmpty()) {
+						leftOvers.values().forEach(stack -> {
+							if (stack != null)
+								player.getWorld().dropItem(player.getLocation(), stack);
+						});
+					}
+				}
 				break;
 		}
 	}

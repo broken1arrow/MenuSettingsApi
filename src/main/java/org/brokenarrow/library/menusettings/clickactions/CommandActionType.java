@@ -23,6 +23,7 @@ public enum CommandActionType {
 	GIVE_EXP("[giveexp]"),
 	TAKE_PERM("[takepermission]"),
 	GIVE_PERM("[givepermission]"),
+	GIVE_SKULL("[giveskull]"),
 	PLACEHOLDER("[placeholder]");
 	private final String identifier;
 
