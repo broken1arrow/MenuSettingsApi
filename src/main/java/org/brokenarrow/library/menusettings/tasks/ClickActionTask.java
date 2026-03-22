@@ -223,8 +223,9 @@ public class ClickActionTask {
         int end = executable.indexOf("}");
         String displayname = "";
         if (start >= 0 && end > start) {
-            displayname = formatColors(executable.substring(start + 14, end));
-            executable = executable.substring(end + 1);
+			String rawName = executable.substring(start + 14, end); // "&6Guld"
+			executable = executable.replace("{display_name=" + rawName + "}", "").trim();
+			displayname = formatColors(rawName);
         }
         ItemStack itemStack = getSkull(player, executable);
         if (itemStack != null) {
@@ -253,9 +254,9 @@ public class ClickActionTask {
             int start = executable.indexOf("{");
             int end = executable.indexOf("}");
 			if (start >= 0 && end > start) {
-                String key = executable.substring(start + 1, end);
-                Template template = templateCache.getTemplet(key.toLowerCase());
-                final String remaining = (executable.length() > end + 1) ? executable.substring(end + 1).trim() : "";
+				final String key = executable.substring(start + 1, end);
+				final String remaining = executable.replace("{" + key + "}", "").trim();
+				final Template template = templateCache.getTemplet(key.toLowerCase());
                 int amount = 1;
                 if (!remaining.isEmpty()) {
                     try {
