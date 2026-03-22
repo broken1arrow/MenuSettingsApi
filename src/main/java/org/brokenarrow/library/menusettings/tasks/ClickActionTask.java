@@ -23,6 +23,7 @@ import static org.broken.lib.rbg.TextTranslator.toSpigotFormat;
 import static org.brokenarrow.library.menusettings.MenuSettingsAddon.getLogger;
 import static org.brokenarrow.library.menusettings.MenuSettingsAddon.setPlaceholders;
 import static org.brokenarrow.library.menusettings.clickactions.CommandActionType.TAKE_EXP;
+import static org.brokenarrow.library.menusettings.utillity.CreateItemStack.formatColors;
 import static org.brokenarrow.library.menusettings.utillity.ExperienceUtillity.setExp;
 import static org.brokenarrow.library.menusettings.utillity.RunTimedTask.runTaskLater;
 
@@ -144,15 +145,11 @@ public class ClickActionTask {
 				int start = executable.indexOf("{display_name=");
 				int end = executable.indexOf("}");
 				String displayname = "";
-				System.out.println("start " + start);
-				System.out.println("start " +  end );
-				if(start >= 0 && end > start) {
-					displayname = executable.substring(start + 14, end);
-					executable = executable.substring(end+1);
+				if (start >= 0 && end > start) {
+					displayname = formatColors(setPlaceholders(player, executable.substring(start + 14, end)));
+					executable = executable.substring(end + 1);
 				}
-				System.out.println("displayname " +  displayname );
 
-				System.out.println("dexecutable " +  executable);
 				if (executable.startsWith("uuid="))
 					itemStack = SkullCreator.itemFromUuid(UUID.fromString(executable.replaceFirst("uuid=", "")));
 				else if (executable.startsWith("base64="))
@@ -162,6 +159,7 @@ public class ClickActionTask {
 				else if (executable.startsWith("player_skull=")) {
 					itemStack = SkullCreator.itemFromUuid(player.getUniqueId());
 				}
+
 				if (itemStack != null) {
 					ItemMeta meta = itemStack.getItemMeta();
 					if(meta != null){
