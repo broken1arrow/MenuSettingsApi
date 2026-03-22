@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.brokenarrow.library.menusettings.settings.GetCollections.parseSlotsFromString;
-import static org.brokenarrow.library.menusettings.settings.GetCollections.sortList;
+import static org.brokenarrow.library.menusettings.settings.ConfigParsingUtils.parseSlotsFromString;
+import static org.brokenarrow.library.menusettings.settings.ConfigParsingUtils.sortList;
 
 public class MenuCache extends SimpleYamlHelper {
 
@@ -52,17 +52,16 @@ public class MenuCache extends SimpleYamlHelper {
 				path = "Menus." + key;
 
 			if (!isSingelFile())
-				menuCache.put(getNameOfFile(file.getName()), chacheYamlData(buttonsCache, path));
+				menuCache.put(getNameOfFile(file.getName()), parseMenuSettings(buttonsCache, path));
 			else
-				menuCache.put(key, chacheYamlData(buttonsCache, path));
+				menuCache.put(key, parseMenuSettings(buttonsCache, path));
 		}
-		System.out.println("menuCache menuCache " + menuCache.keySet());
 	}
 
-	public MenuSettings chacheYamlData(Map<List<Integer>, List<ButtonSettings>> buttonsCache, String key) {
+	public MenuSettings parseMenuSettings(Map<List<Integer>, List<ButtonSettings>> buttonsCache, String key) {
 
 		FileConfiguration config = getCustomConfig();
-		GetYamlSettings yamlSettings = new GetYamlSettings(config);
+		YamlConfigMapper yamlConfigMapper = new YamlConfigMapper(config);
 		String menuType = config.getString(key + ".Menu_Type");
 		int menuSize = config.getInt(key + ".Menu_Size");
 		String menuTitle = config.getString(key + ".Menu_Title");
@@ -95,7 +94,7 @@ public class MenuCache extends SimpleYamlHelper {
 
 
 				ButtonSettings.Builder builder = new ButtonSettings.Builder()
-						.setButtonItem(yamlSettings.getItem(buttonPath, false))
+						.setButtonItem(yamlConfigMapper.getItem(buttonPath, false))
 						.setUpdateButton(updateButton)
 						.setRefreshAllButtons(refreshButtons)
 						.setRefreshClickedButton(refreshClickedButton)
@@ -105,19 +104,19 @@ public class MenuCache extends SimpleYamlHelper {
 						.setOpenNewMenu(menuToOpen)
 						.setCheckArmor(itemfromarmorslot)
 						.setCheckHand(itemfromhand)
-						.setClickrequirement(yamlSettings.checkRequirements(buttonPath, "Click_requirement"))
-						.setLeftClickRequirement(yamlSettings.checkRequirements(buttonPath, "Left_click_requirement"))
-						.setRightClickRequirement(yamlSettings.checkRequirements(buttonPath, "Right_click_requirement"))
-						.setMiddleClickRequirement(yamlSettings.checkRequirements(buttonPath, "Middle_click_requirement"))
-						.setShiftLeftClickRequirement(yamlSettings.checkRequirements(buttonPath, "Shift_left_click_requirement"))
-						.setShiftRightClickRequirement(yamlSettings.checkRequirements(buttonPath, "Shift_right_click_requirement"))
-						.setViewRequirement(yamlSettings.checkRequirements(buttonPath, "View_requirement"))
-						.setClickActionHandler(yamlSettings.checkCommands(buttonPath, "Click_commands"))
-						.setLeftClickActionHandler(yamlSettings.checkCommands(buttonPath, "Left_click_commands"))
-						.setRightClickActionHandler(yamlSettings.checkCommands(buttonPath, "Right_click_commands"))
-						.setMiddleClickActionHandler(yamlSettings.checkCommands(buttonPath, "Middle_click_commands"))
-						.setShiftLeftClickActionHandler(yamlSettings.checkCommands(buttonPath, "Left_shift_click_commands"))
-						.setShiftRightClickActionHandler(yamlSettings.checkCommands(buttonPath, "Right_shift_click_commands"));
+						.setClickrequirement(yamlConfigMapper.checkRequirements(buttonPath, "Click_requirement"))
+						.setLeftClickRequirement(yamlConfigMapper.checkRequirements(buttonPath, "Left_click_requirement"))
+						.setRightClickRequirement(yamlConfigMapper.checkRequirements(buttonPath, "Right_click_requirement"))
+						.setMiddleClickRequirement(yamlConfigMapper.checkRequirements(buttonPath, "Middle_click_requirement"))
+						.setShiftLeftClickRequirement(yamlConfigMapper.checkRequirements(buttonPath, "Shift_left_click_requirement"))
+						.setShiftRightClickRequirement(yamlConfigMapper.checkRequirements(buttonPath, "Shift_right_click_requirement"))
+						.setViewRequirement(yamlConfigMapper.checkRequirements(buttonPath, "View_requirement"))
+						.setClickActionHandler(yamlConfigMapper.checkCommands(buttonPath, "Click_commands"))
+						.setLeftClickActionHandler(yamlConfigMapper.checkCommands(buttonPath, "Left_click_commands"))
+						.setRightClickActionHandler(yamlConfigMapper.checkCommands(buttonPath, "Right_click_commands"))
+						.setMiddleClickActionHandler(yamlConfigMapper.checkCommands(buttonPath, "Middle_click_commands"))
+						.setShiftLeftClickActionHandler(yamlConfigMapper.checkCommands(buttonPath, "Left_shift_click_commands"))
+						.setShiftRightClickActionHandler(yamlConfigMapper.checkCommands(buttonPath, "Right_shift_click_commands"));
 				List<Integer> slotsList = parseSlotsFromString(slot);
 
 				List<ButtonSettings> oldbuttonsCache = buttonsCache.get(slotsList);
@@ -138,7 +137,7 @@ public class MenuCache extends SimpleYamlHelper {
 				.setGlobalDelay(delay)
 				.setMenuTitle(menuTitle)
 				.setSound(sound)
-				.setOpenRequirement(yamlSettings.checkRequirements("Menus." + key, "Open_requirement"))
+				.setOpenRequirement(yamlConfigMapper.checkRequirements("Menus." + key, "Open_requirement"))
 				.setUpdateButtons(updateButtons);
 
 		return builder.build();

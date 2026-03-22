@@ -185,6 +185,10 @@
                                     <include>broken_MenuAPI:*</include>
                                     <include>org.broken.arrow.library:nbt</include>
                                     <include>net.kyori:*</include>
+                                    <include>de.tr7zw:item-nbt-api</include>
+                                    <include>org.broken.arrow.library:item-creator</include>
+                                    <include>org.broken.arrow.library:log-and-validate</include>
+                                    <include>org.broken.arrow.library:version</include>
                                     <include>com.github.broken1arrow:*</include>
                                 </includes>
                                 <excludes>
@@ -213,6 +217,10 @@
                                 </relocation>
                                 <relocation>
                                     <pattern>de.tr7zw</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.nbt</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>de.tr7zw.changeme.nbtapi</pattern>
                                     <shadedPattern>${project.groupId}.${project.artifactId}.nbt</shadedPattern>
                                 </relocation>
 

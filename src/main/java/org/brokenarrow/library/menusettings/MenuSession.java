@@ -22,9 +22,9 @@ import static org.brokenarrow.library.menusettings.MenuSettingsAddon.setPlacehol
 /**
  * This help class, help you get both buttons and requirements needed for open menu or click on a item.
  */
-public final class GetMenuButtonsData {
+public final class MenuSession {
 	private final MenuSettings menuSettings;
-	private final Player wiver;
+	private final Player viewer;
 	private final String menuName;
 	private final MenuDataRegister menuDataRegister = MenuDataRegister.getInstance();
 
@@ -36,7 +36,7 @@ public final class GetMenuButtonsData {
 	 * @param player   the player some have the menu open.
 	 */
 
-	public GetMenuButtonsData(@NotNull Plugin plugin, @NotNull final String menuName, @NotNull final Player player) {
+	public MenuSession(@NotNull Plugin plugin, @NotNull final String menuName, @NotNull final Player player) {
 		Valid.checkNotNull(this.menuDataRegister, "MenuSettingsAddon class is not registed.");
 		MenuCache menuCache = this.menuDataRegister.getMenuCache(plugin);
 		Valid.checkNotNull(menuCache, "the plugin is not registed, so can't load the settings");
@@ -47,7 +47,7 @@ public final class GetMenuButtonsData {
 		} else
 			this.menuSettings = null;
 
-		this.wiver = player;
+		this.viewer = player;
 	}
 
 	/**
@@ -85,8 +85,8 @@ public final class GetMenuButtonsData {
 		return this.getItemSettings().keySet().stream().flatMap(List::stream).collect(Collectors.toSet());
 	}
 
-	public Player getWiver() {
-		return wiver;
+	public Player getViewer() {
+		return viewer;
 	}
 
 	/**
@@ -96,14 +96,14 @@ public final class GetMenuButtonsData {
 	 * @return true if player meet the requirements.
 	 */
 	public boolean checkOpenRequirements(String bypassPermission) {
-		if (this.wiver != null && bypassPermission != null && !bypassPermission.isEmpty() && this.wiver.hasPermission(bypassPermission))
+		if (this.viewer != null && bypassPermission != null && !bypassPermission.isEmpty() && this.viewer.hasPermission(bypassPermission))
 			return true;
 		RequirementsLogic openRequirement = this.getMenuSettings().getOpenRequirement();
 		if (openRequirement != null) {
-			if (openRequirement.estimate(this.wiver)) return true;
+			if (openRequirement.estimate(this.viewer)) return true;
 
 			if (openRequirement.getDenyCommands() != null)
-				openRequirement.runClickActionTask(openRequirement.getDenyCommands(), this.wiver);
+				openRequirement.runClickActionTask(openRequirement.getDenyCommands(), this.viewer);
 			return false;
 		}
 		return true;
@@ -124,22 +124,23 @@ public final class GetMenuButtonsData {
 
 		if (buttonSettings.getClickActionHandler() != null) {
 			RequirementsLogic clickrequirement = buttonSettings.getClickRequirement();
-			if (clickrequirement != null && !clickrequirement.estimate(this.wiver)) {
-				clickrequirement.runClickActionTask(clickrequirement.getDenyCommands(), this.wiver);
+			if (clickrequirement != null && !clickrequirement.estimate(this.viewer)) {
+				clickrequirement.runClickActionTask(clickrequirement.getDenyCommands(), this.viewer);
 				return false;
 			}
-			buttonSettings.getClickActionHandler().runClickActionTask(this.wiver);
+			buttonSettings.getClickActionHandler().runClickActionTask(this.viewer);
 			return true;
 		}
 		if (checkShiftClickRequirements(buttonSettings, clickType)) return true;
 		if (checkRightAndLeftClickRequirements(buttonSettings, clickType)) return true;
 
 		if (clickType == ClickType.MIDDLE && buttonSettings.getMiddleClickActionHandler() != null) {
-			if (buttonSettings.getMiddleClickRequirement() != null && !buttonSettings.getMiddleClickRequirement().estimate(this.wiver)) {
-				buttonSettings.getShiftRightClickRequirement().runClickActionTask(buttonSettings.getShiftRightClickRequirement().getDenyCommands(), this.wiver);
+			final RequirementsLogic middleClickRequirement = buttonSettings.getMiddleClickRequirement();
+			if (middleClickRequirement != null && !middleClickRequirement.estimate(this.viewer)) {
+				middleClickRequirement.runClickActionTask(middleClickRequirement.getDenyCommands(), this.viewer);
 				return false;
 			}
-			buttonSettings.getMiddleClickActionHandler().runClickActionTask(this.wiver);
+			buttonSettings.getMiddleClickActionHandler().runClickActionTask(this.viewer);
 			return true;
 		}
 		return false;
@@ -169,21 +170,21 @@ public final class GetMenuButtonsData {
 
 		if (clickType.isRightClick() && buttonSettings.getRightClickActionHandler() != null) {
 			RequirementsLogic rightClickRequirement = buttonSettings.getRightClickRequirement();
-			if (rightClickRequirement != null && !rightClickRequirement.estimate(this.wiver)) {
-				rightClickRequirement.runClickActionTask(rightClickRequirement.getDenyCommands(), this.wiver);
+			if (rightClickRequirement != null && !rightClickRequirement.estimate(this.viewer)) {
+				rightClickRequirement.runClickActionTask(rightClickRequirement.getDenyCommands(), this.viewer);
 				return false;
 			}
-			buttonSettings.getRightClickActionHandler().runClickActionTask(this.wiver);
+			buttonSettings.getRightClickActionHandler().runClickActionTask(this.viewer);
 			return true;
 
 		}
 		if (clickType.isLeftClick() && buttonSettings.getLeftClickActionHandler() != null) {
 			RequirementsLogic leftClickRequirement = buttonSettings.getLeftClickRequirement();
-			if (leftClickRequirement != null && !leftClickRequirement.estimate(this.wiver)) {
-				leftClickRequirement.runClickActionTask(leftClickRequirement.getDenyCommands(), this.wiver);
+			if (leftClickRequirement != null && !leftClickRequirement.estimate(this.viewer)) {
+				leftClickRequirement.runClickActionTask(leftClickRequirement.getDenyCommands(), this.viewer);
 				return false;
 			}
-			buttonSettings.getLeftClickActionHandler().runClickActionTask(this.wiver);
+			buttonSettings.getLeftClickActionHandler().runClickActionTask(this.viewer);
 			return true;
 		}
 		return false;
@@ -194,33 +195,33 @@ public final class GetMenuButtonsData {
 
 		if (clickType.isLeftClick() && buttonSettings.getShiftLeftClickActionHandler() != null) {
 			RequirementsLogic leftClickRequirement = buttonSettings.getShiftLeftClickRequirement();
-			if (leftClickRequirement != null && !leftClickRequirement.estimate(this.wiver)) {
-				leftClickRequirement.runClickActionTask(buttonSettings.getLeftClickRequirement().getDenyCommands(), this.wiver);
+			if (leftClickRequirement != null && !leftClickRequirement.estimate(this.viewer)) {
+				leftClickRequirement.runClickActionTask(buttonSettings.getLeftClickRequirement().getDenyCommands(), this.viewer);
 				return false;
 			}
-			buttonSettings.getShiftLeftClickActionHandler().runClickActionTask(this.wiver);
+			buttonSettings.getShiftLeftClickActionHandler().runClickActionTask(this.viewer);
 			return true;
 		}
 		if (clickType.isRightClick() && buttonSettings.getShiftRightClickActionHandler() != null) {
 			RequirementsLogic rightClickRequirement = buttonSettings.getShiftRightClickRequirement();
-			if (rightClickRequirement != null && !rightClickRequirement.estimate(this.wiver)) {
-				rightClickRequirement.runClickActionTask(buttonSettings.getShiftRightClickRequirement().getDenyCommands(), this.wiver);
+			if (rightClickRequirement != null && !rightClickRequirement.estimate(this.viewer)) {
+				rightClickRequirement.runClickActionTask(rightClickRequirement.getDenyCommands(), this.viewer);
 				return false;
 			}
-			buttonSettings.getShiftRightClickActionHandler().runClickActionTask(this.wiver);
+			buttonSettings.getShiftRightClickActionHandler().runClickActionTask(this.viewer);
 			return true;
 		}
 		return false;
 	}
 
 	public String setPlaceholder(String string) {
-		return setPlaceholders(getWiver(), string);
+		return setPlaceholders(getViewer(), string);
 	}
 
 	public boolean checkRequirement(RequirementsLogic viewRequirement) {
 		if (viewRequirement == null)
 			return true;
-		return viewRequirement.estimate(this.wiver);
+		return viewRequirement.estimate(this.viewer);
 	}
 
 	public List<ButtonSettings> getButtons(int slot) {

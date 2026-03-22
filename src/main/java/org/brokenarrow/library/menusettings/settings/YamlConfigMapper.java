@@ -13,12 +13,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.util.*;
 
 import static org.brokenarrow.library.menusettings.requirements.RequirementType.*;
-import static org.brokenarrow.library.menusettings.settings.GetCollections.*;
+import static org.brokenarrow.library.menusettings.settings.ConfigParsingUtils.*;
 
-public final class GetYamlSettings {
+public final class YamlConfigMapper {
 	private final FileConfiguration config;
 
-	public GetYamlSettings(FileConfiguration config) {
+	public YamlConfigMapper(FileConfiguration config) {
 		this.config = config;
 	}
 

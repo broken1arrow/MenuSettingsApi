@@ -13,6 +13,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Map;
 import java.util.UUID;
@@ -140,6 +141,18 @@ public class ClickActionTask {
 				break;
 			case GIVE_SKULL:
 				ItemStack itemStack = null;
+				int start = executable.indexOf("{display_name=");
+				int end = executable.indexOf("}");
+				String displayname = "";
+				System.out.println("start " + start);
+				System.out.println("start " +  end );
+				if(start >= 0 && end > start) {
+					displayname = executable.substring(start + 14, end);
+					executable = executable.substring(end+1);
+				}
+				System.out.println("displayname " +  displayname );
+
+				System.out.println("dexecutable " +  executable);
 				if (executable.startsWith("uuid="))
 					itemStack = SkullCreator.itemFromUuid(UUID.fromString(executable.replaceFirst("uuid=", "")));
 				else if (executable.startsWith("base64="))
@@ -150,6 +163,11 @@ public class ClickActionTask {
 					itemStack = SkullCreator.itemFromUuid(player.getUniqueId());
 				}
 				if (itemStack != null) {
+					ItemMeta meta = itemStack.getItemMeta();
+					if(meta != null){
+						meta.setDisplayName(displayname);
+					}
+					itemStack.setItemMeta(meta);
 					Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(itemStack);
 					if (!leftOvers.isEmpty()) {
 						leftOvers.values().forEach(stack -> {
