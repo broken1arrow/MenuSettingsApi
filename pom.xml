@@ -82,6 +82,12 @@
         </dependency>
         <dependency>
             <groupId>org.broken.arrow.library</groupId>
+            <artifactId>item-creator</artifactId>
+            <version>0.130</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.broken.arrow.library</groupId>
             <artifactId>nbt</artifactId>
             <version>0.130</version>
             <scope>compile</scope>
@@ -177,7 +183,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>broken_MenuAPI:*</include>
-                                    <include>com.github.broken1arrow.Item-NBT-API:item-nbt-api:*</include>
+                                    <include>org.broken.arrow.library:nbt</include>
                                     <include>net.kyori:*</include>
                                     <include>com.github.broken1arrow:*</include>
                                 </includes>
