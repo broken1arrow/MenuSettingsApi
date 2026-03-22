@@ -146,7 +146,7 @@ public class ClickActionTask {
 				int end = executable.indexOf("}");
 				String displayname = "";
 				if (start >= 0 && end > start) {
-					displayname = formatColors(setPlaceholders(player, executable.substring(start + 14, end)));
+					displayname = formatColors(executable.substring(start + 14, end));
 					executable = executable.substring(end + 1);
 				}
 
