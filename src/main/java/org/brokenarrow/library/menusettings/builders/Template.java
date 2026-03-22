@@ -49,4 +49,15 @@ public class Template {
     public void setTexture(final String texture) {
         this.texture = texture;
     }
+
+    @Override
+    public String toString() {
+        return "Template{" +
+                "matrial='" + matrial + '\'' +
+                ", amount=" + amount +
+                ", name='" + name + '\'' +
+                ", lore=" + lore +
+                ", texture='" + texture + '\'' +
+                '}';
+    }
 }

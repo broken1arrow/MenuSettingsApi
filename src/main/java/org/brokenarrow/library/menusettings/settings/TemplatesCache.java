@@ -22,7 +22,7 @@ public class TemplatesCache extends SimpleYamlHelper {
     Map<String, Template> cache = new HashMap<>();
 
     public TemplatesCache(Plugin plugin) {
-        super(plugin, "templates.yml", true);
+        super(plugin, "templates.yml", true,true);
         File file = new File(plugin.getDataFolder(), "templates.yml");
         if (!file.exists()) {
             createMissingFile(file);
@@ -47,6 +47,9 @@ public class TemplatesCache extends SimpleYamlHelper {
     protected void loadSettingsFromYaml(File file) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         ConfigurationSection configuration = yamlConfiguration.getConfigurationSection("items");
+        System.out.println("file" + file);
+        System.out.println("yamlConfiguration " + yamlConfiguration );
+        System.out.println("configuration " + configuration );
         if (configuration == null) return;
 
         for (String key : configuration.getKeys(false)) {

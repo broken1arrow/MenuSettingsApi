@@ -4,7 +4,8 @@ items:
     amount: 1
     display_name: "&cLife Juice"
   mushroom_item:
-    name: "&6Brown Mushroom"
+    display_name: "&6Brown Mushroom"
+    amount: 1
     lore:
       - "&7A fungi found in the dark."
       - "&eLore line 2"

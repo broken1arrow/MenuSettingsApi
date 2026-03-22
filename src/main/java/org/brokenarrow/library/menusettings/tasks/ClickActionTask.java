@@ -230,7 +230,11 @@ public class ClickActionTask {
         if (itemStack != null) {
             ItemMeta meta = itemStack.getItemMeta();
             if (meta != null) {
-                meta.setDisplayName(displayname);
+				if (displayname.isEmpty()) {
+					meta.setDisplayName("§fSkull");
+				} else {
+					meta.setDisplayName(displayname);
+				}
             }
             itemStack.setItemMeta(meta);
             Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(itemStack);
@@ -245,17 +249,12 @@ public class ClickActionTask {
 
     private void giveItem(@NotNull final Player player, @NotNull final String executable) {
         final TemplatesCache templateCache = menuDataRegister.getTemplate(plugin);
-		System.out.println("templateCache " + templateCache);
         if (templateCache != null) {
             int start = executable.indexOf("{");
             int end = executable.indexOf("}");
-			System.out.println("templateCache start " + start);
-			System.out.println("templateCache end " + end);
 			if (start >= 0 && end > start) {
                 String key = executable.substring(start + 1, end);
-				System.out.println("templateCache key " + key);
                 Template template = templateCache.getTemplet(key.toLowerCase());
-				System.out.println("templateCache key " + template);
                 final String remaining = (executable.length() > end + 1) ? executable.substring(end + 1).trim() : "";
                 int amount = 1;
                 if (!remaining.isEmpty()) {
