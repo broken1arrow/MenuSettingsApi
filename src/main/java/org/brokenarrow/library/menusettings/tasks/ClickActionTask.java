@@ -5,15 +5,21 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
 import org.brokenarrow.library.menusettings.MenuDataRegister;
+import org.brokenarrow.library.menusettings.builders.Template;
 import org.brokenarrow.library.menusettings.clickactions.CommandActionType;
+import org.brokenarrow.library.menusettings.settings.TemplatesCache;
 import org.brokenarrow.library.menusettings.utillity.SkullCreator;
 import org.brokenarrow.library.menusettings.utillity.SoundUtillity;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.UUID;
@@ -30,14 +36,16 @@ import static org.brokenarrow.library.menusettings.utillity.RunTimedTask.runTask
 
 public class ClickActionTask {
 
-	private final CommandActionType actionType;
+    private final Plugin plugin;
+    private final CommandActionType actionType;
 	private String executable;
 	private String delay;
 	private String chance;
 	private final MenuDataRegister menuDataRegister = MenuDataRegister.getInstance();
 
-	public ClickActionTask(CommandActionType actionType) {
-		this.actionType = actionType;
+	public ClickActionTask(final Plugin plugin,final CommandActionType actionType) {
+        this.plugin = plugin;
+        this.actionType = actionType;
 	}
 
 	public void task(Player player) {
@@ -141,44 +149,16 @@ public class ClickActionTask {
 				menuDataRegister.getPermissionProvider().removePermission(player, executable);
 				break;
 			case GIVE_SKULL:
-				ItemStack itemStack = null;
-				int start = executable.indexOf("{display_name=");
-				int end = executable.indexOf("}");
-				String displayname = "";
-				if (start >= 0 && end > start) {
-					displayname = formatColors(executable.substring(start + 14, end));
-					executable = executable.substring(end + 1);
-				}
+                giveSkullItem(player, executable);
+                break;
+            case GIVE_ITEM:
+                giveItem(player, executable);
+                break;
+        }
+    }
 
-				if (executable.startsWith("uuid="))
-					itemStack = SkullCreator.itemFromUuid(UUID.fromString(executable.replaceFirst("uuid=", "")));
-				else if (executable.startsWith("base64="))
-					itemStack = SkullCreator.itemFromBase64(executable.replaceFirst("base64=", ""));
-				else if (executable.startsWith("url="))
-					itemStack = SkullCreator.itemFromUrl(executable.replaceFirst("url=", ""));
-				else if (executable.startsWith("player_skull=")) {
-					itemStack = SkullCreator.itemFromUuid(player.getUniqueId());
-				}
 
-				if (itemStack != null) {
-					ItemMeta meta = itemStack.getItemMeta();
-					if(meta != null){
-						meta.setDisplayName(displayname);
-					}
-					itemStack.setItemMeta(meta);
-					Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(itemStack);
-					if (!leftOvers.isEmpty()) {
-						leftOvers.values().forEach(stack -> {
-							if (stack != null)
-								player.getWorld().dropItem(player.getLocation(), stack);
-						});
-					}
-				}
-				break;
-		}
-	}
-
-	public long formatDelay(Player wiver) {
+    public long formatDelay(Player wiver) {
 		if (this.getDelay() == null || this.getDelay().isEmpty()) return -1;
 		String delayTranslated = setPlaceholders(wiver, this.getDelay());
 
@@ -237,4 +217,115 @@ public class ClickActionTask {
 	public void setChance(String chance) {
 		this.chance = chance;
 	}
+
+    private void giveSkullItem(Player player, String executable) {
+        int start = executable.indexOf("{display_name=");
+        int end = executable.indexOf("}");
+        String displayname = "";
+        if (start >= 0 && end > start) {
+            displayname = formatColors(executable.substring(start + 14, end));
+            executable = executable.substring(end + 1);
+        }
+        ItemStack itemStack = getSkull(player, executable);
+        if (itemStack != null) {
+            ItemMeta meta = itemStack.getItemMeta();
+            if (meta != null) {
+                meta.setDisplayName(displayname);
+            }
+            itemStack.setItemMeta(meta);
+            Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(itemStack);
+            if (!leftOvers.isEmpty()) {
+                leftOvers.values().forEach(stack -> {
+                    if (stack != null)
+                        player.getWorld().dropItem(player.getLocation(), stack);
+                });
+            }
+        }
+    }
+
+    private void giveItem(@NotNull final Player player, @NotNull final String executable) {
+        final TemplatesCache templateCache = menuDataRegister.getTemplate(plugin);
+		System.out.println("templateCache " + templateCache);
+        if (templateCache != null) {
+            int start = executable.indexOf("{");
+            int end = executable.indexOf("}");
+			System.out.println("templateCache start " + start);
+			System.out.println("templateCache end " + end);
+			if (start >= 0 && end > start) {
+                String key = executable.substring(start + 1, end);
+				System.out.println("templateCache key " + key);
+                Template template = templateCache.getTemplet(key.toLowerCase());
+				System.out.println("templateCache key " + template);
+                final String remaining = (executable.length() > end + 1) ? executable.substring(end + 1).trim() : "";
+                int amount = 1;
+                if (!remaining.isEmpty()) {
+                    try {
+                        amount = Integer.parseInt(remaining.split(" ")[0]);
+                    } catch (NumberFormatException e) {
+                        amount = -1;
+                    }
+                }
+                if (template != null) {
+                    if (amount <= 0)
+                        amount = template.getAmount();
+                    String texture = template.getTexture();
+                    ItemStack itemStack = getSkull(player, texture);
+                    itemStack = getItemStack(itemStack, template);
+                    createStack(player, itemStack, template, amount);
+                }
+            }
+        }
+    }
+
+    private ItemStack getSkull(@NotNull final Player player, @Nullable final String texture) {
+        if(texture == null || texture.isEmpty())
+            return null;
+
+        ItemStack itemStack = null;
+        if (texture.startsWith("uuid="))
+            itemStack = SkullCreator.itemFromUuid(UUID.fromString(texture.substring(5)));
+        else if (texture.startsWith("base64="))
+            itemStack = SkullCreator.itemFromBase64(texture.substring(7));
+        else if (texture.startsWith("url="))
+            itemStack = SkullCreator.itemFromUrl(texture.substring(4));
+        else if (texture.startsWith("player_skull=")) {
+            itemStack = SkullCreator.itemFromUuid(player.getUniqueId());
+        }
+        return itemStack;
+    }
+
+    @Nullable
+    private ItemStack getItemStack(@Nullable ItemStack itemStack, @NotNull final Template template) {
+        if (itemStack == null) {
+            String templateMatrial = template.getMatrial();
+            if (templateMatrial == null || templateMatrial.isEmpty())
+                return null;
+            Material material = Material.getMaterial(templateMatrial.toUpperCase());
+            if (material == null)
+                return null;
+            itemStack = new ItemStack(material);
+        }
+        return itemStack;
+    }
+
+    private static void createStack(@NotNull final Player player, @Nullable final ItemStack itemStack, @NotNull final Template template, final int amount) {
+        if (itemStack != null) {
+            ItemMeta meta = itemStack.getItemMeta();
+            if (meta != null) {
+                meta.setDisplayName(template.getDisplayName());
+                meta.setLore(template.getLore());
+            }
+            itemStack.setItemMeta(meta);
+            if (amount > 0)
+                itemStack.setAmount(amount);
+            Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(itemStack);
+            if (!leftOvers.isEmpty()) {
+                leftOvers.values().forEach(stack -> {
+                    if (stack != null)
+                        player.getWorld().dropItem(player.getLocation(), stack);
+                });
+            }
+        }
+    }
+
 }

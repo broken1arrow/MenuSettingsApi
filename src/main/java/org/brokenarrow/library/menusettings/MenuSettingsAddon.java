@@ -6,6 +6,7 @@ import org.broken.arrow.library.nbt.RegisterNbtAPI;
 import org.brokenarrow.library.menusettings.hooks.economy.RegisterEconomyHook;
 import org.brokenarrow.library.menusettings.hooks.permission.RegisterPermissionHook;
 import org.brokenarrow.library.menusettings.settings.MenuCache;
+import org.brokenarrow.library.menusettings.settings.TemplatesCache;
 import org.brokenarrow.library.menusettings.utillity.RandomUntility;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -92,8 +93,8 @@ public final class MenuSettingsAddon extends JavaPlugin {
 	 */
 	public MenuDataRegister registerPlugin(Plugin plugin, BukkitAudiences audiences, String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
 		MenuCache menuCache = new MenuCache(plugin, name, makeOneFile, shallGenerateDefultFiles);
-		menuDataRegister.addMenuCache(plugin, menuCache);
-		
+		TemplatesCache templatesCache = new TemplatesCache(plugin);
+		menuDataRegister.addMenuCache(plugin, menuCache, templatesCache);
 		return menuDataRegister;
 	}
 

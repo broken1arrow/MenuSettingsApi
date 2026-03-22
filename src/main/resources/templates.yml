@@ -1,0 +1,11 @@
+items:
+  health_potion:
+    material: POTION
+    amount: 1
+    display_name: "&cLife Juice"
+  mushroom_item:
+    name: "&6Brown Mushroom"
+    lore:
+      - "&7A fungi found in the dark."
+      - "&eLore line 2"
+    texture: "url=http://textures.minecraft.net/texture/578897b83f51fb96b59ba418ff0868cef7bdf661e315ba5dbac51d876d1d15d"

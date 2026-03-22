@@ -13,6 +13,7 @@ import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -33,7 +34,7 @@ public final class ConfigParsingUtils {
 	public static final java.util.regex.Pattern DELAY_MATCH = java.util.regex.Pattern.compile("<delay=([^<>]+)>", java.util.regex.Pattern.CASE_INSENSITIVE);
 	public static final java.util.regex.Pattern CHANCE_MATCH = java.util.regex.Pattern.compile("<chance=([^<>]+)>", java.util.regex.Pattern.CASE_INSENSITIVE);
 
-	public static List<ClickActionTask> formatCommands(List<String> comands) {
+	public static List<ClickActionTask> formatCommands(Plugin plugin, List<String> comands) {
 		if (comands == null || comands.isEmpty()) return null;
 		List<ClickActionTask> list = new ArrayList<>();
 		for (String command : comands) {
@@ -43,7 +44,7 @@ public final class ConfigParsingUtils {
 				command = command.replace(commandType.getIdentifier(), "");
 				if (command.startsWith(" "))
 					command = command.trim();
-				ClickActionTask action = new ClickActionTask(commandType);
+				ClickActionTask action = new ClickActionTask(plugin,commandType);
 
 				Matcher delay = DELAY_MATCH.matcher(command);
 				if (delay.find()) {

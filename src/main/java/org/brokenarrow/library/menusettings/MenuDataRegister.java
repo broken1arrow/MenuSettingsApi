@@ -3,11 +3,13 @@ package org.brokenarrow.library.menusettings;
 
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.broken.arrow.library.nbt.RegisterNbtAPI;
+import org.brokenarrow.library.menusettings.builders.MenuLogic;
 import org.brokenarrow.library.menusettings.hooks.economy.PriceProvider;
 import org.brokenarrow.library.menusettings.hooks.economy.RegisterEconomyHook;
 import org.brokenarrow.library.menusettings.hooks.permission.PermissionProvider;
 import org.brokenarrow.library.menusettings.hooks.permission.RegisterPermissionHook;
 import org.brokenarrow.library.menusettings.settings.MenuCache;
+import org.brokenarrow.library.menusettings.settings.TemplatesCache;
 import org.brokenarrow.library.menusettings.utillity.RandomUntility;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -34,7 +36,7 @@ import static org.brokenarrow.library.menusettings.exceptions.Valid.checkNotNull
 
 public final class MenuDataRegister {
 
-	private final Map<Plugin, MenuCache> menuCache = new HashMap<>();
+	private final Map<Plugin, MenuLogic> menuCache = new HashMap<>();
 	private final DecimalFormat decimalFormat;
 	private final RegisterEconomyHook registerEconomyHook;
 	private final RegisterPermissionHook registerPermissionHook;
@@ -59,24 +61,32 @@ public final class MenuDataRegister {
 		instance = this;
 	}
 
-	private Map<Plugin, MenuCache> getMenuCache() {
+	private Map<Plugin, MenuLogic> getMenuCache() {
 		return menuCache;
 	}
 
-	public void addMenuCache(final Plugin plugin, MenuCache menuCache) {
-		getMenuCache().put(plugin, menuCache);
+	public void addMenuCache(final Plugin plugin,final MenuCache menuCache, final TemplatesCache templatesCache) {
+		getMenuCache().computeIfAbsent(plugin, plug -> new MenuLogic(menuCache, templatesCache));
 	}
 
 	public void removeMenuCache(final Plugin plugin) {
 		getMenuCache().remove(plugin);
 	}
 
-	public void clearMenuCache(final BukkitAudiences audiences) {
+	public void clearMenuCache() {
 		getMenuCache().clear();
 	}
 
 	public void setAudiences(final BukkitAudiences audiences) {
 		this.audiences = audiences;
+	}
+
+	public void reloadConfigs(final Plugin plugin){
+		MenuLogic menuLogic = menuCache.get(plugin);
+		if (menuLogic != null) {
+			menuLogic.getMenuCache().reload();
+			menuLogic.getTemplates().reload();
+		}
 	}
 
 	public static MenuDataRegister getInstance() {
@@ -90,7 +100,24 @@ public final class MenuDataRegister {
 	 */
 	@Nullable
 	public MenuCache getMenuCache(@NotNull Plugin plugin) {
-		return menuCache.get(plugin);
+		MenuLogic menuLogic = menuCache.get(plugin);
+		if (menuLogic != null)
+			return menuLogic.getMenuCache();
+		return null;
+	}
+
+	/**
+	 * Get the template cache, for replace the placeholder with matching content in
+	 * templates.yml file.
+	 *
+	 * @return the template cache instance or null if the plugin are not registed.
+	 */
+	@Nullable
+	public TemplatesCache getTemplate(@NotNull Plugin plugin) {
+		MenuLogic menuLogic = menuCache.get(plugin);
+		if (menuLogic != null)
+			return menuLogic.getTemplates();
+		return null;
 	}
 
 	public DecimalFormat getDecimalFormat() {

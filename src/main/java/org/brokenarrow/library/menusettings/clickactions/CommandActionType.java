@@ -24,6 +24,7 @@ public enum CommandActionType {
 	TAKE_PERM("[takepermission]"),
 	GIVE_PERM("[givepermission]"),
 	GIVE_SKULL("[giveskull]"),
+	GIVE_ITEM("[giveitem]"),
 	PLACEHOLDER("[placeholder]");
 	private final String identifier;
 

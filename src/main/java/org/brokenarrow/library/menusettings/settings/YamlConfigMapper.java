@@ -9,6 +9,7 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
@@ -17,9 +18,11 @@ import static org.brokenarrow.library.menusettings.settings.ConfigParsingUtils.*
 
 public final class YamlConfigMapper {
 	private final FileConfiguration config;
+	private final Plugin plugin;
 
-	public YamlConfigMapper(FileConfiguration config) {
+	public YamlConfigMapper(final Plugin plugin,final FileConfiguration config) {
 		this.config = config;
+		this.plugin = plugin;
 	}
 
 	public FileConfiguration getConfig() {
@@ -30,7 +33,7 @@ public final class YamlConfigMapper {
 		String requirementsPath = path + "." + commandType;
 		List<String> commans = this.getConfig().getStringList(requirementsPath);
 		if (!commans.isEmpty())
-			return new ClickActionHandler(formatCommands(commans));
+			return new ClickActionHandler(formatCommands(plugin,commans));
 		return null;
 	}
 
@@ -74,7 +77,7 @@ public final class YamlConfigMapper {
 		int minimumRequirement = this.getConfig().getInt(path + "." + clickType + ".minimum_requirement");
 
 		RequirementsLogic requirementsLogic = new RequirementsLogic(requirementsList);
-		requirementsLogic.setDenyCommands(formatCommands(denyCommands));
+		requirementsLogic.setDenyCommands(formatCommands(plugin, denyCommands));
 		requirementsLogic.setStopAtSuccess(stopAtSuccess);
 
 
@@ -267,8 +270,8 @@ public final class YamlConfigMapper {
 			if (clickRequirementType != null)
 				rec.setClickRequiermentType(clickRequirementType);
 
-			rec.setSuccessCommands(formatCommands(successCommands));
-			rec.setDenyCommands(formatCommands(denyCommands));
+			rec.setSuccessCommands(formatCommands(plugin, successCommands));
+			rec.setDenyCommands(formatCommands(plugin, denyCommands));
 			requirementsList.add(rec);
 		}
 		if (requirementsList.isEmpty())

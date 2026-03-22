@@ -22,6 +22,7 @@ public class MenuCache extends SimpleYamlHelper {
 
 	public MenuCache(@NotNull Plugin plugin, String name, boolean singelfile, boolean shallGenerateDefultFiles) {
 		super(plugin, name, singelfile, shallGenerateDefultFiles);
+
 	}
 
 	/**
@@ -61,7 +62,7 @@ public class MenuCache extends SimpleYamlHelper {
 	public MenuSettings parseMenuSettings(Map<List<Integer>, List<ButtonSettings>> buttonsCache, String key) {
 
 		FileConfiguration config = getCustomConfig();
-		YamlConfigMapper yamlConfigMapper = new YamlConfigMapper(config);
+		YamlConfigMapper yamlConfigMapper = new YamlConfigMapper(plugin,config);
 		String menuType = config.getString(key + ".Menu_Type");
 		int menuSize = config.getInt(key + ".Menu_Size");
 		String menuTitle = config.getString(key + ".Menu_Title");
