@@ -1,7 +1,8 @@
 package org.brokenarrow.library.menusettings;
 
-import de.tr7zw.changeme.nbtapi.metodes.RegisterNbtAPI;
+
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import org.broken.arrow.library.nbt.RegisterNbtAPI;
 import org.brokenarrow.library.menusettings.hooks.economy.PriceProvider;
 import org.brokenarrow.library.menusettings.hooks.economy.RegisterEconomyHook;
 import org.brokenarrow.library.menusettings.hooks.permission.PermissionProvider;

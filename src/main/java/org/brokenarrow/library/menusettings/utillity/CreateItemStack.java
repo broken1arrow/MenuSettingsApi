@@ -1,7 +1,7 @@
 package org.brokenarrow.library.menusettings.utillity;
 
 import com.google.common.base.Enums;
-import de.tr7zw.changeme.nbtapi.metodes.RegisterNbtAPI;
+import org.broken.arrow.library.nbt.RegisterNbtAPI;
 import org.broken.lib.rbg.TextTranslator;
 import org.brokenarrow.library.menusettings.MenuDataRegister;
 import org.brokenarrow.library.menusettings.builders.ItemWrapper;
