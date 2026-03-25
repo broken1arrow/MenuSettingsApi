@@ -4,6 +4,7 @@ import org.brokenarrow.library.menusettings.builders.ButtonSettings;
 import org.brokenarrow.library.menusettings.clickactions.CommandActionType;
 import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.tasks.ClickActionTask;
+import org.brokenarrow.library.menusettings.utillity.MenuActionHandler;
 import org.brokenarrow.library.menusettings.utillity.Tuple;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -16,6 +17,8 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -34,7 +37,7 @@ public final class ConfigParsingUtils {
 	public static final java.util.regex.Pattern DELAY_MATCH = java.util.regex.Pattern.compile("<delay=([^<>]+)>", java.util.regex.Pattern.CASE_INSENSITIVE);
 	public static final java.util.regex.Pattern CHANCE_MATCH = java.util.regex.Pattern.compile("<chance=([^<>]+)>", java.util.regex.Pattern.CASE_INSENSITIVE);
 
-	public static List<ClickActionTask> formatCommands(Plugin plugin, List<String> comands) {
+	public static List<ClickActionTask> formatCommands(@NotNull final Plugin plugin, @Nullable final List<String> comands, @Nullable final MenuActionHandler openCloseAction) {
 		if (comands == null || comands.isEmpty()) return null;
 		List<ClickActionTask> list = new ArrayList<>();
 		for (String command : comands) {
@@ -44,7 +47,7 @@ public final class ConfigParsingUtils {
 				command = command.replace(commandType.getIdentifier(), "");
 				if (command.startsWith(" "))
 					command = command.trim();
-				ClickActionTask action = new ClickActionTask(plugin,commandType);
+                final ClickActionTask action = new ClickActionTask(plugin, commandType, openCloseAction);
 
 				Matcher delay = DELAY_MATCH.matcher(command);
 				if (delay.find()) {

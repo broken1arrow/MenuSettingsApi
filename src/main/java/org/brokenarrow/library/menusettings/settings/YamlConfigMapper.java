@@ -5,11 +5,14 @@ import org.brokenarrow.library.menusettings.builders.ItemWrapper;
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
 import org.brokenarrow.library.menusettings.clickactions.ClickRequirementType;
 import org.brokenarrow.library.menusettings.requirements.*;
+import org.brokenarrow.library.menusettings.utillity.MenuActionHandler;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -17,11 +20,13 @@ import static org.brokenarrow.library.menusettings.requirements.RequirementType.
 import static org.brokenarrow.library.menusettings.settings.ConfigParsingUtils.*;
 
 public final class YamlConfigMapper {
-	private final FileConfiguration config;
+    private final MenuActionHandler openCloseAction;
+    private final FileConfiguration config;
 	private final Plugin plugin;
 
-	public YamlConfigMapper(final Plugin plugin,final FileConfiguration config) {
-		this.config = config;
+	public YamlConfigMapper(@NotNull final Plugin plugin, @Nullable final MenuActionHandler openCloseAction,@NotNull final FileConfiguration config) {
+        this.openCloseAction = openCloseAction;
+        this.config = config;
 		this.plugin = plugin;
 	}
 
@@ -33,7 +38,7 @@ public final class YamlConfigMapper {
 		String requirementsPath = path + "." + commandType;
 		List<String> commans = this.getConfig().getStringList(requirementsPath);
 		if (!commans.isEmpty())
-			return new ClickActionHandler(formatCommands(plugin,commans));
+			return new ClickActionHandler(formatCommands(this.plugin, commans, this.openCloseAction));
 		return null;
 	}
 
@@ -77,7 +82,7 @@ public final class YamlConfigMapper {
 		int minimumRequirement = this.getConfig().getInt(path + "." + clickType + ".minimum_requirement");
 
 		RequirementsLogic requirementsLogic = new RequirementsLogic(requirementsList);
-		requirementsLogic.setDenyCommands(formatCommands(plugin, denyCommands));
+		requirementsLogic.setDenyCommands(formatCommands(plugin, denyCommands, this.openCloseAction));
 		requirementsLogic.setStopAtSuccess(stopAtSuccess);
 
 
@@ -270,8 +275,8 @@ public final class YamlConfigMapper {
 			if (clickRequirementType != null)
 				rec.setClickRequiermentType(clickRequirementType);
 
-			rec.setSuccessCommands(formatCommands(plugin, successCommands));
-			rec.setDenyCommands(formatCommands(plugin, denyCommands));
+			rec.setSuccessCommands(formatCommands(plugin,  successCommands, this.openCloseAction));
+			rec.setDenyCommands(formatCommands(plugin,  denyCommands, this.openCloseAction));
 			requirementsList.add(rec);
 		}
 		if (requirementsList.isEmpty())

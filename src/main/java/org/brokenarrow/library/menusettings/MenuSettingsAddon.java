@@ -3,16 +3,20 @@ package org.brokenarrow.library.menusettings;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.broken.arrow.library.nbt.RegisterNbtAPI;
+import org.brokenarrow.library.menusettings.builders.MenuRegistrationConfig;
 import org.brokenarrow.library.menusettings.hooks.economy.RegisterEconomyHook;
 import org.brokenarrow.library.menusettings.hooks.permission.RegisterPermissionHook;
 import org.brokenarrow.library.menusettings.settings.MenuCache;
 import org.brokenarrow.library.menusettings.settings.TemplatesCache;
 import org.brokenarrow.library.menusettings.utillity.RandomUntility;
+import org.brokenarrow.library.menusettings.utillity.menu.fallback.MenuListener;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Consumer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -48,6 +52,7 @@ public final class MenuSettingsAddon extends JavaPlugin {
 		this.getLogger().log(Level.INFO, "Has check if PlaceholderAPI is enable and exist.");
 		this.getLogger().log(Level.INFO, "Has finish loading. To use the api, dont forget register in onEnable method in your plugin.");
 		menuDataRegister.setAudiences((net.kyori.adventure.platform.bukkit.BukkitAudiences.create(this)));
+		Bukkit.getPluginManager().registerEvents(new MenuListener(),this);
 	}
 
 	@Override
@@ -64,7 +69,7 @@ public final class MenuSettingsAddon extends JavaPlugin {
 	 * @param makeOneFile true if you use only one file.
 	 * @return the MenuDataRegister some contains all methods needed.
 	 */
-	public MenuDataRegister registerPlugin(Plugin plugin, String name, boolean makeOneFile) {
+	public MenuDataRegister registerPlugin(@NotNull final Plugin plugin,@NotNull final String name, boolean makeOneFile) {
 		return registerPlugin(plugin, null, name, makeOneFile, false);
 	}
 
@@ -77,7 +82,7 @@ public final class MenuSettingsAddon extends JavaPlugin {
 	 * @param shallGenerateDefultFiles if it shall also add files from your resources if they not exist.
 	 * @return the MenuDataRegister some contains all methods needed.
 	 */
-	public MenuDataRegister registerPlugin(Plugin plugin, String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
+	public MenuDataRegister registerPlugin(@NotNull final Plugin plugin,@NotNull final  String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
 		return registerPlugin(plugin, null, name, makeOneFile, shallGenerateDefultFiles);
 	}
 
@@ -91,10 +96,35 @@ public final class MenuSettingsAddon extends JavaPlugin {
 	 * @param shallGenerateDefultFiles if it shall also add files from your resources if they not exist.
 	 * @return the MenuDataRegister some contains all methods needed.
 	 */
-	public MenuDataRegister registerPlugin(Plugin plugin, BukkitAudiences audiences, String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
-		MenuCache menuCache = new MenuCache(plugin, name, makeOneFile, shallGenerateDefultFiles);
+	public MenuDataRegister registerPlugin(@NotNull final Plugin plugin,@Nullable final BukkitAudiences audiences, @NotNull final String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
+		final MenuRegistrationConfig config = new MenuRegistrationConfig();
+		config.setOneFile(makeOneFile);
+		config.setGenerateDefaultFiles(shallGenerateDefultFiles);
+		MenuCache menuCache = new MenuCache(plugin, name, config);
 		TemplatesCache templatesCache = new TemplatesCache(plugin);
 		menuDataRegister.addMenuCache(plugin, menuCache, templatesCache);
+		if (audiences != null)
+			menuDataRegister.setAudiences(audiences);
+		return menuDataRegister;
+	}
+
+	/**
+	 * Register this api, this will load yml files and register plugin hooks.
+	 *
+	 * @param plugin                   your main class.
+	 * @param configCallBack                paste your own instance of BukkitAudiences (if you not want this api override your own registerd instance of BukkitAudiences).
+	 * @param name                     file name or folder name (if you set up 1 menu for every file).
+	 * @return the MenuDataRegister some contains all methods needed.
+	 */
+	public MenuDataRegister registerPlugin(@NotNull final Plugin plugin, @NotNull final String name, @NotNull final Consumer<MenuRegistrationConfig> configCallBack) {
+		final MenuRegistrationConfig config = new MenuRegistrationConfig();
+		configCallBack.accept(config);
+
+		MenuCache menuCache = new MenuCache(plugin, name, config);
+		TemplatesCache templatesCache = new TemplatesCache(plugin);
+		menuDataRegister.addMenuCache(plugin, menuCache, templatesCache);
+		if(config.getAudiences() != null)
+			menuDataRegister.setAudiences(config.getAudiences());
 		return menuDataRegister;
 	}
 

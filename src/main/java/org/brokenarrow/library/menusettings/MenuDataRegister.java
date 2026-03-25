@@ -3,7 +3,7 @@ package org.brokenarrow.library.menusettings;
 
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.broken.arrow.library.nbt.RegisterNbtAPI;
-import org.brokenarrow.library.menusettings.builders.MenuLogic;
+import org.brokenarrow.library.menusettings.builders.MenuContext;
 import org.brokenarrow.library.menusettings.hooks.economy.PriceProvider;
 import org.brokenarrow.library.menusettings.hooks.economy.RegisterEconomyHook;
 import org.brokenarrow.library.menusettings.hooks.permission.PermissionProvider;
@@ -36,7 +36,7 @@ import static org.brokenarrow.library.menusettings.exceptions.Valid.checkNotNull
 
 public final class MenuDataRegister {
 
-	private final Map<Plugin, MenuLogic> menuCache = new HashMap<>();
+	private final Map<Plugin, MenuContext> menuCache = new HashMap<>();
 	private final DecimalFormat decimalFormat;
 	private final RegisterEconomyHook registerEconomyHook;
 	private final RegisterPermissionHook registerPermissionHook;
@@ -61,12 +61,12 @@ public final class MenuDataRegister {
 		instance = this;
 	}
 
-	private Map<Plugin, MenuLogic> getMenuCache() {
+	private Map<Plugin, MenuContext> getMenuCache() {
 		return menuCache;
 	}
 
 	public void addMenuCache(final Plugin plugin,final MenuCache menuCache, final TemplatesCache templatesCache) {
-		getMenuCache().computeIfAbsent(plugin, plug -> new MenuLogic(menuCache, templatesCache));
+		getMenuCache().computeIfAbsent(plugin, plug -> new MenuContext(menuCache, templatesCache));
 	}
 
 	public void removeMenuCache(final Plugin plugin) {
@@ -82,10 +82,10 @@ public final class MenuDataRegister {
 	}
 
 	public void reloadConfigs(final Plugin plugin){
-		MenuLogic menuLogic = menuCache.get(plugin);
-		if (menuLogic != null) {
-			menuLogic.getMenuCache().reload();
-			menuLogic.getTemplates().reload();
+		MenuContext menuContext = menuCache.get(plugin);
+		if (menuContext != null) {
+			menuContext.getMenuCache().reload();
+			menuContext.getTemplatesCache().reload();
 		}
 	}
 
@@ -94,29 +94,40 @@ public final class MenuDataRegister {
 	}
 
 	/**
-	 * Get the menu cache.
+	 * Returns the {@link MenuContext} associated with the given plugin.
 	 *
-	 * @return the menu cache instance or null if the plugin are not registed.
+	 * @param plugin the plugin requesting its menu context
+	 * @return the menu context, or null if the plugin has not been registered
 	 */
 	@Nullable
-	public MenuCache getMenuCache(@NotNull Plugin plugin) {
-		MenuLogic menuLogic = menuCache.get(plugin);
-		if (menuLogic != null)
-			return menuLogic.getMenuCache();
-		return null;
+	public MenuContext getMenuContext(@NotNull Plugin plugin) {
+		return menuCache.get(plugin);
 	}
 
 	/**
-	 * Get the template cache, for replace the placeholder with matching content in
-	 * templates.yml file.
+	 * Returns the {@link MenuCache} for the given plugin.
 	 *
-	 * @return the template cache instance or null if the plugin are not registed.
+	 * @param plugin the plugin requesting its menu cache
+	 * @return the menu cache, or null if the plugin has not been registered
 	 */
 	@Nullable
-	public TemplatesCache getTemplate(@NotNull Plugin plugin) {
-		MenuLogic menuLogic = menuCache.get(plugin);
-		if (menuLogic != null)
-			return menuLogic.getTemplates();
+	public MenuCache getMenuCache(@NotNull Plugin plugin) {
+		MenuContext menuContext = menuCache.get(plugin);
+		if (menuContext != null)
+			return menuContext.getMenuCache();
+		return null;
+	}
+	/**
+	 * Returns the {@link TemplatesCache} for the given plugin.
+	 *
+	 * @param plugin the plugin requesting its templates cache
+	 * @return the templates cache, or null if the plugin has not been registered
+	 */
+	@Nullable
+	public TemplatesCache getTemplatesCache(@NotNull Plugin plugin) {
+		MenuContext menuContext = menuCache.get(plugin);
+		if (menuContext != null)
+			return menuContext.getTemplatesCache();
 		return null;
 	}
 

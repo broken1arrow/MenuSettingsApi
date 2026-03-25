@@ -5,9 +5,16 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
 import org.brokenarrow.library.menusettings.MenuDataRegister;
+import org.brokenarrow.library.menusettings.MenuSettingsAddon;
+import org.brokenarrow.library.menusettings.builders.MenuContext;
+import org.brokenarrow.library.menusettings.builders.MenuSettings;
 import org.brokenarrow.library.menusettings.builders.Template;
 import org.brokenarrow.library.menusettings.clickactions.CommandActionType;
+import org.brokenarrow.library.menusettings.settings.MenuCache;
 import org.brokenarrow.library.menusettings.settings.TemplatesCache;
+import org.brokenarrow.library.menusettings.utillity.menu.fallback.FallBackGUI;
+import org.brokenarrow.library.menusettings.utillity.MenuAction;
+import org.brokenarrow.library.menusettings.utillity.MenuActionHandler;
 import org.brokenarrow.library.menusettings.utillity.SkullCreator;
 import org.brokenarrow.library.menusettings.utillity.SoundUtillity;
 import org.bukkit.Bukkit;
@@ -24,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.broken.lib.rbg.TextTranslator.toSpigotFormat;
 import static org.brokenarrow.library.menusettings.MenuSettingsAddon.getLogger;
@@ -35,23 +43,27 @@ import static org.brokenarrow.library.menusettings.utillity.RunTimedTask.runTask
 
 
 public class ClickActionTask {
-
+    Logger logger = MenuSettingsAddon.getPLUGIN().getLogger();
     private final Plugin plugin;
     private final CommandActionType actionType;
-	private String executable;
+	private final  MenuContext menuContext;
+    private final MenuActionHandler openCloseAction;
+    private String executable;
 	private String delay;
 	private String chance;
 	private final MenuDataRegister menuDataRegister = MenuDataRegister.getInstance();
 
-	public ClickActionTask(final Plugin plugin,final CommandActionType actionType) {
+	public ClickActionTask(@NotNull final Plugin plugin,@NotNull final CommandActionType actionType, @Nullable final MenuActionHandler openCloseAction) {
         this.plugin = plugin;
         this.actionType = actionType;
-	}
+		this.menuContext = menuDataRegister.getMenuContext(plugin);
+        this.openCloseAction = openCloseAction;
+    }
 
 	public void task(Player player) {
 		if (player == null) return;
 		String executable = setPlaceholders(player, this.getExecutable());
-
+        final MenuCache menuCache = this.menuContext != null ? this.menuContext.getMenuCache() : null;
 
 		switch (this.actionType) {
 			case CONSOLE:
@@ -100,8 +112,41 @@ public class ClickActionTask {
 				player.chat(executable);
 				break;
 			case CLOSE:
-				player.closeInventory();
+                if (menuCache == null) {
+                    logger.warning("Could not find the menu contect for this plugin: " + plugin.getName() + ". Did you register your menu?");
+                    return;
+                }
+				if(this.openCloseAction != null){
+					MenuSettings menuSettings = menuCache.getMenuCache().get(executable);
+					if (menuSettings != null) {
+						openCloseAction.handle(MenuAction.CLOSE, executable, menuSettings);
+					}
+				} else {
+					player.closeInventory();
+				}
 				break;
+            case OPEN:
+                if (menuCache == null) {
+                    logger.warning("Could not find the menu contect for this plugin: " + plugin.getName() + ". Did you register your menu?");
+                    return;
+                }
+
+                final MenuSettings menuSettings = menuCache.getMenuCache().get(executable);
+                if (menuSettings == null) {
+                    logger.warning("No menu found with this name: " + executable);
+                    return;
+                }
+
+                if (this.openCloseAction != null) {
+                    openCloseAction.handle(MenuAction.OPEN, executable, menuSettings);
+                    return;
+                }
+                logger.warning("Fallback GUI used for menu: " + executable);
+                FallBackGUI fallBackGUI = new FallBackGUI(plugin, executable, player);
+                if (fallBackGUI.beforeOpen()) {
+                    player.openInventory(fallBackGUI.getInventory());
+                }
+                break;
 			case REFRESH:
 				player.updateInventory();
 				break;
@@ -249,7 +294,7 @@ public class ClickActionTask {
     }
 
     private void giveItem(@NotNull final Player player, @NotNull final String executable) {
-        final TemplatesCache templateCache = menuDataRegister.getTemplate(plugin);
+		final TemplatesCache templateCache = menuContext != null ? menuContext.getTemplatesCache() : null;
         if (templateCache != null) {
             int start = executable.indexOf("{");
             int end = executable.indexOf("}");

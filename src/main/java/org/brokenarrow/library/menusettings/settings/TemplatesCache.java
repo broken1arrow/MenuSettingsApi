@@ -68,6 +68,10 @@ public class TemplatesCache extends SimpleYamlHelper {
     }
 
     private void createMissingFile(File file) {
+        File datafolder= plugin.getDataFolder();
+        if(!datafolder.exists()){
+            datafolder.mkdir();
+        }
         try {
             InputStream inputStream = MenuSettingsAddon.getPLUGIN().getResource("templates.yml");
             if (inputStream == null) return;

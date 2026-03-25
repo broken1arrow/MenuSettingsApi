@@ -198,14 +198,6 @@
                                 </excludes>
                             </artifactSet>
                             <relocations>
-                                <!-- <relocation>
-                                   <pattern>net.kyori.adventure</pattern>
-                                   <shadedPattern>${project.groupId}.${project.artifactId}.adventure</shadedPattern>
-                               </relocation>-->
-                                <relocation>
-                                    <pattern>org.brokenarrow.menu</pattern>
-                                    <shadedPattern>${project.groupId}.${project.artifactId}.MenuAPI</shadedPattern>
-                                </relocation>
                                 <relocation>
                                     <pattern>net.kyori</pattern>
                                     <shadedPattern>${project.groupId}.${project.artifactId}.minimsg</shadedPattern>
@@ -214,10 +206,6 @@
                                         <exclude>net.kyori:adventure-nbt-api</exclude>
                                         <exclude>net.kyori:adventure-inventory</exclude>
                                     </excludes>
-                                </relocation>
-                                <relocation>
-                                    <pattern>de.tr7zw</pattern>
-                                    <shadedPattern>${project.groupId}.${project.artifactId}.nbt</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>de.tr7zw.changeme.nbtapi</pattern>

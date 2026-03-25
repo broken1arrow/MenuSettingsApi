@@ -1,7 +1,9 @@
 package org.brokenarrow.library.menusettings.settings;
 
 import org.brokenarrow.library.menusettings.builders.ButtonSettings;
+import org.brokenarrow.library.menusettings.builders.MenuRegistrationConfig;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
+import org.brokenarrow.library.menusettings.utillity.MenuActionHandler;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -17,12 +19,12 @@ import static org.brokenarrow.library.menusettings.settings.ConfigParsingUtils.p
 import static org.brokenarrow.library.menusettings.settings.ConfigParsingUtils.sortList;
 
 public class MenuCache extends SimpleYamlHelper {
+	private MenuActionHandler openCloseAction;
+	private final Map<String, MenuSettings> menuCache = new HashMap<>();
 
-	Map<String, MenuSettings> menuCache = new HashMap<>();
-
-	public MenuCache(@NotNull Plugin plugin, String name, boolean singelfile, boolean shallGenerateDefultFiles) {
-		super(plugin, name, singelfile, shallGenerateDefultFiles);
-
+	public MenuCache(@NotNull final Plugin plugin,final String name, final MenuRegistrationConfig config) {
+		super(plugin, name,  config.isOneFile(), config.isGenerateDefaultFiles());
+		openCloseAction =  config.getActionHandler();
 	}
 
 	/**
@@ -61,8 +63,8 @@ public class MenuCache extends SimpleYamlHelper {
 
 	public MenuSettings parseMenuSettings(Map<List<Integer>, List<ButtonSettings>> buttonsCache, String key) {
 
-		FileConfiguration config = getCustomConfig();
-		YamlConfigMapper yamlConfigMapper = new YamlConfigMapper(plugin,config);
+		final FileConfiguration config = getCustomConfig();
+		final YamlConfigMapper yamlConfigMapper = new YamlConfigMapper(plugin,openCloseAction, config);
 		String menuType = config.getString(key + ".Menu_Type");
 		int menuSize = config.getInt(key + ".Menu_Size");
 		String menuTitle = config.getString(key + ".Menu_Title");

@@ -13,6 +13,7 @@ public enum CommandActionType {
 	BROADCAST("[broadcast]"),
 	CHAT("[chat]"),
 	CLOSE("[close]"),
+	OPEN("[open]"),
 	REFRESH("[refresh]"),//Refresh items in the current menu view
 	BROADCAST_SOUND("[broadcastsound]"),
 	BROADCAST_WORLD_SOUND("[broadcastsoundworld]"),
