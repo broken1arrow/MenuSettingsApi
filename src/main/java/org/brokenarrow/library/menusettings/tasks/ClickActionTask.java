@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 import static org.broken.lib.rbg.TextTranslator.toSpigotFormat;
 import static org.brokenarrow.library.menusettings.MenuSettingsAddon.getLogger;
 import static org.brokenarrow.library.menusettings.MenuSettingsAddon.setPlaceholders;
-import static org.brokenarrow.library.menusettings.clickactions.CommandActionType.TAKE_EXP;
+import static org.brokenarrow.library.menusettings.clickactions.CommandActionType.*;
 import static org.brokenarrow.library.menusettings.utillity.CreateItemStack.formatColors;
 import static org.brokenarrow.library.menusettings.utillity.ExperienceUtillity.setExp;
 import static org.brokenarrow.library.menusettings.utillity.RunTimedTask.runTaskLater;
@@ -63,8 +63,6 @@ public class ClickActionTask {
 	public void task(Player player) {
 		if (player == null) return;
 		String executable = setPlaceholders(player, this.getExecutable());
-        final MenuCache menuCache = this.menuContext != null ? this.menuContext.getMenuCache() : null;
-
 		switch (this.actionType) {
 			case CONSOLE:
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), executable);
@@ -112,41 +110,9 @@ public class ClickActionTask {
 				player.chat(executable);
 				break;
 			case CLOSE:
-                if (menuCache == null) {
-                    logger.warning("Could not find the menu contect for this plugin: " + plugin.getName() + ". Did you register your menu?");
-                    return;
-                }
-				if(this.openCloseAction != null){
-					MenuSettings menuSettings = menuCache.getMenuCache().get(executable);
-					if (menuSettings != null) {
-						openCloseAction.handle(MenuAction.CLOSE, executable, menuSettings);
-					}
-				} else {
-					player.closeInventory();
-				}
-				break;
             case OPEN:
-                if (menuCache == null) {
-                    logger.warning("Could not find the menu contect for this plugin: " + plugin.getName() + ". Did you register your menu?");
-                    return;
-                }
-
-                final MenuSettings menuSettings = menuCache.getMenuCache().get(executable);
-                if (menuSettings == null) {
-                    logger.warning("No menu found with this name: " + executable);
-                    return;
-                }
-
-                if (this.openCloseAction != null) {
-                    openCloseAction.handle(MenuAction.OPEN, executable, menuSettings);
-                    return;
-                }
-                logger.warning("Fallback GUI used for menu: " + executable);
-                FallBackGUI fallBackGUI = new FallBackGUI(plugin, executable, player);
-                if (fallBackGUI.beforeOpen()) {
-                    player.openInventory(fallBackGUI.getInventory());
-                }
-                break;
+				this.menuAction(player,  executable);
+				break;
 			case REFRESH:
 				player.updateInventory();
 				break;
@@ -202,8 +168,40 @@ public class ClickActionTask {
         }
     }
 
+	private void menuAction(final Player player,  final String executable) {
+		final CommandActionType action = this.actionType;
+		final MenuCache menuCache = this.menuContext != null ? this.menuContext.getMenuCache() : null;
 
-    public long formatDelay(Player wiver) {
+		if (action == CLOSE && this.openCloseAction == null) {
+			player.closeInventory();
+			return;
+		}
+		
+		if (menuCache == null) {
+			logger.warning("Could not find the menu contect for this plugin: " + plugin.getName() + ". Did you register your menu?");
+			return;
+		}
+
+		final MenuSettings menuSettings = menuCache.getMenuCache().get(executable);
+		if (menuSettings == null) {
+			logger.warning("No menu found with this name: " + executable);
+			return;
+		}
+
+		if (this.openCloseAction != null) {
+			openCloseAction.handle(action == OPEN ? MenuAction.OPEN : MenuAction.CLOSE, executable, menuSettings);
+			return;
+		}
+
+		logger.warning("Fallback GUI used for menu: " + executable);
+		FallBackGUI fallBackGUI = new FallBackGUI(plugin, executable, player);
+		if (fallBackGUI.beforeOpen()) {
+			player.openInventory(fallBackGUI.getInventory());
+		}
+	}
+
+
+	public long formatDelay(Player wiver) {
 		if (this.getDelay() == null || this.getDelay().isEmpty()) return -1;
 		String delayTranslated = setPlaceholders(wiver, this.getDelay());
 
