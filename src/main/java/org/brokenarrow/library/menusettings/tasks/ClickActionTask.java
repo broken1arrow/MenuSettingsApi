@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
 import org.brokenarrow.library.menusettings.MenuDataRegister;
+import org.brokenarrow.library.menusettings.MenuSession;
 import org.brokenarrow.library.menusettings.MenuSettingsAddon;
 import org.brokenarrow.library.menusettings.builders.MenuContext;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
@@ -189,7 +190,8 @@ public class ClickActionTask {
 		}
 
 		if (this.openCloseAction != null) {
-			openCloseAction.handle(action == OPEN ? MenuAction.OPEN : MenuAction.CLOSE, executable, menuSettings);
+			final MenuSession menuSession = new MenuSession(this.plugin, executable, player);
+			openCloseAction.handle(action == OPEN ? MenuAction.OPEN : MenuAction.CLOSE, executable, menuSession);
 			return;
 		}
 
