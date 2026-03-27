@@ -56,20 +56,20 @@ Menus:
               type: has permission
               output: "test"
               success_commands:
-                - "command 1"
+                - "[message] &7success"
               deny_commands:
-                - "command 1"
+                - "[message] &7failed"
         Click_commands:
           - "[message] &6Anny button trigger this"
-        Left_click_commands:
-          - "[message] &7Left click"
-        Right_click_commands:
-          - "[message] &4Right click"
-        Left_shift_click_commands:
-          - "[message] &4Left and shift click"
-        Right_shift_click_commands:
-          - "[message] &4Right and shift click "
-        Middle_click_commands:
-          - "[message] &7Middle click"
+#        Left_click_commands:
+#          - "[message] &7Left click"
+#        Right_click_commands:
+#          - "[message] &4Right click"
+#        Left_shift_click_commands:
+#          - "[message] &4Left and shift click"
+#        Right_shift_click_commands:
+#          - "[message] &4Right and shift click "
+#        Middle_click_commands:
+#          - "[message] &7Middle click"
 
       

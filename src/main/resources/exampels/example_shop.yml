@@ -1,0 +1,124 @@
+Menus:
+  Main_Menu:
+    Menu_Size: 36
+    Menu_Title: "&1Shop"
+    Update_Buttons: true
+    Delay: 5
+    Open_requirement:
+      Requirement:
+        Permission:
+          type: has permission
+          input: "shop.plus"
+    Menu_Items:
+      Diamond_Sword_No_Money:
+        Priority: 0
+        Update_Button: false
+        Button_delay: 2
+        Glow: false
+        Slot: 10
+        Icon: DIAMOND_SWORD
+        Display_name: "&bDiamond Sword"
+        Lore:
+          - "&4 No money to buy this"
+          - " "
+          - "&7A shiny sharp sword"
+          - "&7Cost: &a10 coins"
+      Diamond_Sword:
+        Priority: 100
+        Update_Button: false
+        Button_delay: 2
+        Glow: true
+        Slot: 10
+        Icon: DIAMOND_SWORD
+        Display_name: "&bDiamond Sword"
+        Lore:
+          - "&7A shiny sharp sword"
+          - "&7Cost: &a10 coins"
+        View_requirement:
+          Requirement:
+            Custom:
+              type: has money
+              amount: 10
+        Click_requirement:
+          Requirement:
+            Money:
+              type: has money
+              amount: 10
+              success_commands:
+                - "[console] give %player_name% diamond_sword 1"
+                - "[message] &aYou bought a Diamond Sword!"
+              deny_commands:
+                - "[message] &cNot enough money!"
+      Golden_Apple_No_Money:
+        Priority: 0
+        Update_Button: false
+        Button_delay: 2
+        Glow: false
+        Slot: 12
+        Icon: GOLDEN_APPLE
+        Display_name: "&6Golden Apple"
+        Lore:
+          - "&4 No money to buy this"
+          - " "
+          - "&7Heals you completely"
+          - "&7Cost: &a5 coins"
+      Golden_Apple:
+        Priority: 100
+        Update_Button: false
+        Button_delay: 2
+        Glow: false
+        Slot: 12
+        Icon: GOLDEN_APPLE
+        Display_name: "&6Golden Apple"
+        Lore:
+          - "&7Heals you completely"
+          - "&7Cost: &a5 coins"
+        View_requirement:
+          Requirement:
+            Custom:
+              type: has money
+              amount: 5
+        Click_requirement:
+          Requirement:
+            Money:
+              type: has money
+              amount: 5
+              success_commands:
+                - "[console] give %player_name% golden_apple 1"
+                - "[message] &aYou bought a Golden Apple!"
+              deny_commands:
+                - "[message] &cNot enough money!"
+      Elytra_No_Money:
+        Priority: 0
+        Update_Button: false
+        Button_delay: 2
+        Glow: false
+        Slot: 14
+        Icon: ELYTRA
+        Display_name: "&eElytra"
+        Lore:
+          - "&4 No money to buy this"
+          - " "
+          - "&7Fly like a bird!"
+          - "&7Cost: &a50 coins"
+      Elytra:
+        Priority: 100
+        Update_Button: false
+        Button_delay: 2
+        Glow: true
+        Slot: 14
+        Icon: ELYTRA
+        Display_name: "&eElytra"
+        Lore:
+          - "&7Fly like a bird!"
+          - "&7Cost: &a50 coins"
+        Click_requirement:
+          Requirement:
+            Money:
+              type: has money
+              amount: 50
+              success_commands:
+                - "[console] give %player_name% elytra 1"
+                - "[message] &aYou bought an Elytra!"
+              deny_commands:
+                - "[message] &cNot enough money!"

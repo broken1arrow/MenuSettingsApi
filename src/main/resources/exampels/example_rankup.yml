@@ -1,0 +1,85 @@
+Menus:
+  Rank_Menu:
+    Menu_Size: 27
+    Menu_Title: "&2Rank Up"
+    Update_Buttons: true
+    Delay: 5
+    Menu_Items:
+      VIP_Rank:
+        Priority: 0
+        Update_Button: false
+        Button_delay: 2
+        Glow: true
+        Slot: 10
+        Icon: GOLD_INGOT
+        Display_name: "&6VIP Rank"
+        Lore:
+          - "&7Grants VIP perks"
+          - "&7Cost: &a20 coins"
+        View_requirement:
+          Requirement:
+            Permission:
+              type: "!has permission"
+              input: "rank.vip"
+        Click_requirement:
+          Requirement:
+            Money:
+              type: has money
+              amount: 20
+              success_commands:
+                - "[console] lp user %player_name% permission set rank.vip"
+                - "[message] &aYou are now VIP!"
+              deny_commands:
+                - "[message] &cYou don't have enough coins!"
+      MVP_Rank:
+        Priority: 0
+        Update_Button: false
+        Button_delay: 2
+        Glow: true
+        Slot: 12
+        Icon: DIAMOND
+        Display_name: "&bMVP Rank"
+        Lore:
+          - "&7Grants MVP perks"
+          - "&7Cost: &a50 coins"
+        View_requirement:
+          Requirement:
+            Permission:
+              type: "!has permission"
+              input: "rank.mvp"
+        Click_requirement:
+          Requirement:
+            Money:
+              type: has money
+              amount: 50
+              success_commands:
+                - "[console] lp user %player_name% permission set rank.mvp"
+                - "[message] &aYou are now MVP!"
+              deny_commands:
+                - "[message] &cYou don't have enough coins!"
+      LEGEND_Rank:
+        Priority: 0
+        Update_Button: false
+        Button_delay: 2
+        Glow: true
+        Slot: 14
+        Icon: NETHER_STAR
+        Display_name: "&5LEGEND Rank"
+        Lore:
+          - "&7Grants LEGEND perks"
+          - "&7Cost: &a100 coins"
+        View_requirement:
+          Requirement:
+            Permission:
+              type: "!has permission"
+              input: "rank.legend"
+        Click_requirement:
+          Requirement:
+            Money:
+              type: has money
+              amount: 100
+              success_commands:
+                - "[console] lp user %player_name% permission set rank.legend"
+                - "[message] &aYou are now LEGEND!"
+              deny_commands:
+                - "[message] &cYou don't have enough coins!"
