@@ -9,8 +9,7 @@ public final class ButtonSettings {
 	private final int priority;
 	private final long refreshTimeWhenUpdateButton;
 	private final boolean updateButton;
-	private final boolean refreshAllButtons;
-	private boolean refreshClickedButton;
+	private final boolean refreshClickedButton;
 	private final String buttonName;
 	private final String checkArmor;
 	private final String checkHand;
@@ -35,7 +34,6 @@ public final class ButtonSettings {
 		this.priority = builder.priority;
 		this.refreshTimeWhenUpdateButton = builder.refreshTimeWhenUpdateButton;
 		this.updateButton = builder.updateButton;
-		this.refreshAllButtons = builder.refreshAllButtons;
 		this.refreshClickedButton = builder.refreshClickedButton;
 		this.buttonName = builder.buttonName;
 		this.checkArmor = builder.checkArmor;
@@ -80,16 +78,6 @@ public final class ButtonSettings {
 	 */
 	public boolean isUpdateButton() {
 		return updateButton;
-	}
-
-	/**
-	 * This method is used for update all buttons when clicking
-	 * on a button/item inside the menu.
-	 *
-	 * @return true if it shall refresh all buttons.
-	 */
-	public boolean isRefreshAllButtons() {
-		return refreshAllButtons;
 	}
 
 	/**
@@ -192,7 +180,6 @@ public final class ButtonSettings {
 		private int priority;
 		private long refreshTimeWhenUpdateButton;
 		private boolean updateButton;
-		private boolean refreshAllButtons;
 		private boolean refreshClickedButton;
 		private String buttonName;
 		public String checkArmor;
@@ -225,12 +212,6 @@ public final class ButtonSettings {
 
 		public Builder setUpdateButton(boolean updateButton) {
 			this.updateButton = updateButton;
-			return this;
-		}
-
-
-		public Builder setRefreshAllButtons(boolean refreshAllButtons) {
-			this.refreshAllButtons = refreshAllButtons;
 			return this;
 		}
 
@@ -341,7 +322,6 @@ public final class ButtonSettings {
 				"priority=" + priority +
 				", refreshTimeWhenUpdateButton=" + refreshTimeWhenUpdateButton +
 				", updateButton=" + updateButton +
-				", refreshAllButtons=" + refreshAllButtons +
 				", buttonName='" + buttonName + '\'' +
 				", checkArmor='" + checkArmor + '\'' +
 				", checkHand='" + checkHand + '\'' +
