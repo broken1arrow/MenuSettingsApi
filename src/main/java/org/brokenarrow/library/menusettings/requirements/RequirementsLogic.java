@@ -43,6 +43,9 @@ public class RequirementsLogic {
 	}
 
 	public void runClickActionTask(List<ClickActionTask> clickActionTaskList, Player wiver) {
+		if(clickActionTaskList == null)
+			return;
+
 		for (ClickActionTask clickAction : clickActionTaskList) {
 			if (clickAction == null) continue;
 

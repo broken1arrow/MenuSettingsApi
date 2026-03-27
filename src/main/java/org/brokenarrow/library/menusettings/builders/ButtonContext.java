@@ -3,6 +3,7 @@ package org.brokenarrow.library.menusettings.builders;
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
 import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.requirements.RequirementsLogic;
+import org.brokenarrow.library.menusettings.utillity.Action;
 import org.brokenarrow.library.menusettings.utillity.CreateItemStack;
 import org.brokenarrow.library.menusettings.utillity.SkullCreator;
 import org.bukkit.entity.Player;
@@ -106,10 +107,11 @@ public class ButtonContext {
      * the corresponding actions if all requirements are met.
      *
      * @param clickType the type of click performed
+     * @param action Called after it run the command.
      * @return true if the click action was executed, false otherwise
      */
-    public boolean handleClick(@NotNull final ClickType clickType) {
-        return handleClick(this.viewer, clickType);
+    public boolean handleClick(@NotNull final ClickType clickType, @NotNull final Action action) {
+        return handleClick(this.viewer, clickType, action);
     }
 
     /**
@@ -120,9 +122,10 @@ public class ButtonContext {
      *
      * @param viewer    Overrides the default viewer for this operation.
      * @param clickType the type of click performed
+     * @param action Called after it run the command.
      * @return true if the click action was executed, false otherwise
      */
-    public boolean handleClick(@NotNull final Player viewer, @NotNull final ClickType clickType) {
+    public boolean handleClick(@NotNull final Player viewer, @NotNull final ClickType clickType, @NotNull final Action action) {
         final ButtonSettings settings = this.buttonSettings;
         final ClickActionHandler globalClickHandler = settings.getClickActionHandler();
         if (globalClickHandler != null) {
@@ -131,11 +134,11 @@ public class ButtonContext {
                 clickrequirement.runClickActionTask(clickrequirement.getDenyCommands(), viewer);
                 return false;
             }
-            globalClickHandler.runClickActionTask(viewer);
+            globalClickHandler.runClickActionTask(viewer, action);
             return true;
         }
-        if (handleShiftClick(viewer, clickType)) return true;
-        if (handlePrimaryClick(viewer, clickType)) return true;
+        if (handleShiftClick(viewer, clickType, action)) return true;
+        if (handlePrimaryClick(viewer, clickType, action)) return true;
 
         final ClickActionHandler middleClickAction = settings.getMiddleClickActionHandler();
         if (clickType == ClickType.MIDDLE && middleClickAction != null) {
@@ -144,7 +147,7 @@ public class ButtonContext {
                 middleClickRequirement.runClickActionTask(middleClickRequirement.getDenyCommands(), viewer);
                 return false;
             }
-            middleClickAction.runClickActionTask(viewer);
+            middleClickAction.runClickActionTask(viewer, action);
             return true;
         }
         return false;
@@ -154,10 +157,11 @@ public class ButtonContext {
      * Handles left and right click interactions for this button.
      *
      * @param clickType the type of click performed
+     * @param action Called after it run the command.
      * @return true if the click action was executed, false otherwise
      */
-    public boolean handlePrimaryClick(@NotNull ClickType clickType) {
-        return handlePrimaryClick(this.viewer, clickType);
+    public boolean handlePrimaryClick(@NotNull ClickType clickType, @NotNull final Action action) {
+        return handlePrimaryClick(this.viewer, clickType, action);
     }
 
     /**
@@ -165,9 +169,10 @@ public class ButtonContext {
      *
      * @param viewer    Overrides the default viewer for this operation.
      * @param clickType the type of click performed
+     * @param action Called after it run the command.
      * @return true if the click action was executed, false otherwise
      */
-    public boolean handlePrimaryClick(@NotNull final Player viewer, @NotNull final ClickType clickType) {
+    public boolean handlePrimaryClick(@NotNull final Player viewer, @NotNull final ClickType clickType, @NotNull final Action action) {
         if (clickType.isShiftClick()) return false;
 
         final ButtonSettings settings = this.buttonSettings;
@@ -178,7 +183,7 @@ public class ButtonContext {
                 rightClickRequirement.runClickActionTask(rightClickRequirement.getDenyCommands(), viewer);
                 return false;
             }
-            rightClickAction.runClickActionTask(viewer);
+            rightClickAction.runClickActionTask(viewer, action);
             return true;
 
         }
@@ -189,7 +194,7 @@ public class ButtonContext {
                 leftClickRequirement.runClickActionTask(leftClickRequirement.getDenyCommands(), viewer);
                 return false;
             }
-            leftClickAction.runClickActionTask(viewer);
+            leftClickAction.runClickActionTask(viewer, action);
             return true;
         }
         return false;
@@ -199,20 +204,23 @@ public class ButtonContext {
      * Handles shift-click interactions for this button.
      *
      * @param clickType the type of click performed
+     * @param action Called after it run the command.
      * @return true if the click action was executed, false otherwise
      */
-    public boolean handleShiftClick(@NotNull final ClickType clickType) {
-        return handleShiftClick(this.viewer, clickType);
+    public boolean handleShiftClick(@NotNull final ClickType clickType, @NotNull final Action action) {
+        return handleShiftClick(this.viewer, clickType, action);
     }
 
     /**
      * Handles shift-click interactions for this button.
      *
+     *
      * @param viewer    Overrides the default viewer for this operation.
      * @param clickType the type of click performed
+     * @param action Called after it run the command.
      * @return true if the click action was executed, false otherwise
      */
-    public boolean handleShiftClick(@NotNull final Player viewer, @NotNull final ClickType clickType) {
+    public boolean handleShiftClick(@NotNull final Player viewer, @NotNull final ClickType clickType, @NotNull final Action action) {
         if (!clickType.isShiftClick()) return false;
 
         final ButtonSettings settings = this.buttonSettings;
@@ -223,7 +231,7 @@ public class ButtonContext {
                 leftClickRequirement.runClickActionTask(leftClickRequirement.getDenyCommands(), viewer);
                 return false;
             }
-            shiftLeftClickAction.runClickActionTask(viewer);
+            shiftLeftClickAction.runClickActionTask(viewer, action);
             return true;
         }
 
@@ -234,7 +242,7 @@ public class ButtonContext {
                 rightClickRequirement.runClickActionTask(rightClickRequirement.getDenyCommands(), viewer);
                 return false;
             }
-            shiftRightClickAction.runClickActionTask(viewer);
+            shiftRightClickAction.runClickActionTask(viewer, action);
             return true;
         }
         return false;

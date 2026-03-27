@@ -49,7 +49,7 @@ public class FallBackGUI implements InventoryHolder {
     public void onClick(int slot, ClickType click) {
         ButtonContext buttonContext = menuSession.getButton(slot);
         if (buttonContext != null) {
-            buttonContext.handleClick(click);
+            buttonContext.handleClick(click,() -> {});
         }
     }
 
