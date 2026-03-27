@@ -86,6 +86,10 @@ public final class MenuSettings {
 		return fillSpace;
 	}
 
+	public boolean isRefreshAll() {
+		return refreshAll;
+	}
+
 	public Map<List<Integer>, List<ButtonSettings>> getItemSettings() {
 		return itemSettings;
 	}
