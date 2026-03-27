@@ -87,7 +87,7 @@ public class MenuCache extends SimpleYamlHelper {
 				int priority = config.getInt(buttonPath + ".Priority", 1);
 				boolean refreshClickedButton = config.getBoolean(buttonPath + "Refresh");
 				boolean updateButton = config.getBoolean(buttonPath + ".Update_Button");
-				long updateButtondelay = config.getLong(buttonPath + ".Update_Button_delay");
+				long updateButtondelay = config.getLong(buttonPath + ".Update_delay");
 
 				String slot = config.getString(buttonPath + ".Slot");
 
