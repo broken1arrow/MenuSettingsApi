@@ -1,17 +1,8 @@
 package org.brokenarrow.library.menusettings.builders;
 
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
-import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.requirements.RequirementsLogic;
-import org.brokenarrow.library.menusettings.utillity.CreateItemStack;
-import org.brokenarrow.library.menusettings.utillity.SkullCreator;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.UUID;
-
-import static org.brokenarrow.library.menusettings.utillity.ArmorSlots.getArmorPiece;
 
 public final class ButtonSettings {
 
@@ -120,12 +111,12 @@ public final class ButtonSettings {
 	}
 
 	/**
-	 * Get name on next menu or previous menu is button open.
+	 * Get name on menu to open.
 	 *
 	 * @return name on the menu.
 	 */
 	@Nullable
-	public String getNextMenu() {
+	public String getMenuToOpen() {
 		return openNewMenu;
 	}
 
@@ -139,47 +130,6 @@ public final class ButtonSettings {
 
 	public ItemWrapper getButtonItem() {
 		return buttonItem;
-	}
-
-	/**
-	 * Get the item from {@link ItemWrapper} will create
-	 * the item with the settings from the ItemWrapper class.
-	 *
-	 * @param viewer some open the menu.
-	 * @return itemstack with the set values from ItemWrapper class.
-	 */
-	@Nullable
-	public ItemStack getItemStack(Player viewer) {
-		ItemWrapper itemWrapper = this.getButtonItem();
-		final String icon = itemWrapper.getIcon();
-		Valid.checkBoolean(icon != null, "Your material is null, so can´t add this item to the menu " + ButtonSettings.class);
-
-		ItemStack itemStack = null;
-		if (this.getCheckHand() != null) {
-			final String itemhand = this.getCheckHand().toLowerCase();
-			if (itemhand.equals("main_hand"))
-				if (viewer.getInventory().getItemInMainHand() != null) {
-					itemStack = viewer.getInventory().getItemInMainHand().clone();
-				}
-			if (itemhand.equals("off_hand"))
-				if (viewer.getInventory().getItemInOffHand() != null) {
-					itemStack = viewer.getInventory().getItemInOffHand().clone();
-				}
-		}
-		if (this.getCheckArmor() != null) {
-			itemStack = getArmorPiece(viewer, this.getCheckArmor().toLowerCase());
-		}
-		if (icon.startsWith("uuid="))
-			itemStack = SkullCreator.itemFromUuid(UUID.fromString(icon.replaceFirst("uuid=", "")));
-		else if (icon.startsWith("base64="))
-			itemStack = SkullCreator.itemFromBase64(icon.replaceFirst("base64=", ""));
-		else if (icon.startsWith("url="))
-			itemStack = SkullCreator.itemFromUrl(icon.replaceFirst("url=", ""));
-		else if (icon.startsWith("Player_Skull=") && viewer != null) {
-			itemStack = SkullCreator.itemFromUuid(viewer.getUniqueId());
-		}
-
-		return CreateItemStack.of(itemStack, itemWrapper, viewer).makeItemStack();
 	}
 
 	public RequirementsLogic getViewRequirement() {
