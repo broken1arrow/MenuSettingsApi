@@ -35,6 +35,10 @@ public final class MenuSettingsAddon extends JavaPlugin {
 	@Override
 	public void onLoad() {
 		PLUGIN = this;
+	}
+
+	@Override
+	public void onEnable() {
 		menuDataRegister = new MenuDataRegister.Builder().setDecimalFormat(formatDubbleDecimal())
 				.setRandomUntility(new RandomUntility())
 				.setRegisterEconomyHook(new RegisterEconomyHook())
@@ -42,10 +46,6 @@ public final class MenuSettingsAddon extends JavaPlugin {
 				.setNbtApi(new RegisterNbtAPI(this, false)).build();
 		setServerVersion(PLUGIN);
 		this.getLogger().log(Level.INFO, "Has set plugin and created needed classes.");
-	}
-
-	@Override
-	public void onEnable() {
 		isPlaceholderAPIRegisted = Bukkit.getServer().getPluginManager().getPlugin("PlaceholderAPI") != null;
 		if (!isPlaceholderAPIRegisted)
 			PLUGIN.getLogger().log(Level.WARNING, "You has not added PlaceholderAPI in plugins folder. The api will not work as it should (no placeholders will be translated)");

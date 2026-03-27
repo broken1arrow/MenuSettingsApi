@@ -1,7 +1,7 @@
 Menus:
   Rank_Menu:
     Menu_Size: 27
-    Menu_Title: "&2Rank Up"
+    Menu_Title: "&2Ranks"
     Update_Buttons: true
     Delay: 5
     Menu_Items:

@@ -118,7 +118,9 @@ Menus:
               type: has money
               amount: 50
               success_commands:
-                - "[console] give %player_name% elytra 1"
+                - "[takemoney] 50"
                 - "[message] &aYou bought an Elytra!"
               deny_commands:
                 - "[message] &cNot enough money!"
+        Click_commands:
+          - "[console] give %player_name% elytra 1"

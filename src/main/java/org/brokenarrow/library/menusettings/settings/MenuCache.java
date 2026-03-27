@@ -70,6 +70,7 @@ public class MenuCache extends SimpleYamlHelper {
 		String menuTitle = config.getString(key + ".Menu_Title");
 		String fillSpace = config.getString(key + ".FillSpace");
 		String sound = config.getString(key + ".Sound");
+		boolean refreshAll = config.getBoolean(key + ".Refresh_all_buttons");
 		boolean updateButtons = config.getBoolean(key + ".Update_Buttons");
 		int delay = config.getInt(key + ".Update_buttons_delay");
 
@@ -84,8 +85,7 @@ public class MenuCache extends SimpleYamlHelper {
 				String buttonPath = path + "." + button;
 
 				int priority = config.getInt(buttonPath + ".Priority", 1);
-				boolean refreshButtons = config.getBoolean(buttonPath + "Refresh_buttons");
-				boolean refreshClickedButton = config.getBoolean(buttonPath + "Refresh_clicked_button");
+				boolean refreshClickedButton = config.getBoolean(buttonPath + "Refresh");
 				boolean updateButton = config.getBoolean(buttonPath + ".Update_Button");
 				long updateButtondelay = config.getLong(buttonPath + ".Update_Button_delay");
 
@@ -99,7 +99,6 @@ public class MenuCache extends SimpleYamlHelper {
 				ButtonSettings.Builder builder = new ButtonSettings.Builder()
 						.setButtonItem(yamlConfigMapper.getItem(buttonPath, false))
 						.setUpdateButton(updateButton)
-						.setRefreshAllButtons(refreshButtons)
 						.setRefreshClickedButton(refreshClickedButton)
 						.setRefreshTimeWhenUpdateButton(updateButtondelay)
 						.setPriority(priority)
@@ -141,7 +140,8 @@ public class MenuCache extends SimpleYamlHelper {
 				.setMenuTitle(menuTitle)
 				.setSound(sound)
 				.setOpenRequirement(yamlConfigMapper.checkRequirements("Menus." + key, "Open_requirement"))
-				.setUpdateButtons(updateButtons);
+				.setUpdateButtons(updateButtons)
+				.setRefreshAllButtons(refreshAll);
 
 		return builder.build();
 	}

@@ -15,6 +15,7 @@ public final class MenuSettings {
 	private final int menuSize;
 	private final int globalDelay;
 	private final boolean updateButtons;
+	private final boolean refreshAll;
 	private final String menuType;
 	private final String menuTitle;
 	private final String fillSpace;
@@ -33,6 +34,8 @@ public final class MenuSettings {
 		this.sound = builder.sound;
 		this.itemSettings = builder.itemSettings;
 		this.openRequirement = builder.openRequirement;
+		this.refreshAll = builder.refreshAll;
+
 		this.builder = builder;
 	}
 
@@ -100,6 +103,7 @@ public final class MenuSettings {
 		private int menuSize;
 		private int globalDelay;
 		private boolean updateButtons;
+		private boolean refreshAll;
 		private String menuType;
 		private String menuTitle;
 		private String fillSpace;
@@ -152,10 +156,16 @@ public final class MenuSettings {
 			return this;
 		}
 
+		public Builder setRefreshAllButtons(boolean refreshAll) {
+			this.refreshAll = refreshAll;
+			return this;
+		}
+
 		public MenuSettings build() {
 			return new MenuSettings(this);
 		}
-	}
+
+    }
 
 	@Override
 	public String toString() {

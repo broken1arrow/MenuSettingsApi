@@ -18,7 +18,7 @@ public class HasMoneyRequirement extends Requirement {
 	@Override
 	boolean estimate(Player wiver) {
 		try {
-			return !invert == menuDataRegister.getEconomyProvider().hasAmount(wiver.getUniqueId(), Long.parseLong(setPlaceholders(wiver, this.amount)));
+			return !invert == menuDataRegister.getEconomyProvider().hasAmount(wiver.getUniqueId(), Double.parseDouble(setPlaceholders(wiver, this.amount)));
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		}
