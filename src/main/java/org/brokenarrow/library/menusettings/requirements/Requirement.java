@@ -7,8 +7,6 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 public abstract class Requirement {
-
-
 	private boolean optional;
 	private List<ClickActionTask> denyCommands;
 	private List<ClickActionTask> successCommands;
@@ -37,16 +35,6 @@ public abstract class Requirement {
 		return denyCommands;
 	}
 
-	public void setOptional(boolean optional) {
-		this.optional = optional;
-
-	}
-
-	public void setDenyCommands(List<ClickActionTask> denyCommands) {
-		this.denyCommands = denyCommands;
-
-	}
-
 	public List<ClickActionTask> getSuccessCommands() {
 		return successCommands;
 	}
@@ -62,6 +50,16 @@ public abstract class Requirement {
 
 	public void setSuccessCommands(List<ClickActionTask> successCommands) {
 		this.successCommands = successCommands;
+
+	}
+
+	public void setOptional(boolean optional) {
+		this.optional = optional;
+
+	}
+
+	public void setDenyCommands(List<ClickActionTask> denyCommands) {
+		this.denyCommands = denyCommands;
 
 	}
 

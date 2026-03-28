@@ -1,14 +1,13 @@
 package org.brokenarrow.library.menusettings.clickactions;
 
 import org.brokenarrow.library.menusettings.tasks.ClickActionTask;
-import org.brokenarrow.library.menusettings.utillity.Action;
+import org.brokenarrow.library.menusettings.utillity.RunTimedTask;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import static org.brokenarrow.library.menusettings.utillity.RunTimedTask.runTask;
-import static org.brokenarrow.library.menusettings.utillity.RunTimedTask.runTaskLater;
+import java.util.concurrent.CompletableFuture;
 
 
 public class ClickActionHandler {
@@ -19,26 +18,35 @@ public class ClickActionHandler {
         this.clickActionTaskList = clickActionTaskList;
     }
 
-    public void runClickActionTask(Player wiver, @NotNull Action action) {
-        if (clickActionTaskList == null)
-            return;
-        for (ClickActionTask clickAction : this.clickActionTaskList) {
-            if (clickAction == null) continue;
-
-            if (clickAction.checkChance(wiver)) {
-                long delay = clickAction.formatDelay(wiver);
-                if (delay > 0)
-                    runTaskLater(delay, false, () -> {
-                        clickAction.task(wiver);
-                        action.perform();
-                    });
-                else
-                    runTask(false, () -> {
-                        clickAction.task(wiver);
-                        action.perform();
-                    });
-
-            }
+    public CompletableFuture<Void> runClickActionTasks(@NotNull final Player wiver) {
+        if (clickActionTaskList == null || clickActionTaskList.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
         }
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        for (ClickActionTask action : this.clickActionTaskList) {
+            if (action == null) continue;
+            futures.add(runTask(action, wiver));
+        }
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+    }
+
+    private CompletableFuture<Void> runTask(ClickActionTask action, Player wiver) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        long delay = action.formatDelay(wiver);
+
+        Runnable taskWrapper = () -> {
+            try {
+                action.task(wiver);
+            } finally {
+                future.complete(null);
+            }
+        };
+        if (delay > 0) {
+            RunTimedTask.runTaskLater(delay, false, taskWrapper);
+        } else {
+            RunTimedTask.runTask(false, taskWrapper);
+        }
+        return future;
     }
 }

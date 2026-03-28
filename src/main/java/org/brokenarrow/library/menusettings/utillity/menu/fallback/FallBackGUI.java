@@ -3,6 +3,7 @@ package org.brokenarrow.library.menusettings.utillity.menu.fallback;
 import org.brokenarrow.library.menusettings.MenuSession;
 import org.brokenarrow.library.menusettings.builders.ButtonContext;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
+import org.brokenarrow.library.menusettings.utillity.Action;
 import org.brokenarrow.library.menusettings.utillity.CreateItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -42,8 +43,8 @@ public class FallBackGUI implements InventoryHolder {
         return CreateItemStack.of(Material.BARRIER, "§4Fallback Mode", " ", "§7Some features may not work", "").makeItemStack();
     }
 
-    public boolean beforeOpen() {
-        return menuSession.checkOpenRequirements("");
+    public void beforeOpen(@NotNull final Action action) {
+        menuSession.checkOpenRequirements("", action);
     }
 
     public void onClick(int slot, ClickType click) {

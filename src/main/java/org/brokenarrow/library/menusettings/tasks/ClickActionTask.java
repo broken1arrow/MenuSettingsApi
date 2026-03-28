@@ -177,7 +177,7 @@ public class ClickActionTask {
 			player.closeInventory();
 			return;
 		}
-		
+
 		if (menuCache == null) {
 			logger.warning("Could not find the menu contect for this plugin: " + plugin.getName() + ". Did you register your menu?");
 			return;
@@ -195,11 +195,9 @@ public class ClickActionTask {
 			return;
 		}
 
-		logger.warning("Fallback GUI used for menu: " + executable);
-		FallBackGUI fallBackGUI = new FallBackGUI(plugin, executable, player);
-		if (fallBackGUI.beforeOpen()) {
-			player.openInventory(fallBackGUI.getInventory());
-		}
+        logger.warning("Fallback GUI used for menu: " + executable);
+        FallBackGUI fallBackGUI = new FallBackGUI(plugin, executable, player);
+        fallBackGUI.beforeOpen(() -> player.openInventory(fallBackGUI.getInventory()));
 	}
 
 

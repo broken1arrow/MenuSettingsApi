@@ -1,6 +1,6 @@
 package org.brokenarrow.library.menusettings.builders;
 
-import org.brokenarrow.library.menusettings.requirements.RequirementsLogic;
+import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
 import org.brokenarrow.library.menusettings.utillity.GuiTypeUtillity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -21,7 +21,7 @@ public final class MenuSettings {
 	private final String fillSpace;
 	private final String sound;
 	private final Map<List<Integer>, List<ButtonSettings>> itemSettings;
-	private final RequirementsLogic openRequirement;
+	private final RequirementsContext openRequirement;
 	private final Builder builder;
 
 	private MenuSettings(Builder builder) {
@@ -94,7 +94,7 @@ public final class MenuSettings {
 		return itemSettings;
 	}
 
-	public RequirementsLogic getOpenRequirement() {
+	public RequirementsContext getOpenRequirement() {
 		return openRequirement;
 	}
 
@@ -113,7 +113,7 @@ public final class MenuSettings {
 		private String fillSpace;
 		private String sound;
 		private Map<List<Integer>, List<ButtonSettings>> itemSettings;
-		private RequirementsLogic openRequirement;
+		private RequirementsContext openRequirement;
 
 		public Builder setMenuType(String menuType) {
 			this.menuType = menuType;
@@ -155,7 +155,7 @@ public final class MenuSettings {
 			return this;
 		}
 
-		public Builder setOpenRequirement(RequirementsLogic openRequirement) {
+		public Builder setOpenRequirement(RequirementsContext openRequirement) {
 			this.openRequirement = openRequirement;
 			return this;
 		}

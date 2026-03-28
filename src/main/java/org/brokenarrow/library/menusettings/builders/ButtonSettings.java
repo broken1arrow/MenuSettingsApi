@@ -1,7 +1,7 @@
 package org.brokenarrow.library.menusettings.builders;
 
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
-import org.brokenarrow.library.menusettings.requirements.RequirementsLogic;
+import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
 import org.jetbrains.annotations.Nullable;
 
 public final class ButtonSettings {
@@ -15,13 +15,13 @@ public final class ButtonSettings {
 	private final String checkHand;
 	private final String openNewMenu;
 	private final ItemWrapper buttonItem;
-	private final RequirementsLogic viewRequirement;
-	private final RequirementsLogic clickrequirement;
-	private final RequirementsLogic shiftRightClickRequirement;
-	private final RequirementsLogic shiftLeftClickRequirement;
-	private final RequirementsLogic leftClickRequirement;
-	private final RequirementsLogic rightClickRequirement;
-	private final RequirementsLogic middleClickRequirement;
+	private final RequirementsContext viewRequirement;
+	private final RequirementsContext clickrequirement;
+	private final RequirementsContext shiftRightClickRequirement;
+	private final RequirementsContext shiftLeftClickRequirement;
+	private final RequirementsContext leftClickRequirement;
+	private final RequirementsContext rightClickRequirement;
+	private final RequirementsContext middleClickRequirement;
 	private final ClickActionHandler clickActionHandler;
 	private final ClickActionHandler leftClickActionHandler;
 	private final ClickActionHandler rightClickActionHandler;
@@ -120,31 +120,31 @@ public final class ButtonSettings {
 		return buttonItem;
 	}
 
-	public RequirementsLogic getViewRequirement() {
+	public RequirementsContext getViewRequirement() {
 		return viewRequirement;
 	}
 
-	public RequirementsLogic getClickRequirement() {
+	public RequirementsContext getClickRequirement() {
 		return clickrequirement;
 	}
 
-	public RequirementsLogic getShiftRightClickRequirement() {
+	public RequirementsContext getShiftRightClickRequirement() {
 		return shiftRightClickRequirement;
 	}
 
-	public RequirementsLogic getShiftLeftClickRequirement() {
+	public RequirementsContext getShiftLeftClickRequirement() {
 		return shiftLeftClickRequirement;
 	}
 
-	public RequirementsLogic getLeftClickRequirement() {
+	public RequirementsContext getLeftClickRequirement() {
 		return leftClickRequirement;
 	}
 
-	public RequirementsLogic getRightClickRequirement() {
+	public RequirementsContext getRightClickRequirement() {
 		return rightClickRequirement;
 	}
 
-	public RequirementsLogic getMiddleClickRequirement() {
+	public RequirementsContext getMiddleClickRequirement() {
 		return middleClickRequirement;
 	}
 
@@ -186,13 +186,13 @@ public final class ButtonSettings {
 		public String checkHand;
 		private String openNewMenu;
 		private ItemWrapper buttonItem;
-		private RequirementsLogic viewRequirement;
-		private RequirementsLogic clickrequirement;
-		private RequirementsLogic shiftRightClickRequirement;
-		private RequirementsLogic shiftLeftClickRequirement;
-		private RequirementsLogic leftClickRequirement;
-		private RequirementsLogic rightClickRequirement;
-		private RequirementsLogic middleClickRequirement;
+		private RequirementsContext viewRequirement;
+		private RequirementsContext clickrequirement;
+		private RequirementsContext shiftRightClickRequirement;
+		private RequirementsContext shiftLeftClickRequirement;
+		private RequirementsContext leftClickRequirement;
+		private RequirementsContext rightClickRequirement;
+		private RequirementsContext middleClickRequirement;
 		private ClickActionHandler clickActionHandler;
 		private ClickActionHandler leftClickActionHandler;
 		private ClickActionHandler rightClickActionHandler;
@@ -246,37 +246,37 @@ public final class ButtonSettings {
 			return this;
 		}
 
-		public Builder setViewRequirement(RequirementsLogic requirementsList) {
+		public Builder setViewRequirement(RequirementsContext requirementsList) {
 			this.viewRequirement = requirementsList;
 			return this;
 		}
 
-		public Builder setClickrequirement(RequirementsLogic clickrequirement) {
+		public Builder setClickrequirement(RequirementsContext clickrequirement) {
 			this.clickrequirement = clickrequirement;
 			return this;
 		}
 
-		public Builder setShiftRightClickRequirement(RequirementsLogic shiftRightClickRequirement) {
+		public Builder setShiftRightClickRequirement(RequirementsContext shiftRightClickRequirement) {
 			this.shiftRightClickRequirement = shiftRightClickRequirement;
 			return this;
 		}
 
-		public Builder setShiftLeftClickRequirement(RequirementsLogic shiftLeftClickRequirement) {
+		public Builder setShiftLeftClickRequirement(RequirementsContext shiftLeftClickRequirement) {
 			this.shiftLeftClickRequirement = shiftLeftClickRequirement;
 			return this;
 		}
 
-		public Builder setLeftClickRequirement(RequirementsLogic leftClickRequirement) {
+		public Builder setLeftClickRequirement(RequirementsContext leftClickRequirement) {
 			this.leftClickRequirement = leftClickRequirement;
 			return this;
 		}
 
-		public Builder setRightClickRequirement(RequirementsLogic rightClickRequirement) {
+		public Builder setRightClickRequirement(RequirementsContext rightClickRequirement) {
 			this.rightClickRequirement = rightClickRequirement;
 			return this;
 		}
 
-		public Builder setMiddleClickRequirement(RequirementsLogic middleClickRequirement) {
+		public Builder setMiddleClickRequirement(RequirementsContext middleClickRequirement) {
 			this.middleClickRequirement = middleClickRequirement;
 			return this;
 		}

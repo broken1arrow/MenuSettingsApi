@@ -62,7 +62,7 @@ public final class YamlConfigMapper {
 		return builder.build();
 	}
 
-	public RequirementsLogic checkRequirements(String path, String clickType) {
+	public RequirementsContext checkRequirements(String path, String clickType) {
 
 		if (!clickType.contains("_requirement")) return null;
 		String innerPath = path + "." + clickType + ".Requirement";
@@ -81,9 +81,9 @@ public final class YamlConfigMapper {
 		boolean stopAtSuccess = this.getConfig().getBoolean(path + "." + clickType + ".stop_at_success");
 		int minimumRequirement = this.getConfig().getInt(path + "." + clickType + ".minimum_requirement");
 
-		RequirementsLogic requirementsLogic = new RequirementsLogic(requirementsList);
-		requirementsLogic.setDenyCommands(formatCommands(plugin, denyCommands, this.openCloseAction));
-		requirementsLogic.setStopAtSuccess(stopAtSuccess);
+		RequirementsContext requirementsContext = new RequirementsContext(requirementsList);
+		requirementsContext.setDenyCommands(formatCommands(plugin, denyCommands, this.openCloseAction));
+		requirementsContext.setStopAtSuccess(stopAtSuccess);
 
 
 		if (minimumRequirement <= 0) {
@@ -95,15 +95,15 @@ public final class YamlConfigMapper {
 					required++;
 				}
 			}
-			requirementsLogic.setMinimumRequirements(required);
+			requirementsContext.setMinimumRequirements(required);
 		} else {
 			if (minimumRequirement > requirementsList.size())
 				minimumRequirement = requirementsList.size();
-			requirementsLogic.setMinimumRequirements(minimumRequirement);
+			requirementsContext.setMinimumRequirements(minimumRequirement);
 		}
 
 
-		return requirementsLogic;
+		return requirementsContext;
 	}
 
 	public ItemWrapper getItem(String path, boolean addItemChecks) {
