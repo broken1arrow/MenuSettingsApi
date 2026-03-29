@@ -193,8 +193,9 @@ public final class MenuSession {
      */
     private boolean checkRequirement(RequirementsContext viewRequirement,@NotNull final Consumer<Boolean> callback) {
         if (viewRequirement == null)
-            return;
+            return false;
         viewRequirement.estimate(this.viewer, callback);
+        return false;
     }
 
     /**
