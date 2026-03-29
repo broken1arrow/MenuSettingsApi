@@ -13,6 +13,7 @@ import org.brokenarrow.library.menusettings.builders.Template;
 import org.brokenarrow.library.menusettings.clickactions.CommandActionType;
 import org.brokenarrow.library.menusettings.settings.MenuCache;
 import org.brokenarrow.library.menusettings.settings.TemplatesCache;
+import org.brokenarrow.library.menusettings.utillity.RequirementCheck;
 import org.brokenarrow.library.menusettings.utillity.menu.fallback.FallBackGUI;
 import org.brokenarrow.library.menusettings.utillity.MenuAction;
 import org.brokenarrow.library.menusettings.utillity.MenuActionHandler;
@@ -47,120 +48,120 @@ public class ClickActionTask {
     Logger logger = MenuSettingsAddon.getPLUGIN().getLogger();
     private final Plugin plugin;
     private final CommandActionType actionType;
-	private final  MenuContext menuContext;
+    private final MenuContext menuContext;
     private final MenuActionHandler openCloseAction;
     private String executable;
-	private String delay;
-	private String chance;
-	private final MenuDataRegister menuDataRegister = MenuDataRegister.getInstance();
+    private String delay;
+    private String chance;
+    private final MenuDataRegister menuDataRegister = MenuDataRegister.getInstance();
 
-	public ClickActionTask(@NotNull final Plugin plugin,@NotNull final CommandActionType actionType, @Nullable final MenuActionHandler openCloseAction) {
+    public ClickActionTask(@NotNull final Plugin plugin, @NotNull final CommandActionType actionType, @Nullable final MenuActionHandler openCloseAction) {
         this.plugin = plugin;
         this.actionType = actionType;
-		this.menuContext = menuDataRegister.getMenuContext(plugin);
+        this.menuContext = menuDataRegister.getMenuContext(plugin);
         this.openCloseAction = openCloseAction;
     }
 
-	public void task(Player player) {
-		if (player == null) return;
-		String executable = setPlaceholders(player, this.getExecutable());
-		switch (this.actionType) {
-			case CONSOLE:
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), executable);
-				break;
-			case PLAYER:
-				player.chat("/" + executable);
-				break;
-			case MINI_MESSAGE:
-				menuDataRegister.getAudiences().player(player).sendMessage(MiniMessage.miniMessage().deserialize(executable));
-				break;
-			case MINI_BROADCAST:
-				menuDataRegister.getAudiences().all().sendMessage(MiniMessage.miniMessage().deserialize(executable));
-				break;
-			case MINI_BOSSBAR:
-				BossBar bossBar = BossBar.bossBar(MiniMessage.miniMessage().deserialize(executable), 0, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
-				menuDataRegister.getAudiences().player(player).showBossBar(bossBar);
-				runTaskLater(20 * 5, false, () -> menuDataRegister.getAudiences().player(player).hideBossBar(bossBar));
-				break;
-			case MINI_ACTIONBAR:
-				menuDataRegister.getAudiences().player(player).sendActionBar(MiniMessage.miniMessage().deserialize(executable));
-				break;
-			case MINI_TITLE:
-				String[] splited = null;
-				if (executable.contains("|"))
-					splited = executable.split("\\|");
-				String message = splited != null ? splited[0] : executable;
-				String submessage = splited != null && splited.length == 2 ? splited[1] : "";
-				final Component mainTitle = MiniMessage.miniMessage().deserialize(message);
-				final Component subtitle = MiniMessage.miniMessage().deserialize(submessage);
-				final Title title = Title.title(mainTitle, subtitle);
-				menuDataRegister.getAudiences().player(player).showTitle(title);
-				break;
-			case PLACEHOLDER:
-				setPlaceholders(player, executable);
-			case PLAYER_COMMAND_EVENT:
-				Bukkit.getPluginManager().callEvent(new PlayerCommandPreprocessEvent(player, "/" + executable));
-				break;
-			case MESSAGE:
-				player.sendMessage(toSpigotFormat(executable));
-				break;
-			case BROADCAST:
-				Bukkit.broadcastMessage(toSpigotFormat(executable));
-				break;
-			case CHAT:
-				player.chat(executable);
-				break;
-			case CLOSE:
+    public void task(Player player) {
+        if (player == null) return;
+        String executable = setPlaceholders(player, this.getExecutable());
+        switch (this.actionType) {
+            case CONSOLE:
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), executable);
+                break;
+            case PLAYER:
+                player.chat("/" + executable);
+                break;
+            case MINI_MESSAGE:
+                menuDataRegister.getAudiences().player(player).sendMessage(MiniMessage.miniMessage().deserialize(executable));
+                break;
+            case MINI_BROADCAST:
+                menuDataRegister.getAudiences().all().sendMessage(MiniMessage.miniMessage().deserialize(executable));
+                break;
+            case MINI_BOSSBAR:
+                BossBar bossBar = BossBar.bossBar(MiniMessage.miniMessage().deserialize(executable), 0, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
+                menuDataRegister.getAudiences().player(player).showBossBar(bossBar);
+                runTaskLater(20 * 5, false, () -> menuDataRegister.getAudiences().player(player).hideBossBar(bossBar));
+                break;
+            case MINI_ACTIONBAR:
+                menuDataRegister.getAudiences().player(player).sendActionBar(MiniMessage.miniMessage().deserialize(executable));
+                break;
+            case MINI_TITLE:
+                String[] splited = null;
+                if (executable.contains("|"))
+                    splited = executable.split("\\|");
+                String message = splited != null ? splited[0] : executable;
+                String submessage = splited != null && splited.length == 2 ? splited[1] : "";
+                final Component mainTitle = MiniMessage.miniMessage().deserialize(message);
+                final Component subtitle = MiniMessage.miniMessage().deserialize(submessage);
+                final Title title = Title.title(mainTitle, subtitle);
+                menuDataRegister.getAudiences().player(player).showTitle(title);
+                break;
+            case PLACEHOLDER:
+                setPlaceholders(player, executable);
+            case PLAYER_COMMAND_EVENT:
+                Bukkit.getPluginManager().callEvent(new PlayerCommandPreprocessEvent(player, "/" + executable));
+                break;
+            case MESSAGE:
+                player.sendMessage(toSpigotFormat(executable));
+                break;
+            case BROADCAST:
+                Bukkit.broadcastMessage(toSpigotFormat(executable));
+                break;
+            case CHAT:
+                player.chat(executable);
+                break;
+            case CLOSE:
             case OPEN:
-				this.menuAction(player,  executable);
-				break;
-			case REFRESH:
-				player.updateInventory();
-				break;
-			case BROADCAST_SOUND:
-			case BROADCAST_WORLD_SOUND:
-			case PLAY_SOUND:
-				SoundUtillity soundU = new SoundUtillity(executable);
-				Sound sound = soundU.getSound();
-				float volume = soundU.getVolume();
-				float pitch = soundU.getPitch();
+                this.menuAction(player, executable);
+                break;
+            case REFRESH:
+                player.updateInventory();
+                break;
+            case BROADCAST_SOUND:
+            case BROADCAST_WORLD_SOUND:
+            case PLAY_SOUND:
+                SoundUtillity soundU = new SoundUtillity(executable);
+                Sound sound = soundU.getSound();
+                float volume = soundU.getVolume();
+                float pitch = soundU.getPitch();
 
-				if (sound == null) return;
+                if (sound == null) return;
 
-				if (this.actionType == CommandActionType.BROADCAST_SOUND) {
-					for (Player p : Bukkit.getOnlinePlayers()) {
-						p.playSound(p.getLocation(), sound, volume, pitch);
-					}
-				} else if (this.actionType == CommandActionType.BROADCAST_WORLD_SOUND) {
-					for (Player p : Bukkit.getOnlinePlayers()) {
-						if (player.getWorld().getName().equals(p.getWorld().getName()))
-							player.getWorld().playSound(p.getLocation(), sound, volume, pitch);
-					}
-				} else {
-					player.playSound(player.getLocation(), sound, volume, pitch);
-				}
+                if (this.actionType == CommandActionType.BROADCAST_SOUND) {
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.playSound(p.getLocation(), sound, volume, pitch);
+                    }
+                } else if (this.actionType == CommandActionType.BROADCAST_WORLD_SOUND) {
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        if (player.getWorld().getName().equals(p.getWorld().getName()))
+                            player.getWorld().playSound(p.getLocation(), sound, volume, pitch);
+                    }
+                } else {
+                    player.playSound(player.getLocation(), sound, volume, pitch);
+                }
 
-				break;
-			case TAKE_MONEY:
-				menuDataRegister.getEconomyProvider().withdrawAmont(player.getUniqueId(), Double.parseDouble(executable));
-				break;
-			case GIVE_MONEY:
-				menuDataRegister.getEconomyProvider().depositAmont(player.getUniqueId(), Double.parseDouble(executable));
-				break;
-			case TAKE_EXP:
-			case GIVE_EXP:
-				if (this.actionType == TAKE_EXP)
-					executable = "-" + executable;
+                break;
+            case TAKE_MONEY:
+                menuDataRegister.getEconomyProvider().withdrawAmont(player.getUniqueId(), Double.parseDouble(executable));
+                break;
+            case GIVE_MONEY:
+                menuDataRegister.getEconomyProvider().depositAmont(player.getUniqueId(), Double.parseDouble(executable));
+                break;
+            case TAKE_EXP:
+            case GIVE_EXP:
+                if (this.actionType == TAKE_EXP)
+                    executable = "-" + executable;
 
-				setExp(player, executable);
-				break;
-			case TAKE_PERM:
-				menuDataRegister.getPermissionProvider().setPermission(player, executable);
-				break;
-			case GIVE_PERM:
-				menuDataRegister.getPermissionProvider().removePermission(player, executable);
-				break;
-			case GIVE_SKULL:
+                setExp(player, executable);
+                break;
+            case TAKE_PERM:
+                menuDataRegister.getPermissionProvider().setPermission(player, executable);
+                break;
+            case GIVE_PERM:
+                menuDataRegister.getPermissionProvider().removePermission(player, executable);
+                break;
+            case GIVE_SKULL:
                 giveSkullItem(player, executable);
                 break;
             case GIVE_ITEM:
@@ -169,116 +170,119 @@ public class ClickActionTask {
         }
     }
 
-	private void menuAction(final Player player,  final String executable) {
-		final CommandActionType action = this.actionType;
-		final MenuCache menuCache = this.menuContext != null ? this.menuContext.getMenuCache() : null;
+    private void menuAction(final Player player, final String executable) {
+        final CommandActionType action = this.actionType;
+        final MenuCache menuCache = this.menuContext != null ? this.menuContext.getMenuCache() : null;
 
-		if (action == CLOSE && this.openCloseAction == null) {
-			player.closeInventory();
-			return;
-		}
+        if (action == CLOSE && this.openCloseAction == null) {
+            player.closeInventory();
+            return;
+        }
 
-		if (menuCache == null) {
-			logger.warning("Could not find the menu contect for this plugin: " + plugin.getName() + ". Did you register your menu?");
-			return;
-		}
+        if (menuCache == null) {
+            logger.warning("Could not find the menu contect for this plugin: " + plugin.getName() + ". Did you register your menu?");
+            return;
+        }
 
-		final MenuSettings menuSettings = menuCache.getMenuCache().get(executable);
-		if (menuSettings == null) {
-			logger.warning("No menu found with this name: " + executable);
-			return;
-		}
+        final MenuSettings menuSettings = menuCache.getMenuCache().get(executable);
+        if (menuSettings == null) {
+            logger.warning("No menu found with this name: " + executable);
+            return;
+        }
 
-		if (this.openCloseAction != null) {
-			final MenuSession menuSession = new MenuSession(this.plugin, executable, player);
-			openCloseAction.handle(action == OPEN ? MenuAction.OPEN : MenuAction.CLOSE, executable, menuSession);
-			return;
-		}
+        if (this.openCloseAction != null) {
+            final MenuSession menuSession = new MenuSession(this.plugin, executable, player);
+            openCloseAction.handle(action == OPEN ? MenuAction.OPEN : MenuAction.CLOSE, executable, menuSession);
+            return;
+        }
 
         logger.warning("Fallback GUI used for menu: " + executable);
         FallBackGUI fallBackGUI = new FallBackGUI(plugin, executable, player);
-        fallBackGUI.beforeOpen(() -> player.openInventory(fallBackGUI.getInventory()));
-	}
+        fallBackGUI.beforeOpen((check) -> {
+            if (check == RequirementCheck.SUCCESS)
+                player.openInventory(fallBackGUI.getInventory());
+        });
+    }
 
 
-	public long formatDelay(Player wiver) {
-		if (this.getDelay() == null || this.getDelay().isEmpty()) return -1;
-		String delayTranslated = setPlaceholders(wiver, this.getDelay());
+    public long formatDelay(Player wiver) {
+        if (this.getDelay() == null || this.getDelay().isEmpty()) return -1;
+        String delayTranslated = setPlaceholders(wiver, this.getDelay());
 
-		try {
-			return Long.parseLong(delayTranslated);
-		} catch (NumberFormatException ignored) {
-			return -1;
-		}
-	}
+        try {
+            return Long.parseLong(delayTranslated);
+        } catch (NumberFormatException ignored) {
+            return -1;
+        }
+    }
 
-	public boolean checkChance(Player wiver) {
-		if (this.getChance() == null) {
-			return true;
-		} else {
-			String chanceTranslated = setPlaceholders(wiver, this.getChance());
-			double chance;
-			try {
-				chance = Double.parseDouble(chanceTranslated);
-			} catch (NumberFormatException ignored) {
-				getLogger(Level.WARNING, "Your set chance, is not valid format, your input " + chanceTranslated + ". use numbers only. " +
-						"This will now return false and the command/action will not be executed");
-				return false;
-			}
-			if (chance == -1) {
-				return true;
-			}
-			if (chance >= 100.0) {
-				return true;
-			} else {
-				double random = Double.parseDouble(menuDataRegister.getDecimalFormat().format(menuDataRegister.getRandomUntility().randomDouble()));
-				return random <= chance;
-			}
-		}
-	}
+    public boolean checkChance(Player wiver) {
+        if (this.getChance() == null) {
+            return true;
+        } else {
+            String chanceTranslated = setPlaceholders(wiver, this.getChance());
+            double chance;
+            try {
+                chance = Double.parseDouble(chanceTranslated);
+            } catch (NumberFormatException ignored) {
+                getLogger(Level.WARNING, "Your set chance, is not valid format, your input " + chanceTranslated + ". use numbers only. " +
+                        "This will now return false and the command/action will not be executed");
+                return false;
+            }
+            if (chance == -1) {
+                return true;
+            }
+            if (chance >= 100.0) {
+                return true;
+            } else {
+                double random = Double.parseDouble(menuDataRegister.getDecimalFormat().format(menuDataRegister.getRandomUntility().randomDouble()));
+                return random <= chance;
+            }
+        }
+    }
 
-	public String getExecutable() {
-		return executable;
-	}
+    public String getExecutable() {
+        return executable;
+    }
 
-	public void setExecutable(String executable) {
-		this.executable = executable;
-	}
+    public void setExecutable(String executable) {
+        this.executable = executable;
+    }
 
-	public String getDelay() {
-		return delay;
-	}
+    public String getDelay() {
+        return delay;
+    }
 
-	public void setDelay(String delay) {
-		this.delay = delay;
-	}
+    public void setDelay(String delay) {
+        this.delay = delay;
+    }
 
-	public String getChance() {
-		return chance;
-	}
+    public String getChance() {
+        return chance;
+    }
 
-	public void setChance(String chance) {
-		this.chance = chance;
-	}
+    public void setChance(String chance) {
+        this.chance = chance;
+    }
 
     private void giveSkullItem(Player player, String executable) {
         int start = executable.indexOf("{display_name=");
         int end = executable.indexOf("}");
         String displayname = "";
         if (start >= 0 && end > start) {
-			String rawName = executable.substring(start + 14, end); // "&6Guld"
-			executable = executable.replace("{display_name=" + rawName + "}", "").trim();
-			displayname = formatColors(rawName);
+            String rawName = executable.substring(start + 14, end); // "&6Guld"
+            executable = executable.replace("{display_name=" + rawName + "}", "").trim();
+            displayname = formatColors(rawName);
         }
         ItemStack itemStack = getSkull(player, executable);
         if (itemStack != null) {
             ItemMeta meta = itemStack.getItemMeta();
             if (meta != null) {
-				if (displayname.isEmpty()) {
-					meta.setDisplayName("§fSkull");
-				} else {
-					meta.setDisplayName(displayname);
-				}
+                if (displayname.isEmpty()) {
+                    meta.setDisplayName("§fSkull");
+                } else {
+                    meta.setDisplayName(displayname);
+                }
             }
             itemStack.setItemMeta(meta);
             Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(itemStack);
@@ -292,14 +296,14 @@ public class ClickActionTask {
     }
 
     private void giveItem(@NotNull final Player player, @NotNull final String executable) {
-		final TemplatesCache templateCache = menuContext != null ? menuContext.getTemplatesCache() : null;
+        final TemplatesCache templateCache = menuContext != null ? menuContext.getTemplatesCache() : null;
         if (templateCache != null) {
             int start = executable.indexOf("{");
             int end = executable.indexOf("}");
-			if (start >= 0 && end > start) {
-				final String key = executable.substring(start + 1, end);
-				final String remaining = executable.replace("{" + key + "}", "").trim();
-				final Template template = templateCache.getTemplet(key.toLowerCase());
+            if (start >= 0 && end > start) {
+                final String key = executable.substring(start + 1, end);
+                final String remaining = executable.replace("{" + key + "}", "").trim();
+                final Template template = templateCache.getTemplet(key.toLowerCase());
                 int amount = 1;
                 if (!remaining.isEmpty()) {
                     try {
@@ -321,7 +325,7 @@ public class ClickActionTask {
     }
 
     private ItemStack getSkull(@NotNull final Player player, @Nullable final String texture) {
-        if(texture == null || texture.isEmpty())
+        if (texture == null || texture.isEmpty())
             return null;
 
         ItemStack itemStack = null;

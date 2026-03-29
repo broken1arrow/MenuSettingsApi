@@ -3,8 +3,9 @@ package org.brokenarrow.library.menusettings.utillity.menu.fallback;
 import org.brokenarrow.library.menusettings.MenuSession;
 import org.brokenarrow.library.menusettings.builders.ButtonContext;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
-import org.brokenarrow.library.menusettings.utillity.Action;
 import org.brokenarrow.library.menusettings.utillity.CreateItemStack;
+import org.brokenarrow.library.menusettings.utillity.RequirementCheck;
+import org.brokenarrow.library.menusettings.utillity.RequirementResult;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -14,6 +15,8 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Consumer;
 
 public class FallBackGUI implements InventoryHolder {
     private final Inventory inventory;
@@ -43,14 +46,14 @@ public class FallBackGUI implements InventoryHolder {
         return CreateItemStack.of(Material.BARRIER, "§4Fallback Mode", " ", "§7Some features may not work", "").makeItemStack();
     }
 
-    public void beforeOpen(@NotNull final Action action) {
+    public void beforeOpen(@NotNull final Consumer<RequirementCheck> action) {
         menuSession.checkOpenRequirements("", action);
     }
 
     public void onClick(int slot, ClickType click) {
         ButtonContext buttonContext = menuSession.getButton(slot);
         if (buttonContext != null) {
-            buttonContext.handleClick(click,() -> {});
+            buttonContext.handleClick(click, new RequirementResult() {});
         }
     }
 

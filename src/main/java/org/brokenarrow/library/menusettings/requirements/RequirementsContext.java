@@ -1,6 +1,7 @@
 package org.brokenarrow.library.menusettings.requirements;
 
 import org.brokenarrow.library.menusettings.tasks.ClickActionTask;
+import org.brokenarrow.library.menusettings.utillity.RunTimedTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -58,14 +59,14 @@ public class RequirementsContext {
             if (clickAction.checkChance(wiver)) {
                 long delay = clickAction.formatDelay(wiver);
                 if (delay > 0)
-                    Bukkit.getScheduler().runTaskLater(getPLUGIN(), () -> clickAction.task(wiver), delay);
+                    RunTimedTask.runTaskLater(delay, false, () -> clickAction.task(wiver));
                 else
-                    Bukkit.getScheduler().runTask(getPLUGIN(), () -> clickAction.task(wiver));
+                    RunTimedTask.runTask(false, () -> clickAction.task(wiver));
             }
         }
     }
 
-    public void estimate(@NotNull final Player wiver,@NotNull final Consumer<Boolean> callback) {
+    public void estimate(@NotNull final Player wiver, @NotNull final Consumer<Boolean> callback) {
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         int success = 0;
 

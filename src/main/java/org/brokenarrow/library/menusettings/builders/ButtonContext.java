@@ -5,6 +5,8 @@ import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
 import org.brokenarrow.library.menusettings.utillity.Action;
 import org.brokenarrow.library.menusettings.utillity.CreateItemStack;
+import org.brokenarrow.library.menusettings.utillity.RequirementCheck;
+import org.brokenarrow.library.menusettings.utillity.RequirementResult;
 import org.brokenarrow.library.menusettings.utillity.SkullCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -13,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static org.brokenarrow.library.menusettings.utillity.ArmorSlots.getArmorPiece;
 
@@ -107,11 +110,10 @@ public class ButtonContext {
      * the corresponding actions if all requirements are met.
      *
      * @param clickType the type of click performed
-     * @param action    Called after it run the command.
-     * @return true if the click action was executed, false otherwise
+     * @param resultCallback    Called after it run the command.
      */
-    public boolean handleClick(@NotNull final ClickType clickType, @NotNull final Action action) {
-        return handleClick(this.viewer, clickType, action);
+    public void handleClick(@NotNull final ClickType clickType, @NotNull final  RequirementResult resultCallback) {
+        handleClick(this.viewer, clickType, resultCallback);
     }
 
     /**
@@ -122,16 +124,14 @@ public class ButtonContext {
      *
      * @param viewer    Overrides the default viewer for this operation.
      * @param clickType the type of click performed
-     * @param action    Called after it run the command.
-     * @return true if the click action was executed, false otherwise
+     * @param resultCallback    Called after it run the command.
      */
-    public boolean handleClick(@NotNull final Player viewer, @NotNull final ClickType clickType, @NotNull final Action action) {
+    public void handleClick(@NotNull final Player viewer, @NotNull final ClickType clickType, @NotNull final RequirementResult resultCallback) {
 
-        handleGlobalClick(viewer, action);
-        handleShiftClick(viewer, clickType, action);
-        handlePrimaryClick(viewer, clickType, action);
-        handleMiddleClick(viewer, clickType, action);
-        return false;
+        handleGlobalClick(viewer, resultCallback);
+        handleShiftClick(viewer, clickType, resultCallback);
+        handlePrimaryClick(viewer, clickType, resultCallback);
+        handleMiddleClick(viewer, clickType, resultCallback);
     }
 
     /**
@@ -142,21 +142,21 @@ public class ButtonContext {
      * and the method returns immediately; do not rely on return value for success/failure.
      *
      * @param viewer the player clicking
-     * @param action the action to execute if allowed
+     * @param resultCallback  the action to execute if allowed
      */
-    private void handleGlobalClick(@NotNull Player viewer, @NotNull Action action) {
+    private void handleGlobalClick(@NotNull Player viewer, @NotNull final  RequirementResult resultCallback) {
         final ButtonSettings settings = this.buttonSettings;
         final ClickActionHandler globalClickHandler = settings.getClickActionHandler();
         final RequirementsContext clickrequirement = settings.getClickRequirement();
-        this.handleClickRequirements(viewer, globalClickHandler, clickrequirement, action);
+        this.handleClickRequirements(viewer, globalClickHandler, clickrequirement, resultCallback);
     }
 
-    private void handleMiddleClick(@NotNull Player viewer, @NotNull final ClickType clickType, @NotNull Action action) {
+    private void handleMiddleClick(@NotNull Player viewer, @NotNull final ClickType clickType, @NotNull final  RequirementResult resultCallback) {
         final ButtonSettings settings = this.buttonSettings;
         final ClickActionHandler middleClickAction = settings.getMiddleClickActionHandler();
         final RequirementsContext middleClickRequirement = settings.getMiddleClickRequirement();
         if (clickType == ClickType.MIDDLE) {
-            this.handleClickRequirements(viewer, middleClickAction, middleClickRequirement, action);
+            this.handleClickRequirements(viewer, middleClickAction, middleClickRequirement, resultCallback);
         }
     }
 
@@ -229,26 +229,27 @@ public class ButtonContext {
         }
     }
 
-    private void handleClickRequirements(@NotNull final Player viewer, @Nullable final ClickActionHandler clickActionHandler, @Nullable final RequirementsContext requirementsContext, @NotNull final Action action) {
-        if (handeleRequirements(viewer, clickActionHandler, requirementsContext, action)) return;
-        if (clickActionHandler != null) {
-            clickActionHandler.runClickActionTasks(viewer).thenRun(action::perform);
+    private void handleClickRequirements(@NotNull Player viewer, @Nullable ClickActionHandler clickActionHandler, @Nullable RequirementsContext requirementsContext, @NotNull RequirementResult resultCallback) {
+        if (clickActionHandler == null) {
+            return;
         }
-    }
 
-    private boolean handeleRequirements(@NotNull final Player viewer, @Nullable final ClickActionHandler clickActionHandler, @Nullable final RequirementsContext requirementsContext, @NotNull final Action action) {
-        if (requirementsContext != null && clickActionHandler != null) {
-            requirementsContext.estimate(viewer, hasRequirement -> {
-                if (hasRequirement) {
-                    clickActionHandler.runClickActionTasks(viewer)
-                            .thenRun(action::perform);
-                } else {
-                    requirementsContext.runClickActionTasks(requirementsContext.getDenyCommands(), viewer);
-                }
-            });
-            return true;
+        if (requirementsContext == null) {
+            clickActionHandler.runClickActionTasks(viewer)
+                    .thenRun(resultCallback::onSuccess);
+            return;
         }
-        return false;
+        viewer.set;
+        requirementsContext.estimate(viewer, hasRequirement -> {
+            if (hasRequirement) {
+                clickActionHandler.runClickActionTasks(viewer)
+                        .thenRun(resultCallback::onSuccess);
+            } else {
+                requirementsContext
+                        .runClickActionTasks(requirementsContext.getDenyCommands(), viewer)
+                        .thenRun(() -> resultCallback::onFailure);
+            }
+        });
     }
 
 }

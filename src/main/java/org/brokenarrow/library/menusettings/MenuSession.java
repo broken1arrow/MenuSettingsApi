@@ -6,7 +6,7 @@ import org.brokenarrow.library.menusettings.builders.MenuSettings;
 import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
 import org.brokenarrow.library.menusettings.settings.MenuCache;
-import org.brokenarrow.library.menusettings.utillity.Action;
+import org.brokenarrow.library.menusettings.utillity.RequirementCheck;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.brokenarrow.library.menusettings.MenuSettingsAddon.setPlaceholders;
@@ -108,19 +109,19 @@ public final class MenuSession {
      *
      * @param bypassPermission a permission node to bypass the requirements, if applicable
      */
-    public void checkOpenRequirements(@Nullable final String bypassPermission, @Nonnull final Action action) {
+    public void checkOpenRequirements(@Nullable final String bypassPermission, @Nonnull final Consumer<RequirementCheck> action) {
         if (this.viewer != null && bypassPermission != null && !bypassPermission.isEmpty() && this.viewer.hasPermission(bypassPermission)) {
-            action.perform();
+            action.accept(RequirementCheck.SUCCESS);
             return;
         }
         RequirementsContext openRequirement = this.getMenuSettings().getOpenRequirement();
         if (openRequirement != null && this.viewer != null) {
             openRequirement.estimate(this.viewer, hasRequirements -> {
                 if (hasRequirements) {
-                    action.perform();
+                    action.accept(RequirementCheck.SUCCESS);
                 } else {
                     if (openRequirement.getDenyCommands() != null)
-                        openRequirement.runClickActionTasks(openRequirement.getDenyCommands(), this.viewer);
+                        openRequirement.runClickActionTasks(openRequirement.getDenyCommands(), this.viewer).thenRun(() -> action.accept(RequirementCheck.FAILED));
                 }
             });
         }
