@@ -27,11 +27,11 @@ public class RequirementsContext {
 
     public boolean estimate(Player viewer) {
         int success = 0;
-
+        System.out.println("estimate " );
         for (Requirement requirement : getRequirements()) {
             boolean passed = requirement.estimate(viewer);
             List<ClickActionTask> commands = passed ? requirement.getSuccessCommands() : requirement.getDenyCommands();
-
+            System.out.println("passed " + passed);
             if (!passed && !requirement.isOptional()) {
                 return false;
             }
@@ -46,6 +46,8 @@ public class RequirementsContext {
             }
             if (isStopAtSuccess() && success >= getMinimumRequirements()) break;
         }
+        System.out.println("success " + success);
+        System.out.println("getMinimumRequirements() " + getMinimumRequirements());
         return success >= getMinimumRequirements();
     }
 

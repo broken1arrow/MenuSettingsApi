@@ -127,6 +127,8 @@ public final class MenuSession {
                         openRequirement.runClickActionTasks(openRequirement.getDenyCommands(), this.viewer).thenRun(handler::executeFailure);
                 }
             });
+        } else {
+            handler.executeSuccess();
         }
     }
 
@@ -173,6 +175,7 @@ public final class MenuSession {
 
     private @Nullable ButtonContext getButtonContext(ButtonSettings key) {
         final RequirementsContext viewRequirement = key.getViewRequirement();
+        System.out.println("viewRequirement " + viewRequirement);
         if (viewRequirement == null) {
             return new ButtonContext(key, this.viewer);
         }
