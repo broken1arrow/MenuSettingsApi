@@ -6,7 +6,8 @@ import org.brokenarrow.library.menusettings.builders.MenuSettings;
 import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
 import org.brokenarrow.library.menusettings.settings.MenuCache;
-import org.brokenarrow.library.menusettings.utillity.RequirementCheck;
+import org.brokenarrow.library.menusettings.utillity.ButtonContextCallback;
+import org.brokenarrow.library.menusettings.utillity.RequirementResultHandler;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -108,20 +109,23 @@ public final class MenuSession {
      * Checks whether the player meets the requirements to open this menu.
      *
      * @param bypassPermission a permission node to bypass the requirements, if applicable
+     * @param resultCallback configures actions to execute on success or failure
      */
-    public void checkOpenRequirements(@Nullable final String bypassPermission, @Nonnull final Consumer<RequirementCheck> action) {
+    public void checkOpenRequirements(@Nullable final String bypassPermission, @Nonnull final Consumer<RequirementResultHandler> resultCallback) {
+        final RequirementResultHandler handler = new RequirementResultHandler();
+        resultCallback.accept(handler);
         if (this.viewer != null && bypassPermission != null && !bypassPermission.isEmpty() && this.viewer.hasPermission(bypassPermission)) {
-            action.accept(RequirementCheck.SUCCESS);
+            handler.executeSuccess();
             return;
         }
         RequirementsContext openRequirement = this.getMenuSettings().getOpenRequirement();
         if (openRequirement != null && this.viewer != null) {
             openRequirement.estimate(this.viewer, hasRequirements -> {
                 if (hasRequirements) {
-                    action.accept(RequirementCheck.SUCCESS);
+                    handler.executeSuccess();
                 } else {
                     if (openRequirement.getDenyCommands() != null)
-                        openRequirement.runClickActionTasks(openRequirement.getDenyCommands(), this.viewer).thenRun(() -> action.accept(RequirementCheck.FAILED));
+                        openRequirement.runClickActionTasks(openRequirement.getDenyCommands(), this.viewer).thenRun(handler::executeFailure);
                 }
             });
         }
@@ -131,16 +135,28 @@ public final class MenuSession {
      * Returns the first button available at the specified slot that the player can view.
      *
      * @param slot the slot index
+     * @param resultCallback configures actions to execute on success or failure
      * @return a {@link ButtonContext} for the button, or null if no button is visible
      */
     @Nullable
-    public ButtonContext getButton(int slot) {
+    public <T> ButtonContext getButton(int slot, @Nonnull final ButtonContextCallback<T> resultCallback) {
         List<ButtonSettings> buttonSettings = this.collectButtons(slot);
         if (buttonSettings == null) return null;
 
         for (ButtonSettings key : buttonSettings) {
-            if (checkRequirement(key.getViewRequirement())) {
-                return new ButtonContext(key, this.viewer);
+            final RequirementsContext viewRequirement =  key.getViewRequirement();
+            if(viewRequirement == null ) {
+               resultCallback.apply(new ButtonContext(key, this.viewer));
+            } else {
+                viewRequirement.estimate(this.viewer, hasRequirement -> {
+                    if (hasRequirement) {
+                        resultCallback.apply(new ButtonContext(key, this.viewer));
+                    }else {
+                        resultCallback.apply(null);
+                    }
+
+
+                });
             }
         }
         return null;
@@ -175,10 +191,10 @@ public final class MenuSession {
      * @param viewRequirement the requirement to check
      * @return true if the requirement is met or null, false otherwise
      */
-    private boolean checkRequirement(RequirementsContext viewRequirement) {
+    private boolean checkRequirement(RequirementsContext viewRequirement,@NotNull final Consumer<Boolean> callback) {
         if (viewRequirement == null)
-            return true;
-        return viewRequirement.estimate(this.viewer);
+            return;
+        viewRequirement.estimate(this.viewer, callback);
     }
 
     /**

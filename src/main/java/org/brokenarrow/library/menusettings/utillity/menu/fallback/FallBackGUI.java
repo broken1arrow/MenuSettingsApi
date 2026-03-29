@@ -1,11 +1,9 @@
 package org.brokenarrow.library.menusettings.utillity.menu.fallback;
 
 import org.brokenarrow.library.menusettings.MenuSession;
-import org.brokenarrow.library.menusettings.builders.ButtonContext;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
 import org.brokenarrow.library.menusettings.utillity.CreateItemStack;
-import org.brokenarrow.library.menusettings.utillity.RequirementCheck;
-import org.brokenarrow.library.menusettings.utillity.RequirementResult;
+import org.brokenarrow.library.menusettings.utillity.RequirementResultHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -31,10 +29,13 @@ public class FallBackGUI implements InventoryHolder {
 
         this.inventory = Bukkit.createInventory(this, size, "§4[Fallback] §r" + menuSettings.getMenuTitle());
         for (int slot = 0; slot < this.inventory.getSize(); slot++) {
-            ButtonContext buttonContext = menuSession.getButton(slot);
-            if (buttonContext != null) {
-                this.inventory.setItem(slot, buttonContext.getItemStack());
-            }
+            final int finalSlot = slot;
+            menuSession.getButton(slot, buttonContext ->  {
+                if (buttonContext != null) {
+                    this.inventory.setItem(finalSlot, buttonContext.getItemStack());
+                }
+                return null;
+            });
         }
         int slot = inventory.firstEmpty();
         if (slot != -1) {
@@ -46,15 +47,17 @@ public class FallBackGUI implements InventoryHolder {
         return CreateItemStack.of(Material.BARRIER, "§4Fallback Mode", " ", "§7Some features may not work", "").makeItemStack();
     }
 
-    public void beforeOpen(@NotNull final Consumer<RequirementCheck> action) {
-        menuSession.checkOpenRequirements("", action);
+    public void beforeOpen(@NotNull final Consumer<RequirementResultHandler> resultCallback) {
+        menuSession.checkOpenRequirements("", resultCallback);
     }
 
     public void onClick(int slot, ClickType click) {
-        ButtonContext buttonContext = menuSession.getButton(slot);
-        if (buttonContext != null) {
-            buttonContext.handleClick(click, new RequirementResult() {});
-        }
+        menuSession.getButton(slot, buttonContext ->  {
+            if (buttonContext != null) {
+                buttonContext.handleClick(click, resultHandler -> {});
+            }
+            return null;
+        });
     }
 
     @Override

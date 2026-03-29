@@ -13,12 +13,11 @@ import org.brokenarrow.library.menusettings.builders.Template;
 import org.brokenarrow.library.menusettings.clickactions.CommandActionType;
 import org.brokenarrow.library.menusettings.settings.MenuCache;
 import org.brokenarrow.library.menusettings.settings.TemplatesCache;
-import org.brokenarrow.library.menusettings.utillity.RequirementCheck;
-import org.brokenarrow.library.menusettings.utillity.menu.fallback.FallBackGUI;
 import org.brokenarrow.library.menusettings.utillity.MenuAction;
 import org.brokenarrow.library.menusettings.utillity.MenuActionHandler;
 import org.brokenarrow.library.menusettings.utillity.SkullCreator;
 import org.brokenarrow.library.menusettings.utillity.SoundUtillity;
+import org.brokenarrow.library.menusettings.utillity.menu.fallback.FallBackGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -198,10 +197,9 @@ public class ClickActionTask {
 
         logger.warning("Fallback GUI used for menu: " + executable);
         FallBackGUI fallBackGUI = new FallBackGUI(plugin, executable, player);
-        fallBackGUI.beforeOpen((check) -> {
-            if (check == RequirementCheck.SUCCESS)
-                player.openInventory(fallBackGUI.getInventory());
-        });
+        fallBackGUI.beforeOpen((handler) ->
+                handler.onSuccess(() -> player.openInventory(fallBackGUI.getInventory()))
+        );
     }
 
 
