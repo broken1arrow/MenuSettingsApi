@@ -1,7 +1,7 @@
 package org.brokenarrow.library.menusettings.requirements;
 
+import org.brokenarrow.library.menusettings.MenuSettingsAddon;
 import org.brokenarrow.library.menusettings.tasks.ClickActionTask;
-import org.brokenarrow.library.menusettings.utillity.RunTimedTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -25,48 +25,31 @@ public class RequirementsContext {
         this.setRequirements(requirements);
     }
 
-    public boolean estimate(Player wiver) {
+    public boolean estimate(Player viewer) {
         int success = 0;
-        for (Requirement requirement : this.getRequirements()) {
-            if (requirement.estimate(wiver)) {
-                ++success;
-                final List<ClickActionTask> commands = requirement.getSuccessCommands();
-                if (commands != null) {
-                    runClickActionTask(commands, wiver);
-                }
-                if (this.isStopAtSuccess() && success >= this.getMinimumRequirements())
-                    break;
-            } else {
-                final List<ClickActionTask> commands = requirement.getDenyCommands();
-                if (commands != null) {
-                    runClickActionTask(commands, wiver);
-                }
-                if (!requirement.isOptional()) {
-                    return false;
-                }
+
+        for (Requirement requirement : getRequirements()) {
+            boolean passed = requirement.estimate(viewer);
+            List<ClickActionTask> commands = passed ? requirement.getSuccessCommands() : requirement.getDenyCommands();
+
+            if (!passed && !requirement.isOptional()) {
+                return false;
             }
+            if (passed) success++;
+
+            if (commands != null) {
+                runClickActionTasks(commands, viewer)
+                        .exceptionally(ex -> {
+                            MenuSettingsAddon.getLogger(ex, "Could not run the command set.");
+                            return null;
+                        });
+            }
+            if (isStopAtSuccess() && success >= getMinimumRequirements()) break;
         }
-        return success >= this.getMinimumRequirements();
+        return success >= getMinimumRequirements();
     }
 
-    public void runClickActionTask(List<ClickActionTask> clickActionTaskList, Player wiver) {
-        if (clickActionTaskList == null)
-            return;
-
-        for (ClickActionTask clickAction : clickActionTaskList) {
-            if (clickAction == null) continue;
-
-            if (clickAction.checkChance(wiver)) {
-                long delay = clickAction.formatDelay(wiver);
-                if (delay > 0)
-                    RunTimedTask.runTaskLater(delay, false, () -> clickAction.task(wiver));
-                else
-                    RunTimedTask.runTask(false, () -> clickAction.task(wiver));
-            }
-        }
-    }
-
-    public void estimate(@NotNull final Player wiver, @NotNull final Consumer<Boolean> callback) {
+    public void estimateLater(@NotNull final Player wiver, @NotNull final Consumer<Boolean> callback) {
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         int success = 0;
 
@@ -108,33 +91,6 @@ public class RequirementsContext {
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
     }
 
-    private CompletableFuture<Void> runTask(ClickActionTask clickAction, Player wiver) {
-        CompletableFuture<Void> future = new CompletableFuture<>();
-
-        if (!clickAction.checkChance(wiver)) {
-            future.complete(null);
-            return future;
-        }
-
-        long delay = clickAction.formatDelay(wiver);
-
-        Runnable task = () -> {
-            try {
-                clickAction.task(wiver);
-                future.complete(null);
-            } catch (Exception e) {
-                future.completeExceptionally(e);
-            }
-        };
-
-        if (delay > 0)
-            Bukkit.getScheduler().runTaskLater(getPLUGIN(), task, delay);
-        else
-            Bukkit.getScheduler().runTask(getPLUGIN(), task);
-
-        return future;
-    }
-
     public List<Requirement> getRequirements() {
         return requirements;
     }
@@ -168,4 +124,30 @@ public class RequirementsContext {
 
     }
 
+    private CompletableFuture<Void> runTask(ClickActionTask clickAction, Player wiver) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        if (!clickAction.checkChance(wiver)) {
+            future.complete(null);
+            return future;
+        }
+
+        long delay = clickAction.formatDelay(wiver);
+
+        Runnable task = () -> {
+            try {
+                clickAction.task(wiver);
+                future.complete(null);
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+            }
+        };
+
+        if (delay > 0)
+            Bukkit.getScheduler().runTaskLater(getPLUGIN(), task, delay);
+        else
+            Bukkit.getScheduler().runTask(getPLUGIN(), task);
+
+        return future;
+    }
 }

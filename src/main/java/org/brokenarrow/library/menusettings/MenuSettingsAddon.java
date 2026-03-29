@@ -28,132 +28,136 @@ import static org.brokenarrow.library.menusettings.utillity.ServerVersion.setSer
 
 public final class MenuSettingsAddon extends JavaPlugin {
 
-	private static Plugin PLUGIN;
-	private static boolean isPlaceholderAPIRegisted;
-	private static MenuDataRegister menuDataRegister;
+    private static Plugin PLUGIN;
+    private static boolean isPlaceholderAPIRegisted;
+    private static MenuDataRegister menuDataRegister;
 
-	@Override
-	public void onLoad() {
-		PLUGIN = this;
-	}
+    @Override
+    public void onLoad() {
+        PLUGIN = this;
+    }
 
-	@Override
-	public void onEnable() {
-		menuDataRegister = new MenuDataRegister.Builder().setDecimalFormat(formatDubbleDecimal())
-				.setRandomUntility(new RandomUntility())
-				.setRegisterEconomyHook(new RegisterEconomyHook())
-				.setRegisterPermissionHook(new RegisterPermissionHook())
-				.setNbtApi(new RegisterNbtAPI(this, false)).build();
-		setServerVersion(PLUGIN);
-		this.getLogger().log(Level.INFO, "Has set plugin and created needed classes.");
-		isPlaceholderAPIRegisted = Bukkit.getServer().getPluginManager().getPlugin("PlaceholderAPI") != null;
-		if (!isPlaceholderAPIRegisted)
-			PLUGIN.getLogger().log(Level.WARNING, "You has not added PlaceholderAPI in plugins folder. The api will not work as it should (no placeholders will be translated)");
-		this.getLogger().log(Level.INFO, "Has check if PlaceholderAPI is enable and exist.");
-		this.getLogger().log(Level.INFO, "Has finish loading. To use the api, dont forget register in onEnable method in your plugin.");
-		menuDataRegister.setAudiences((net.kyori.adventure.platform.bukkit.BukkitAudiences.create(this)));
-		Bukkit.getPluginManager().registerEvents(new MenuListener(),this);
-	}
+    @Override
+    public void onEnable() {
+        menuDataRegister = new MenuDataRegister.Builder().setDecimalFormat(formatDubbleDecimal())
+                .setRandomUntility(new RandomUntility())
+                .setRegisterEconomyHook(new RegisterEconomyHook())
+                .setRegisterPermissionHook(new RegisterPermissionHook())
+                .setNbtApi(new RegisterNbtAPI(this, false)).build();
+        setServerVersion(PLUGIN);
+        this.getLogger().log(Level.INFO, "Has set plugin and created needed classes.");
+        isPlaceholderAPIRegisted = Bukkit.getServer().getPluginManager().getPlugin("PlaceholderAPI") != null;
+        if (!isPlaceholderAPIRegisted)
+            PLUGIN.getLogger().log(Level.WARNING, "You has not added PlaceholderAPI in plugins folder. The api will not work as it should (no placeholders will be translated)");
+        this.getLogger().log(Level.INFO, "Has check if PlaceholderAPI is enable and exist.");
+        this.getLogger().log(Level.INFO, "Has finish loading. To use the api, dont forget register in onEnable method in your plugin.");
+        menuDataRegister.setAudiences((net.kyori.adventure.platform.bukkit.BukkitAudiences.create(this)));
+        Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
+    }
 
-	@Override
-	public void onDisable() {
-		Bukkit.getScheduler().cancelTasks(this);
-	}
+    @Override
+    public void onDisable() {
+        Bukkit.getScheduler().cancelTasks(this);
+    }
 
-	/**
-	 * Register this api, this will load yml files and register plugin hooks.
-	 * Also set shallGenerateDefultFiles to false.
-	 *
-	 * @param plugin      your main class.
-	 * @param name        file name or folder name (if you set up 1 menu for every file).
-	 * @param makeOneFile true if you use only one file.
-	 * @return the MenuDataRegister some contains all methods needed.
-	 */
-	public MenuDataRegister registerPlugin(@NotNull final Plugin plugin,@NotNull final String name, boolean makeOneFile) {
-		return registerPlugin(plugin, null, name, makeOneFile, false);
-	}
+    /**
+     * Register this api, this will load yml files and register plugin hooks.
+     * Also set shallGenerateDefultFiles to false.
+     *
+     * @param plugin      your main class.
+     * @param name        file name or folder name (if you set up 1 menu for every file).
+     * @param makeOneFile true if you use only one file.
+     * @return the MenuDataRegister some contains all methods needed.
+     */
+    public MenuDataRegister registerPlugin(@NotNull final Plugin plugin, @NotNull final String name, boolean makeOneFile) {
+        return registerPlugin(plugin, null, name, makeOneFile, false);
+    }
 
-	/**
-	 * Register this api, this will load yml files and register plugin hooks.
-	 *
-	 * @param plugin                   your main class.
-	 * @param name                     file name or folder name (if you set up 1 menu for every file).
-	 * @param makeOneFile              true if you use only one file.
-	 * @param shallGenerateDefultFiles if it shall also add files from your resources if they not exist.
-	 * @return the MenuDataRegister some contains all methods needed.
-	 */
-	public MenuDataRegister registerPlugin(@NotNull final Plugin plugin,@NotNull final  String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
-		return registerPlugin(plugin, null, name, makeOneFile, shallGenerateDefultFiles);
-	}
+    /**
+     * Register this api, this will load yml files and register plugin hooks.
+     *
+     * @param plugin                   your main class.
+     * @param name                     file name or folder name (if you set up 1 menu for every file).
+     * @param makeOneFile              true if you use only one file.
+     * @param shallGenerateDefultFiles if it shall also add files from your resources if they not exist.
+     * @return the MenuDataRegister some contains all methods needed.
+     */
+    public MenuDataRegister registerPlugin(@NotNull final Plugin plugin, @NotNull final String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
+        return registerPlugin(plugin, null, name, makeOneFile, shallGenerateDefultFiles);
+    }
 
-	/**
-	 * Register this api, this will load yml files and register plugin hooks.
-	 *
-	 * @param plugin                   your main class.
-	 * @param audiences                paste your own instance of BukkitAudiences (if you not want this api override your own registerd instance of BukkitAudiences).
-	 * @param name                     file name or folder name (if you set up 1 menu for every file).
-	 * @param makeOneFile              true if you use only one file.
-	 * @param shallGenerateDefultFiles if it shall also add files from your resources if they not exist.
-	 * @return the MenuDataRegister some contains all methods needed.
-	 */
-	public MenuDataRegister registerPlugin(@NotNull final Plugin plugin,@Nullable final BukkitAudiences audiences, @NotNull final String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
-		final MenuRegistrationConfig config = new MenuRegistrationConfig();
-		config.setOneFile(makeOneFile);
-		config.setGenerateDefaultFiles(shallGenerateDefultFiles);
-		MenuCache menuCache = new MenuCache(plugin, name, config);
-		TemplatesCache templatesCache = new TemplatesCache(plugin);
-		menuDataRegister.addMenuCache(plugin, menuCache, templatesCache);
-		if (audiences != null)
-			menuDataRegister.setAudiences(audiences);
-		return menuDataRegister;
-	}
+    /**
+     * Register this api, this will load yml files and register plugin hooks.
+     *
+     * @param plugin                   your main class.
+     * @param audiences                paste your own instance of BukkitAudiences (if you not want this api override your own registerd instance of BukkitAudiences).
+     * @param name                     file name or folder name (if you set up 1 menu for every file).
+     * @param makeOneFile              true if you use only one file.
+     * @param shallGenerateDefultFiles if it shall also add files from your resources if they not exist.
+     * @return the MenuDataRegister some contains all methods needed.
+     */
+    public MenuDataRegister registerPlugin(@NotNull final Plugin plugin, @Nullable final BukkitAudiences audiences, @NotNull final String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
+        final MenuRegistrationConfig config = new MenuRegistrationConfig();
+        config.setOneFile(makeOneFile);
+        config.setGenerateDefaultFiles(shallGenerateDefultFiles);
+        MenuCache menuCache = new MenuCache(plugin, name, config);
+        TemplatesCache templatesCache = new TemplatesCache(plugin);
+        menuDataRegister.addMenuCache(plugin, menuCache, templatesCache);
+        if (audiences != null)
+            menuDataRegister.setAudiences(audiences);
+        return menuDataRegister;
+    }
 
-	/**
-	 * Register this api, this will load yml files and register plugin hooks.
-	 *
-	 * @param plugin                   your main class.
-	 * @param configCallBack                paste your own instance of BukkitAudiences (if you not want this api override your own registerd instance of BukkitAudiences).
-	 * @param name                     file name or folder name (if you set up 1 menu for every file).
-	 * @return the MenuDataRegister some contains all methods needed.
-	 */
-	public MenuDataRegister registerPlugin(@NotNull final Plugin plugin, @NotNull final String name, @NotNull final Consumer<MenuRegistrationConfig> configCallBack) {
-		final MenuRegistrationConfig config = new MenuRegistrationConfig();
-		configCallBack.accept(config);
+    /**
+     * Register this api, this will load yml files and register plugin hooks.
+     *
+     * @param plugin         your main class.
+     * @param configCallBack paste your own instance of BukkitAudiences (if you not want this api override your own registerd instance of BukkitAudiences).
+     * @param name           file name or folder name (if you set up 1 menu for every file).
+     * @return the MenuDataRegister some contains all methods needed.
+     */
+    public MenuDataRegister registerPlugin(@NotNull final Plugin plugin, @NotNull final String name, @NotNull final Consumer<MenuRegistrationConfig> configCallBack) {
+        final MenuRegistrationConfig config = new MenuRegistrationConfig();
+        configCallBack.accept(config);
 
-		MenuCache menuCache = new MenuCache(plugin, name, config);
-		TemplatesCache templatesCache = new TemplatesCache(plugin);
-		menuDataRegister.addMenuCache(plugin, menuCache, templatesCache);
-		if(config.getAudiences() != null)
-			menuDataRegister.setAudiences(config.getAudiences());
-		return menuDataRegister;
-	}
+        MenuCache menuCache = new MenuCache(plugin, name, config);
+        TemplatesCache templatesCache = new TemplatesCache(plugin);
+        menuDataRegister.addMenuCache(plugin, menuCache, templatesCache);
+        if (config.getAudiences() != null)
+            menuDataRegister.setAudiences(config.getAudiences());
+        return menuDataRegister;
+    }
 
-	public static String setPlaceholders(Player player, String string) {
-		if (isPlaceholderAPIRegisted)
-			return PlaceholderAPI.setPlaceholders(player, string);
-		return string;
-	}
+    public static String setPlaceholders(Player player, String string) {
+        if (isPlaceholderAPIRegisted)
+            return PlaceholderAPI.setPlaceholders(player, string);
+        return string;
+    }
 
-	public static List<String> setPlaceholders(Player player, List<String> list) {
-		if (isPlaceholderAPIRegisted)
-			return PlaceholderAPI.setPlaceholders(player, list);
-		return list;
-	}
+    public static List<String> setPlaceholders(Player player, List<String> list) {
+        if (isPlaceholderAPIRegisted)
+            return PlaceholderAPI.setPlaceholders(player, list);
+        return list;
+    }
 
-	@NotNull
-	public static MenuSettingsAddon getPLUGIN() {
-		return (MenuSettingsAddon) PLUGIN;
-	}
+    @NotNull
+    public static MenuSettingsAddon getPLUGIN() {
+        return (MenuSettingsAddon) PLUGIN;
+    }
 
-	public static void getLogger(Level level, String messsage) {
-		PLUGIN.getLogger().log(level, messsage);
-	}
+    public static void getLogger(Level level, String messsage) {
+        PLUGIN.getLogger().log(level, messsage);
+    }
 
-	private static DecimalFormat formatDubbleDecimal() {
-		DecimalFormat decimalFormat = new DecimalFormat("#.##");
-		decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
+    public static void getLogger(Throwable ex, String messsage) {
+        PLUGIN.getLogger().log(Level.WARNING, ex, () -> messsage);
+    }
 
-		return decimalFormat;
-	}
+    private static DecimalFormat formatDubbleDecimal() {
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
+
+        return decimalFormat;
+    }
 
 }

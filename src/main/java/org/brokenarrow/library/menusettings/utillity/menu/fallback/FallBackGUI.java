@@ -1,6 +1,7 @@
 package org.brokenarrow.library.menusettings.utillity.menu.fallback;
 
 import org.brokenarrow.library.menusettings.MenuSession;
+import org.brokenarrow.library.menusettings.builders.ButtonContext;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
 import org.brokenarrow.library.menusettings.utillity.CreateItemStack;
 import org.brokenarrow.library.menusettings.utillity.RequirementResultHandler;
@@ -29,13 +30,10 @@ public class FallBackGUI implements InventoryHolder {
 
         this.inventory = Bukkit.createInventory(this, size, "§4[Fallback] §r" + menuSettings.getMenuTitle());
         for (int slot = 0; slot < this.inventory.getSize(); slot++) {
-            final int finalSlot = slot;
-            menuSession.getButton(slot, buttonContext ->  {
-                if (buttonContext != null) {
-                    this.inventory.setItem(finalSlot, buttonContext.getItemStack());
-                }
-                return null;
-            });
+            ButtonContext buttonContext = menuSession.getButton(slot);
+            if (buttonContext != null) {
+                this.inventory.setItem(slot, buttonContext.getItemStack());
+            }
         }
         int slot = inventory.firstEmpty();
         if (slot != -1) {
@@ -52,12 +50,11 @@ public class FallBackGUI implements InventoryHolder {
     }
 
     public void onClick(int slot, ClickType click) {
-        menuSession.getButton(slot, buttonContext ->  {
-            if (buttonContext != null) {
-                buttonContext.handleClick(click, resultHandler -> {});
-            }
-            return null;
-        });
+        ButtonContext buttonContext = menuSession.getButton(slot);
+        if (buttonContext != null) {
+            buttonContext.handleClick(click, resultHandler -> {
+            });
+        }
     }
 
     @Override

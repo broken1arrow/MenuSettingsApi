@@ -258,7 +258,7 @@ public class ButtonContext {
                     .thenRun(handler::executeSuccess);
             return true;
         }
-        requirementsContext.estimate(viewer, hasRequirement -> {
+        requirementsContext.estimateLater(viewer, hasRequirement -> {
             if (hasRequirement) {
                 clickActionHandler.runClickActionTasks(viewer)
                         .thenRun(handler::executeSuccess);

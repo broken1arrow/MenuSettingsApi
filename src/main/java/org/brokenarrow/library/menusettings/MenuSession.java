@@ -6,7 +6,6 @@ import org.brokenarrow.library.menusettings.builders.MenuSettings;
 import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
 import org.brokenarrow.library.menusettings.settings.MenuCache;
-import org.brokenarrow.library.menusettings.utillity.ButtonContextCallback;
 import org.brokenarrow.library.menusettings.utillity.RequirementResultHandler;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -109,7 +108,7 @@ public final class MenuSession {
      * Checks whether the player meets the requirements to open this menu.
      *
      * @param bypassPermission a permission node to bypass the requirements, if applicable
-     * @param resultCallback configures actions to execute on success or failure
+     * @param resultCallback   configures actions to execute on success or failure
      */
     public void checkOpenRequirements(@Nullable final String bypassPermission, @Nonnull final Consumer<RequirementResultHandler> resultCallback) {
         final RequirementResultHandler handler = new RequirementResultHandler();
@@ -120,7 +119,7 @@ public final class MenuSession {
         }
         RequirementsContext openRequirement = this.getMenuSettings().getOpenRequirement();
         if (openRequirement != null && this.viewer != null) {
-            openRequirement.estimate(this.viewer, hasRequirements -> {
+            openRequirement.estimateLater(this.viewer, hasRequirements -> {
                 if (hasRequirements) {
                     handler.executeSuccess();
                 } else {
@@ -132,32 +131,19 @@ public final class MenuSession {
     }
 
     /**
-     * Returns the first button available at the specified slot that the player can view.
+     * Returns the first button available at the specified slot that the player can view
      *
      * @param slot the slot index
-     * @param resultCallback configures actions to execute on success or failure
      * @return a {@link ButtonContext} for the button, or null if no button is visible
      */
     @Nullable
-    public <T> ButtonContext getButton(int slot, @Nonnull final ButtonContextCallback<T> resultCallback) {
+    public ButtonContext getButton(int slot) {
         List<ButtonSettings> buttonSettings = this.collectButtons(slot);
         if (buttonSettings == null) return null;
 
         for (ButtonSettings key : buttonSettings) {
-            final RequirementsContext viewRequirement =  key.getViewRequirement();
-            if(viewRequirement == null ) {
-               resultCallback.apply(new ButtonContext(key, this.viewer));
-            } else {
-                viewRequirement.estimate(this.viewer, hasRequirement -> {
-                    if (hasRequirement) {
-                        resultCallback.apply(new ButtonContext(key, this.viewer));
-                    }else {
-                        resultCallback.apply(null);
-                    }
-
-
-                });
-            }
+            ButtonContext buttonContext = getButtonContext(key);
+            if (buttonContext != null) return buttonContext;
         }
         return null;
     }
@@ -185,17 +171,14 @@ public final class MenuSession {
         return setPlaceholders(getViewer(), string);
     }
 
-    /**
-     * Checks if the player meets a specific requirement.
-     *
-     * @param viewRequirement the requirement to check
-     * @return true if the requirement is met or null, false otherwise
-     */
-    private boolean checkRequirement(RequirementsContext viewRequirement,@NotNull final Consumer<Boolean> callback) {
-        if (viewRequirement == null)
-            return false;
-        viewRequirement.estimate(this.viewer, callback);
-        return false;
+    private @Nullable ButtonContext getButtonContext(ButtonSettings key) {
+        final RequirementsContext viewRequirement = key.getViewRequirement();
+        if (viewRequirement == null) {
+            return new ButtonContext(key, this.viewer);
+        }
+        if (viewRequirement.estimate(this.viewer))
+            return new ButtonContext(key, this.viewer);
+        return null;
     }
 
     /**
