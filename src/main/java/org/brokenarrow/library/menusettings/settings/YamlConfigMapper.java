@@ -15,6 +15,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.brokenarrow.library.menusettings.requirements.RequirementType.*;
 import static org.brokenarrow.library.menusettings.settings.ConfigParsingUtils.*;
@@ -198,7 +200,8 @@ public final class YamlConfigMapper {
 		return map;
 	}
 
-	public List<Requirement> checkRequirement(String path, String clicktype) {
+	public List<Requirement> checkRequirement(String path, String clickType) {
+		final Logger logger = plugin.getLogger();
 		List<Requirement> requirementsList = new ArrayList<>();
 		Requirement rec = null;
 
@@ -211,13 +214,13 @@ public final class YamlConfigMapper {
 		String amount = this.getConfig().getString(path + ".amount");
 
 		boolean useLevel = this.getConfig().getBoolean(path + ".level");
-		ClickRequirementType clickRequirementType = ClickRequirementType.getType(clicktype);
+		ClickRequirementType clickRequirementType = ClickRequirementType.getType(clickType);
 		RequirementType requirementType = RequirementType.getType(type);
 
 		if (requirementType == null) return null;
 		List<String> successCommands = null;
 		List<String> denyCommands = null;
-		if (clicktype != null) {
+		if (clickType != null) {
 			successCommands = this.getConfig().getStringList(path + ".success_commands");
 			denyCommands = this.getConfig().getStringList(path + ".deny_commands");
 		}
@@ -228,7 +231,7 @@ public final class YamlConfigMapper {
 				if (permission != null)
 					rec = new HasPermissionRequirement(permission, requirementType == DO_NOT_HAVE_PERMISSION);
 				else
-					System.out.println("permission path is null");
+					logger.log (Level.INFO,"Permission key is null");
 				break;
 			case HAS_MONEY:
 			case DO_NOT_HAVE_MONEY:
@@ -244,13 +247,13 @@ public final class YamlConfigMapper {
 				if (amount != null)
 					rec = new HasExpRequirement(amount, useLevel, requirementType == DO_NOT_HAVE_EXPERIENCE);
 				else
-					System.out.println("amount path is null");
+					logger.log (Level.INFO,"Amount key is null");
 				break;
 			case JAVASCRIPT:
 				if (expression != null)
 					rec = new JavascriptRequirement(expression);
 				else
-					System.out.println("Javascript expression is null ");
+					logger.log (Level.INFO,"Javascript expression is null");
 				break;
 			case STRING_EQUALS:
 			case STRING_CONTAINS:

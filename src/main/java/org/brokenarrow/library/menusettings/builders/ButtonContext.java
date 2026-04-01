@@ -271,4 +271,11 @@ public class ButtonContext {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "ButtonContext{" +
+                "viewer=" + viewer +
+                ", buttonSettings=" + buttonSettings +
+                '}';
+    }
 }

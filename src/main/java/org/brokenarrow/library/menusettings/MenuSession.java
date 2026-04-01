@@ -142,9 +142,9 @@ public final class MenuSession {
     public ButtonContext getButton(int slot) {
         List<ButtonSettings> buttonSettings = this.collectButtons(slot);
         if (buttonSettings == null) return null;
-
         for (ButtonSettings key : buttonSettings) {
             ButtonContext buttonContext = getButtonContext(key);
+
             if (buttonContext != null) return buttonContext;
         }
         return null;
@@ -175,7 +175,6 @@ public final class MenuSession {
 
     private @Nullable ButtonContext getButtonContext(ButtonSettings key) {
         final RequirementsContext viewRequirement = key.getViewRequirement();
-        System.out.println("viewRequirement " + viewRequirement);
         if (viewRequirement == null) {
             return new ButtonContext(key, this.viewer);
         }

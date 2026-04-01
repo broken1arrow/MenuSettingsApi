@@ -47,9 +47,6 @@ public class TemplatesCache extends SimpleYamlHelper {
     protected void loadSettingsFromYaml(File file) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         ConfigurationSection configuration = yamlConfiguration.getConfigurationSection("items");
-        System.out.println("file" + file);
-        System.out.println("yamlConfiguration " + yamlConfiguration );
-        System.out.println("configuration " + configuration );
         if (configuration == null) return;
 
         for (String key : configuration.getKeys(false)) {

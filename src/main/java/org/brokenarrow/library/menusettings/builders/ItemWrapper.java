@@ -249,4 +249,28 @@ public final class ItemWrapper {
 			return new ItemWrapper(this);
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "ItemWrapper{" +
+				"displayname='" + displayname + '\'' +
+				", icon='" + icon + '\'' +
+				", matrialColor='" + matrialColor + '\'' +
+				", rbg='" + rbg + '\'' +
+				", dynamicAmount='" + dynamicAmount + '\'' +
+				", lore=" + lore +
+				", portionEffects=" + portionEffects +
+				", bannerPatterns=" + bannerPatterns +
+				", enchantments=" + enchantments +
+				", hideFlags=" + hideFlags +
+				", amount=" + amount +
+				", customModeldata=" + customModeldata +
+				", data=" + data +
+				", glow=" + glow +
+				", unbreakable=" + unbreakable +
+				", itemChecks=" + itemChecks +
+				", fireworkEffects=" + fireworkEffects +
+				", builder=" + builder +
+				'}';
+	}
 }

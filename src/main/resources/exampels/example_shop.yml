@@ -2,8 +2,8 @@ Menus:
   Main_Menu:
     Menu_Size: 36
     Menu_Title: "&1Shop"
-    Update_Buttons: true
-    Delay: 5
+    ## Global flag to update all the buttons when clicking on any button
+    Refresh_all_buttons: false
     Open_requirement:
       Requirement:
         Permission:
@@ -12,8 +12,6 @@ Menus:
     Menu_Items:
       Diamond_Sword_No_Money:
         Priority: 0
-        Update_Button: false
-        Button_delay: 2
         Glow: false
         Slot: 10
         Icon: DIAMOND_SWORD
@@ -25,8 +23,7 @@ Menus:
           - "&7Cost: &a10 coins"
       Diamond_Sword:
         Priority: 100
-        Update_Button: false
-        Button_delay: 2
+        Refresh: true
         Glow: true
         Slot: 10
         Icon: DIAMOND_SWORD
@@ -51,8 +48,6 @@ Menus:
                 - "[message] &cNot enough money!"
       Golden_Apple_No_Money:
         Priority: 0
-        Update_Button: false
-        Button_delay: 2
         Glow: false
         Slot: 12
         Icon: GOLDEN_APPLE
@@ -64,8 +59,7 @@ Menus:
           - "&7Cost: &a5 coins"
       Golden_Apple:
         Priority: 100
-        Update_Button: false
-        Button_delay: 2
+        Refresh: true
         Glow: false
         Slot: 12
         Icon: GOLDEN_APPLE
@@ -82,16 +76,14 @@ Menus:
           Requirement:
             Money:
               type: has money
-              amount: 5
+              amount: 10
               success_commands:
                 - "[console] give %player_name% golden_apple 1"
                 - "[message] &aYou bought a Golden Apple!"
               deny_commands:
                 - "[message] &cNot enough money!"
       Elytra_No_Money:
-        Priority: 0
-        Update_Button: false
-        Button_delay: 2
+        Priority: 100
         Glow: false
         Slot: 14
         Icon: ELYTRA
@@ -102,9 +94,8 @@ Menus:
           - "&7Fly like a bird!"
           - "&7Cost: &a50 coins"
       Elytra:
-        Priority: 100
-        Update_Button: false
-        Button_delay: 2
+        Priority: 0
+        Refresh: true
         Glow: true
         Slot: 14
         Icon: ELYTRA
@@ -112,10 +103,15 @@ Menus:
         Lore:
           - "&7Fly like a bird!"
           - "&7Cost: &a50 coins"
-        Click_requirement:
+        View_requirement:
           Requirement:
             Money:
               type: has money
+              amount: 50
+        Click_requirement:
+          Requirement:
+            Money:
+              type: "has money"
               amount: 50
               success_commands:
                 - "[takemoney] 50"
@@ -124,3 +120,4 @@ Menus:
                 - "[message] &cNot enough money!"
         Click_commands:
           - "[console] give %player_name% elytra 1"
+

@@ -81,7 +81,7 @@ public final class ButtonSettings {
 	}
 
 	/**
-	 * Refrech only one button, insted of all buttons.
+	 * Refresh only one button, instead of all buttons.
 	 *
 	 * @return true if it shall refresh only clicked button.
 	 */

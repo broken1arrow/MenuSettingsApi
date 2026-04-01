@@ -71,8 +71,8 @@ public class MenuCache extends SimpleYamlHelper {
 		String fillSpace = config.getString(key + ".FillSpace");
 		String sound = config.getString(key + ".Sound");
 		boolean refreshAll = config.getBoolean(key + ".Refresh_all_buttons");
-		boolean updateButtons = config.getBoolean(key + ".Update_Buttons");
-		int delay = config.getInt(key + ".Update_buttons_delay");
+		int delay = config.getInt(key + ".Update_all_buttons_delay");
+		boolean updateButtons = delay >= 0;
 
 		String path = key + ".Menu_Items";
 		if (!config.contains(path))
@@ -85,7 +85,7 @@ public class MenuCache extends SimpleYamlHelper {
 				String buttonPath = path + "." + button;
 
 				int priority = config.getInt(buttonPath + ".Priority", 1);
-				boolean refreshClickedButton = config.getBoolean(buttonPath + "Refresh");
+				boolean refreshClickedButton = config.getBoolean(buttonPath + ".Refresh");
 				boolean updateButton = config.getBoolean(buttonPath + ".Update_Button");
 				long updateButtondelay = config.getLong(buttonPath + ".Update_delay");
 
