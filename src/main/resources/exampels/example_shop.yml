@@ -1,5 +1,5 @@
 Menus:
-  Main_Menu:
+  Shop_Menu:
     Menu_Size: 36
     Menu_Title: "&1Shop"
     ## Global flag to update all the buttons when clicking on any button
@@ -8,7 +8,7 @@ Menus:
       Requirement:
         Permission:
           type: has permission
-          input: "shop.plus"
+          permission: shop.plus
     Menu_Items:
       Diamond_Sword_No_Money:
         Priority: 100
