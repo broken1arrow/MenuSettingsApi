@@ -2,13 +2,13 @@ Menus:
   Rank_Menu:
     Menu_Size: 27
     Menu_Title: "&2Ranks"
-    Update_Buttons: true
-    Delay: 5
+    Refresh_all_buttons: false
+    Update_all_buttons_delay: -1
     Menu_Items:
       VIP_Rank:
         Priority: 0
-        Update_Button: false
-        Button_delay: 2
+        Update_Button: true
+        Update_delay: 5
         Glow: true
         Slot: 10
         Icon: GOLD_INGOT
@@ -20,21 +20,39 @@ Menus:
           Requirement:
             Permission:
               type: "!has permission"
-              input: "rank.vip"
+              permission: rank.vip
         Click_requirement:
           Requirement:
             Money:
               type: has money
               amount: 20
               success_commands:
-                - "[console] lp user %player_name% permission set rank.vip"
                 - "[message] &aYou are now VIP!"
               deny_commands:
                 - "[message] &cYou don't have enough coins!"
+        Click_commands:
+          - "[takemoney] 20"
+          - "[console] lp user %player_name% permission set rank.vip"
+      Have_VIP_Rank:
+        Priority: 100
+        Update_Button: true
+        Update_delay: 5
+        Glow: true
+        Slot: 10
+        Icon: GOLD_INGOT
+        Display_name: "&6VIP Rank"
+        Lore:
+          - "&7You have VIP perks"
+          - "&7"
+        View_requirement:
+          Requirement:
+            Permission:
+              type: has permission
+              permission: rank.vip
       MVP_Rank:
         Priority: 0
-        Update_Button: false
-        Button_delay: 2
+        Update_Button: true
+        Update_delay: 5
         Glow: true
         Slot: 12
         Icon: DIAMOND
@@ -46,21 +64,39 @@ Menus:
           Requirement:
             Permission:
               type: "!has permission"
-              input: "rank.mvp"
+              permission: rank.mvp
         Click_requirement:
           Requirement:
             Money:
               type: has money
               amount: 50
               success_commands:
-                - "[console] lp user %player_name% permission set rank.mvp"
                 - "[message] &aYou are now MVP!"
               deny_commands:
                 - "[message] &cYou don't have enough coins!"
+        Click_commands:
+          - "[takemoney] 50"
+          - "[console] lp user %player_name% permission set rank.mvp"
+      Have_MVP_Rank:
+        Priority: 100
+        Update_Button: true
+        Update_delay: 5
+        Glow: true
+        Slot: 12
+        Icon: DIAMOND
+        Display_name: "&bMVP Rank"
+        Lore:
+          - "&7You have MVP Rank"
+          - "&7"
+        View_requirement:
+          Requirement:
+            Permission:
+              type: "has permission"
+              permission: rank.mvp
       LEGEND_Rank:
         Priority: 0
-        Update_Button: false
-        Button_delay: 2
+        Update_Button: true
+        Update_delay: 5
         Glow: true
         Slot: 14
         Icon: NETHER_STAR
@@ -72,14 +108,32 @@ Menus:
           Requirement:
             Permission:
               type: "!has permission"
-              input: "rank.legend"
+              permission: rank.legend
         Click_requirement:
           Requirement:
             Money:
               type: has money
               amount: 100
               success_commands:
-                - "[console] lp user %player_name% permission set rank.legend"
                 - "[message] &aYou are now LEGEND!"
               deny_commands:
                 - "[message] &cYou don't have enough coins!"
+        Click_commands:
+          - "[takemoney] 100"
+          - "[console] lp user %player_name% permission set rank.legend"
+      Have_LEGEND_Rank:
+        Priority: 100
+        Update_Button: true
+        Update_delay: 5
+        Glow: true
+        Slot: 14
+        Icon: NETHER_STAR
+        Display_name: "&bLEGEND Rank"
+        Lore:
+          - "&7You have LEGEND Rank"
+          - "&7"
+        View_requirement:
+          Requirement:
+            Permission:
+              type: has permission
+              permission: rank.legend

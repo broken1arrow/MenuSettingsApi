@@ -42,10 +42,12 @@ Menus:
               type: has money
               amount: 10
               success_commands:
-                - "[console] give %player_name% diamond_sword 1"
                 - "[message] &aYou bought a Diamond Sword!"
               deny_commands:
                 - "[message] &cNot enough money!"
+        Click_commands:
+          - "[takemoney] 10"
+          - "[console] give %player_name% diamond_sword 1"
       Golden_Apple_No_Money:
         Priority: 0
         Glow: false
@@ -78,10 +80,12 @@ Menus:
               type: has money
               amount: 10
               success_commands:
-                - "[console] give %player_name% golden_apple 1"
                 - "[message] &aYou bought a Golden Apple!"
               deny_commands:
                 - "[message] &cNot enough money!"
+        Click_commands:
+          - "[takemoney] 5"
+          - "[console] give %player_name% golden_apple 1"
       Elytra_No_Money:
         Priority: 100
         Glow: false

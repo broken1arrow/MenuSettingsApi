@@ -144,7 +144,6 @@ public final class MenuSession {
         if (buttonSettings == null) return null;
         for (ButtonSettings key : buttonSettings) {
             ButtonContext buttonContext = getButtonContext(key);
-
             if (buttonContext != null) return buttonContext;
         }
         return null;
