@@ -179,7 +179,7 @@ public class ClickActionTask {
         }
 
         if (menuCache == null) {
-            logger.warning("Could not find the menu contect for this plugin: " + plugin.getName() + ". Did you register your menu?");
+            logger.warning("Could not find the menu connected for this plugin: " + plugin.getName() + ". Did you register your menu?");
             return;
         }
 
