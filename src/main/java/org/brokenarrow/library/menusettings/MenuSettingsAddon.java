@@ -66,45 +66,46 @@ public final class MenuSettingsAddon extends JavaPlugin {
     }
 
     /**
-     * Register this api, this will load yml files and register plugin hooks.
-     * Also set shallGenerateDefultFiles to false.
+     * Registers this API and loads YML files, while registering plugin hooks.
      *
-     * @param plugin      your main class.
-     * @param name        file name or folder name (if you set up 1 menu for every file).
-     * @param makeOneFile true if you use only one file.
-     * @return the MenuDataRegister some contains all methods needed.
+     * <p>Automatically sets {@code shallGenerateDefaultFiles} to {@code false}.</p>
+     *
+     * @param plugin      your main plugin class
+     * @param name        the file name or folder name (if you set up one menu per file)
+     * @param makeOneFile {@code true} if only a single file is used
+     * @return the {@link MenuDataRegister}, which contains all necessary methods for further usage
      */
     public MenuDataRegister registerPlugin(@NotNull final Plugin plugin, @NotNull final String name, boolean makeOneFile) {
         return registerPlugin(plugin, null, name, makeOneFile, false);
     }
 
     /**
-     * Register this api, this will load yml files and register plugin hooks.
+     * Registers this API and loads YML files, while registering plugin hooks.
      *
-     * @param plugin                   your main class.
-     * @param name                     file name or folder name (if you set up 1 menu for every file).
-     * @param makeOneFile              true if you use only one file.
-     * @param shallGenerateDefultFiles if it shall also add files from your resources if they not exist.
-     * @return the MenuDataRegister some contains all methods needed.
+     * @param plugin                   your main plugin class
+     * @param name                     the file name or folder name (if you set up one menu per file)
+     * @param makeOneFile              {@code true} if only a single file is used
+     * @param shallGenerateDefaultFiles {@code true} to generate default files from resources if they do not exist
+     * @return the {@link MenuDataRegister}, which contains all necessary methods for further usage
      */
-    public MenuDataRegister registerPlugin(@NotNull final Plugin plugin, @NotNull final String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
-        return registerPlugin(plugin, null, name, makeOneFile, shallGenerateDefultFiles);
+    public MenuDataRegister registerPlugin(@NotNull final Plugin plugin, @NotNull final String name, boolean makeOneFile, boolean shallGenerateDefaultFiles) {
+        return registerPlugin(plugin, null, name, makeOneFile, shallGenerateDefaultFiles);
     }
 
-    /**
-     * Register this api, this will load yml files and register plugin hooks.
+     /**
+     * Registers this API and loads YML files, while registering plugin hooks.
      *
-     * @param plugin                   your main class.
-     * @param audiences                paste your own instance of BukkitAudiences (if you not want this api override your own registerd instance of BukkitAudiences).
-     * @param name                     file name or folder name (if you set up 1 menu for every file).
-     * @param makeOneFile              true if you use only one file.
-     * @param shallGenerateDefultFiles if it shall also add files from your resources if they not exist.
-     * @return the MenuDataRegister some contains all methods needed.
+     * @param plugin                   your main plugin class
+     * @param audiences                your instance of {@link BukkitAudiences}, if you do not want this API to override an existing one
+     * @param name                     the file name or folder name (if you set up one menu per file)
+     * @param makeOneFile              {@code true} if only a single file is used
+     * @param shallGenerateDefaultFiles {@code true} to generate default files from resources if they do not exist
+     * @return the {@link MenuDataRegister}, which contains all necessary methods for further usage
      */
-    public MenuDataRegister registerPlugin(@NotNull final Plugin plugin, @Nullable final BukkitAudiences audiences, @NotNull final String name, boolean makeOneFile, boolean shallGenerateDefultFiles) {
+    public MenuDataRegister registerPlugin(@NotNull final Plugin plugin, @Nullable final BukkitAudiences audiences, @NotNull final String name, boolean makeOneFile, boolean shallGenerateDefaultFiles) {
         final MenuRegistrationConfig config = new MenuRegistrationConfig();
         config.setOneFile(makeOneFile);
-        config.setGenerateDefaultFiles(shallGenerateDefultFiles);
+        config.setGenerateDefaultFiles(shallGenerateDefaultFiles);
         MenuCache menuCache = new MenuCache(plugin, name, config);
         TemplatesCache templatesCache = new TemplatesCache(plugin);
         menuDataRegister.addMenuCache(plugin, menuCache, templatesCache);
@@ -114,12 +115,12 @@ public final class MenuSettingsAddon extends JavaPlugin {
     }
 
     /**
-     * Register this api, this will load yml files and register plugin hooks.
+     * Registers this API and loads YML files, while registering plugin hooks.
      *
-     * @param plugin         your main class.
-     * @param configCallBack paste your own instance of BukkitAudiences (if you not want this api override your own registered instance of BukkitAudiences).
-     * @param name           file name or folder name (if you set up 1 menu for every file).
-     * @return the MenuDataRegister some contains all methods needed.
+     * @param plugin         your main plugin class
+     * @param name           the file name or folder name (if you set up one menu per file)
+     * @param configCallBack a callback to configure {@link MenuRegistrationConfig}, including optional {@link BukkitAudiences}
+     * @return the {@link MenuDataRegister}, which contains all necessary methods for further usage
      */
     public MenuDataRegister registerPlugin(@NotNull final Plugin plugin, @NotNull final String name, @NotNull final Consumer<MenuRegistrationConfig> configCallBack) {
         final MenuRegistrationConfig config = new MenuRegistrationConfig();
@@ -134,9 +135,10 @@ public final class MenuSettingsAddon extends JavaPlugin {
     }
 
     /**
-     * Reload the configs for your menu.
+     * Reloads the menu configuration files for the given plugin.
      *
-     * @param plugin your main class.
+     * @param plugin your main plugin class
+     * @return the {@link MenuDataRegister}, which contains all necessary methods for further usage
      */
     public MenuDataRegister reloadPluginConfigs(@NotNull final Plugin plugin) {
         menuDataRegister.reloadConfigs(plugin);
