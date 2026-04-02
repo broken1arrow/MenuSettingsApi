@@ -11,6 +11,12 @@ import java.util.Map;
 
 import static org.brokenarrow.library.menusettings.MenuSettingsAddon.setPlaceholders;
 
+/**
+ * Represents the configuration for a menu, including layout, behavior,
+ * button mappings, and requirements.
+ *
+ * <p>This class is immutable and should be constructed using the {@link Builder}.</p>
+ */
 public final class MenuSettings {
 	private final int menuSize;
 	private final int globalDelay;
@@ -40,60 +46,125 @@ public final class MenuSettings {
 	}
 
 	/**
-	 * get inventory string name, will not translate placeholders.
+	 * Returns the raw menu type string.
 	 *
-	 * @return type of inventory or null.
+	 * <p>This value is not processed and may contain placeholders.</p>
+	 *
+	 * @return the configured menu type string, or {@code null} if not set
 	 */
 	@Nullable
 	public String getMenuType() {
 		return menuType;
 	}
 
-	/**
-	 * Get type of inventory. will also translate placeholders.
-	 *
-	 * @param player some open menu.
-	 * @return type of inventory or null.
-	 */
 
+	/**
+	 * Resolves and returns the {@link InventoryType} for this menu.
+	 *
+	 * <p>This method applies placeholder replacement using the provided player
+	 * before resolving the inventory type.</p>
+	 *
+	 * @param player the player viewing or opening the menu
+	 * @return the resolved {@link InventoryType}, or {@code null} if invalid or not set
+	 */
 	@Nullable
 	public InventoryType getMenuType(Player player) {
 		GuiTypeUtillity type = new GuiTypeUtillity(setPlaceholders(player, this.getMenuType()));
 		return type.getInventoryType();
 	}
 
+	/**
+	 * Returns the configured menu size.
+	 *
+	 * @return the menu size
+	 */
 	public int getMenuSize() {
 		return menuSize;
 	}
 
+	/**
+	 * Returns the global delay applied to button interactions.
+	 *
+	 * <p>The meaning and unit of this value are defined by the implementation
+	 * using this setting (for example, ticks, milliseconds, or custom logic).</p>
+	 *
+	 * @return the configured global delay
+	 */
 	public int getGlobalDelay() {
 		return globalDelay;
 	}
 
+	/**
+	 * Indicates whether buttons in the menu should update automatically.
+	 *
+	 * <p>The exact update behavior is determined by the implementation
+	 * using this setting.</p>
+	 *
+	 * @return {@code true} if buttons should update automatically, otherwise {@code false}
+	 */
 	public boolean isUpdateButtons() {
 		return updateButtons;
 	}
 
+	/**
+	 * Returns the sound to be played when interacting with the menu.
+	 *
+	 * @return the configured sound name, or {@code null} if not set
+	 */
 	public String getSound() {
 		return sound;
 	}
 
+	/**
+	 * Returns the menu title.
+	 *
+	 * <p>This value may contain placeholders and formatting codes.</p>
+	 *
+	 * @return the menu title
+	 */
 	public String getMenuTitle() {
 		return menuTitle;
 	}
 
+	/**
+	 * Returns the filler item definition used for empty slots, could be formated like 0-35 and
+	 * fill all slots between this numbers.
+	 *
+	 * @return the filler item configuration string, or {@code null} if not set
+	 */
 	public String getFillSpace() {
 		return fillSpace;
 	}
 
+	/**
+	 * Indicates whether all buttons should be refreshed when an update occurs.
+	 *
+	 * <p>The definition of a "refresh" and when it is triggered depends on the
+	 * implementation using this setting.</p>
+	 *
+	 * @return {@code true} if all buttons should be refreshed, otherwise {@code false}
+	 */
 	public boolean isRefreshAll() {
 		return refreshAll;
 	}
 
+	/**
+	 * Returns the mapping of slot groups to their corresponding button settings.
+	 *
+	 * <p>Each key represents a list of slot indices, and the value represents
+	 * one or more {@link ButtonSettings} that may be evaluated for those slots.</p>
+	 *
+	 * @return a map of slot lists to button settings
+	 */
 	public Map<List<Integer>, List<ButtonSettings>> getItemSettings() {
 		return itemSettings;
 	}
 
+	/**
+	 * Returns the requirement context that must be satisfied in order to open the menu.
+	 *
+	 * @return the open requirement context, or {@code null} if no requirement is set
+	 */
 	public RequirementsContext getOpenRequirement() {
 		return openRequirement;
 	}

@@ -56,34 +56,49 @@ public final class ButtonSettings {
 		this.builder = builder;
 	}
 
+	/**
+	 * Retrieve the priority order, where lower number have higher priority
+	 * @return the current priority for the button.
+	 */
 	public int getPriority() {
 		return priority;
 	}
 
 	/**
-	 * This method you get the time between each update this button shall update. Is used with
-	 * {@link #isUpdateButton()} if that are true it will updated the button.
+	 * Returns the time interval between each update for this button.
 	 *
-	 * @return amount of seconds between every update.
+	 * <p>This is used in combination with {@link #isUpdateButton()}. If updates are enabled,
+	 * this value indicates how often the button should be refreshed.</p>
+	 *
+	 * <p>The unit and actual handling of this value depend on the plugin implementation.</p>
+	 *
+	 * @return the amount of time between updates, typically in seconds, as interpreted by the plugin
 	 */
 	public long getRefreshButtonTime() {
 		return refreshTimeWhenUpdateButton;
 	}
 
 	/**
-	 * This method is used for check if the buttion shall update
-	 * when menu is open time bewteen every update are used with {@link #getRefreshButtonTime()}.
+	 * Determines whether this button should be updated automatically while the menu is open.
 	 *
-	 * @return true if it shall update the button.
+	 * <p>Update behavior may consider {@link #getRefreshButtonTime()} or other plugin-specific logic.
+	 * Using a negative value for the refresh time may disable updates entirely.</p>
+	 *
+	 * <p>The exact semantics depend on the plugin implementing this feature.</p>
+	 *
+	 * @return {@code true} if the button should be updated, otherwise {@code false}
 	 */
 	public boolean isUpdateButton() {
 		return updateButton;
 	}
 
 	/**
-	 * Refresh only one button, instead of all buttons.
+	 * Indicates whether only this specific button should be refreshed instead of all buttons.
 	 *
-	 * @return true if it shall refresh only clicked button.
+	 * <p>The definition of a "refresh" and when it is triggered depends on the
+	 * implementation using this setting.</p>
+	 *
+	 * @return {@code true} if only this clicked button should be refreshed, otherwise {@code false}
 	 */
 	public boolean isRefreshClickedButton() {
 		return refreshClickedButton;

@@ -155,10 +155,10 @@ public class ClickActionTask {
                 setExp(player, executable);
                 break;
             case TAKE_PERM:
-                menuDataRegister.getPermissionProvider().setPermission(player, executable);
+                menuDataRegister.getPermissionProvider().removePermission(player, executable);
                 break;
             case GIVE_PERM:
-                menuDataRegister.getPermissionProvider().removePermission(player, executable);
+                menuDataRegister.getPermissionProvider().setPermission(player, executable);
                 break;
             case GIVE_SKULL:
                 giveSkullItem(player, executable);

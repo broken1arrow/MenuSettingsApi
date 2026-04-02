@@ -241,6 +241,10 @@ public final class MenuDataRegister {
 		public MenuDataRegister build() {
 			return new MenuDataRegister(this);
 		}
+
+		public Builder setServiceRegisterEvent(MenuSettingsListener menuSettingsListener) {
+			return this;
+		}
 	}
 
 	private void registerNashorn() {

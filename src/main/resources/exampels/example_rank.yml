@@ -32,7 +32,7 @@ Menus:
                 - "[message] &cYou don't have enough coins!"
         Click_commands:
           - "[takemoney] 20"
-          - "[console] lp user %player_name% permission set rank.vip"
+          - "[givepermission] rank.vip"
       Have_VIP_Rank:
         Priority: 100
         Update_Button: true
@@ -76,7 +76,7 @@ Menus:
                 - "[message] &cYou don't have enough coins!"
         Click_commands:
           - "[takemoney] 50"
-          - "[console] lp user %player_name% permission set rank.mvp"
+          - "[givepermission] rank.mvp"
       Have_MVP_Rank:
         Priority: 100
         Update_Button: true
@@ -120,7 +120,7 @@ Menus:
                 - "[message] &cYou don't have enough coins!"
         Click_commands:
           - "[takemoney] 100"
-          - "[console] lp user %player_name% permission set rank.legend"
+          - "[givepermission] rank.legend"
       Have_LEGEND_Rank:
         Priority: 100
         Update_Button: true

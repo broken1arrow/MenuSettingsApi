@@ -39,11 +39,15 @@ public final class MenuSettingsAddon extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        menuDataRegister = new MenuDataRegister.Builder().setDecimalFormat(formatDubbleDecimal())
+        MenuSettingsListener menuSettingsListener = new MenuSettingsListener(this);
+        menuDataRegister = new MenuDataRegister.Builder()
+                .setDecimalFormat(formatDoubleDecimal())
                 .setRandomUntility(new RandomUntility())
+                .setServiceRegisterEvent(menuSettingsListener)
                 .setRegisterEconomyHook(new RegisterEconomyHook())
                 .setRegisterPermissionHook(new RegisterPermissionHook())
-                .setNbtApi(new RegisterNbtAPI(this, false)).build();
+                .setNbtApi(new RegisterNbtAPI(this, false))
+                .build();
         setServerVersion(PLUGIN);
         this.getLogger().log(Level.INFO, "Has set plugin and created needed classes.");
         isPlaceholderAPIRegisted = Bukkit.getServer().getPluginManager().getPlugin("PlaceholderAPI") != null;
@@ -52,6 +56,7 @@ public final class MenuSettingsAddon extends JavaPlugin {
         this.getLogger().log(Level.INFO, "Has check if PlaceholderAPI is enable and exist.");
         this.getLogger().log(Level.INFO, "Has finish loading. To use the api, dont forget register in onEnable method in your plugin.");
         menuDataRegister.setAudiences((net.kyori.adventure.platform.bukkit.BukkitAudiences.create(this)));
+        Bukkit.getPluginManager().registerEvents(menuSettingsListener, this);
         Bukkit.getPluginManager().registerEvents(new MenuListener(), this);
     }
 
@@ -112,7 +117,7 @@ public final class MenuSettingsAddon extends JavaPlugin {
      * Register this api, this will load yml files and register plugin hooks.
      *
      * @param plugin         your main class.
-     * @param configCallBack paste your own instance of BukkitAudiences (if you not want this api override your own registerd instance of BukkitAudiences).
+     * @param configCallBack paste your own instance of BukkitAudiences (if you not want this api override your own registered instance of BukkitAudiences).
      * @param name           file name or folder name (if you set up 1 menu for every file).
      * @return the MenuDataRegister some contains all methods needed.
      */
@@ -127,6 +132,17 @@ public final class MenuSettingsAddon extends JavaPlugin {
             menuDataRegister.setAudiences(config.getAudiences());
         return menuDataRegister;
     }
+
+    /**
+     * Reload the configs for your menu.
+     *
+     * @param plugin your main class.
+     */
+    public MenuDataRegister reloadPluginConfigs(@NotNull final Plugin plugin) {
+        menuDataRegister.reloadConfigs(plugin);
+        return menuDataRegister;
+    }
+
 
     public static String setPlaceholders(Player player, String string) {
         if (isPlaceholderAPIRegisted)
@@ -145,15 +161,15 @@ public final class MenuSettingsAddon extends JavaPlugin {
         return (MenuSettingsAddon) PLUGIN;
     }
 
-    public static void getLogger(Level level, String messsage) {
-        PLUGIN.getLogger().log(level, messsage);
+    public static void getLogger(Level level, String message) {
+        PLUGIN.getLogger().log(level, message);
     }
 
-    public static void getLogger(Throwable ex, String messsage) {
-        PLUGIN.getLogger().log(Level.WARNING, ex, () -> messsage);
+    public static void getLogger(Throwable ex, String message) {
+        PLUGIN.getLogger().log(Level.WARNING, ex, () -> message);
     }
 
-    private static DecimalFormat formatDubbleDecimal() {
+    private static DecimalFormat formatDoubleDecimal() {
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
 

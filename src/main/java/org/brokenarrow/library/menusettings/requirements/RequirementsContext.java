@@ -25,6 +25,21 @@ public class RequirementsContext {
         this.setRequirements(requirements);
     }
 
+    /**
+     * Performs a synchronous evaluation of all requirements.
+     *
+     * <p>This method immediately returns whether the requirements are met
+     * based on the current state at the time of evaluation.</p>
+     *
+     * <p>Any associated success or deny commands are executed asynchronously
+     * (fire-and-forget). These commands may complete after this method returns
+     * and may update the underlying state at a later time.</p>
+     *
+     * <p><strong>Note:</strong> This method does not wait for any command execution to complete.</p>
+     *
+     * @param viewer the player viewing the menu
+     * @return {@code true} if the requirements are met at evaluation time, otherwise {@code false}
+     */
     public boolean estimate(Player viewer) {
         int success = 0;
 
@@ -48,13 +63,37 @@ public class RequirementsContext {
         return success >= getMinimumRequirements();
     }
 
-    public void estimateLater(@NotNull final Player wiver, @NotNull final Consumer<Boolean> callback) {
+    /**
+     * Performs a requirement evaluation and invokes the callback after all
+     * triggered command tasks have completed.
+     *
+     * <p>This method evaluates requirements synchronously, but collects any
+     * associated command tasks and waits for their completion before invoking
+     * the callback.</p>
+     *
+     * <p><strong>Important:</strong> This only guarantees completion of commands that are
+     * tracked via {@link CompletableFuture} (i.e., commands executed through
+     * {@link #runClickActionTasks(List, Player)}).
+     * </p>
+     *
+     * <p>Commands that perform additional asynchronous work outside of this system
+     * (for example, plugins like LuckPerms that apply changes asynchronously without
+     * immediate caching) may still complete <i>after</i> the callback is invoked.</p>
+     *
+     * <p>As a result, the callback reflects the evaluation result at the time of execution,
+     * but does not guarantee that all external side effects are fully applied.</p>
+     *
+     * @param viewer the player viewing the menu
+     * @param callback callback invoked after tracked command tasks complete,
+     *                 receiving the evaluation result
+     */
+    public void estimateLater(@NotNull final Player viewer, @NotNull final Consumer<Boolean> callback) {
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         int success = 0;
 
         for (Requirement requirement : this.getRequirements()) {
             List<ClickActionTask> commands;
-            if (requirement.estimate(wiver)) {
+            if (requirement.estimate(viewer)) {
                 ++success;
                 commands = requirement.getSuccessCommands();
                 if (this.isStopAtSuccess() && success >= this.getMinimumRequirements())
@@ -68,7 +107,7 @@ public class RequirementsContext {
                 }
             }
             if (commands != null) {
-                futures.add(runClickActionTasks(commands, wiver));
+                futures.add(runClickActionTasks(commands, viewer));
             }
         }
         final boolean result = success >= this.getMinimumRequirements();
