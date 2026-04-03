@@ -6,10 +6,11 @@ Menus:
     Menu_Title: "&1Main menu"
     # slots you want to use to add items inside.
     FillSpace: 9-35
-    # max amount of item on the page (if you not fill all slots and wants more pages).
-    Max_Amount_Of_Items: 13
-    Update_Buttons: true
-    Delay: 5
+    #This two options below depends on how the plugin implement this options.
+    #If i shall update all buttons when one is clicked.
+    Refresh_all_buttons: false
+    #time format depends on the plugin 
+    Update_all_buttons_delay: -1
     Open_requirement:
       Requirement:
         Permission:
@@ -24,8 +25,13 @@ Menus:
       # one menu item.
       Menu_Icon:
         Priority: 0
+        #This three options below depends on how the plugin implement this options.
+        #update the button when click
+        Refresh: true
+        #update the button on timer
         Update_Button: false
-        Button_delay: 2
+        #time format depends on the plugin
+        Update_delay: 5
         Glow: true
         Slot: 11
         Icon: SUNFLOWER
@@ -35,15 +41,15 @@ Menus:
               type: custom
               output: "test"
               success_commands:
-                - "command 1"
+                - "command success"
               deny_commands:
-                - "command 1"
+                - "command deny"
         Display_name: "&6Example item"
         Lore:
           - ""
           - "&4Example lore"
-        # This is all diffrent requirement checks you
-        # can use to check diffrent clicks.
+        # This is all different requirement checks you
+        # can use to check different clicks.
         #
         # Right_click_requirement:
         # Shift_left_click_requirement:
