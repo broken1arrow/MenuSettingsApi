@@ -44,8 +44,9 @@ import static org.brokenarrow.library.menusettings.utillity.RunTimedTask.runTask
 
 
 public class ClickActionTask {
-    Logger logger = MenuSettingsAddon.getPLUGIN().getLogger();
+    private final Logger logger = MenuSettingsAddon.getPLUGIN().getLogger();
     private final Plugin plugin;
+    private final String menuName;
     private final CommandActionType actionType;
     private final MenuContext menuContext;
     private final MenuActionHandler openCloseAction;
@@ -54,8 +55,9 @@ public class ClickActionTask {
     private String chance;
     private final MenuDataRegister menuDataRegister = MenuDataRegister.getInstance();
 
-    public ClickActionTask(@NotNull final Plugin plugin, @NotNull final CommandActionType actionType, @Nullable final MenuActionHandler openCloseAction) {
+    public ClickActionTask(@NotNull final Plugin plugin, @NotNull final String menuName, @NotNull final CommandActionType actionType, @Nullable final MenuActionHandler openCloseAction) {
         this.plugin = plugin;
+        this.menuName = menuName;
         this.actionType = actionType;
         this.menuContext = menuDataRegister.getMenuContext(plugin);
         this.openCloseAction = openCloseAction;
@@ -185,6 +187,12 @@ public class ClickActionTask {
 
         final MenuSettings menuSettings = menuCache.getMenuCache().get(executable);
         if (menuSettings == null) {
+            if (this.openCloseAction != null && action == CLOSE) {
+                final String name = executable == null || executable.isEmpty() ? this.menuName : executable;
+                final MenuSession menuSession = new MenuSession(this.plugin, name, player);
+                openCloseAction.handle(MenuAction.CLOSE, name, menuSession);
+                return;
+            }
             logger.warning("No menu found with this name: " + executable);
             return;
         }

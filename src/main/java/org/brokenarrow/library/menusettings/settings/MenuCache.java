@@ -58,17 +58,19 @@ public class MenuCache extends SimpleYamlHelper {
 			if (getCustomConfig().contains("Menus." + key + ".Menu_Items"))
 				path = "Menus." + key;
 
-			if (!isSingelFile())
-				menuCache.put(getNameOfFile(file.getName()), parseMenuSettings(buttonsCache, path));
-			else
-				menuCache.put(key, parseMenuSettings(buttonsCache, path));
+			if (!isSingelFile()) {
+				final String menuName = getNameOfFile(file.getName());
+				menuCache.put(menuName, parseMenuSettings(menuName, buttonsCache, path));
+			} else {
+				menuCache.put(key, parseMenuSettings(key, buttonsCache, path));
+			}
 		}
 	}
 
-	public MenuSettings parseMenuSettings(Map<List<Integer>, List<ButtonSettings>> buttonsCache, String key) {
+	public MenuSettings parseMenuSettings(@NotNull final String menuName, Map<List<Integer>, List<ButtonSettings>> buttonsCache, String key) {
 
 		final FileConfiguration config = getCustomConfig();
-		final YamlConfigMapper yamlConfigMapper = new YamlConfigMapper(plugin,openCloseAction, config);
+		final YamlConfigMapper yamlConfigMapper = new YamlConfigMapper(plugin, menuName, config, openCloseAction);
 		String menuType = config.getString(key + ".Menu_Type");
 		int menuSize = config.getInt(key + ".Menu_Size");
 		String menuTitle = config.getString(key + ".Menu_Title");

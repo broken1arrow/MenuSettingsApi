@@ -37,17 +37,17 @@ public final class ConfigParsingUtils {
 	public static final java.util.regex.Pattern DELAY_MATCH = java.util.regex.Pattern.compile("<delay=([^<>]+)>", java.util.regex.Pattern.CASE_INSENSITIVE);
 	public static final java.util.regex.Pattern CHANCE_MATCH = java.util.regex.Pattern.compile("<chance=([^<>]+)>", java.util.regex.Pattern.CASE_INSENSITIVE);
 
-	public static List<ClickActionTask> formatCommands(@NotNull final Plugin plugin, @Nullable final List<String> comands, @Nullable final MenuActionHandler openCloseAction) {
-		if (comands == null || comands.isEmpty()) return null;
+	public static List<ClickActionTask> formatCommands(@NotNull final Plugin plugin, @NotNull final String menuName, @Nullable final List<String> commands, @Nullable final MenuActionHandler openCloseAction) {
+		if (commands == null || commands.isEmpty()) return null;
 		List<ClickActionTask> list = new ArrayList<>();
-		for (String command : comands) {
+		for (String command : commands) {
 			CommandActionType commandType = CommandActionType.getType(command);
 
 			if (commandType != null) {
 				command = command.replace(commandType.getIdentifier(), "");
 				if (command.startsWith(" "))
 					command = command.trim();
-                final ClickActionTask action = new ClickActionTask(plugin, commandType, openCloseAction);
+                final ClickActionTask action = new ClickActionTask(plugin,menuName, commandType, openCloseAction);
 
 				Matcher delay = DELAY_MATCH.matcher(command);
 				if (delay.find()) {
