@@ -84,6 +84,7 @@ public final class MenuDataRegister {
 	public void reloadConfigs(final Plugin plugin){
 		MenuContext menuContext = menuCache.get(plugin);
 		if (menuContext != null) {
+			menuContext.getMenuCache().clearMenuCache();
 			menuContext.getMenuCache().reload();
 			menuContext.getTemplatesCache().reload();
 		}

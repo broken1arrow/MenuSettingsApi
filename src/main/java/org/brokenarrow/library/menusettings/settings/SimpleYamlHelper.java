@@ -17,6 +17,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -43,6 +44,7 @@ public abstract class SimpleYamlHelper {
 	private final File dataFolder;
 	private Set<String> filesFromResource;
 	protected final Plugin plugin;
+	private boolean recursive;
 
 
 	public SimpleYamlHelper(@NotNull Plugin plugin, final String name, final boolean shallGenerateFiles) {
@@ -50,12 +52,19 @@ public abstract class SimpleYamlHelper {
 	}
 
 	public SimpleYamlHelper(@NotNull Plugin plugin, final String name, final boolean singelFile, final boolean shallGenerateFiles) {
-		if (plugin == null) throw new RuntimeException("You have not set the plugin, becuse it is null");
+		if (plugin == null) throw new RuntimeException("You have not set the plugin, because it is null");
+		String path = name;
+		if (name.endsWith("/*")) {
+			recursive = true;
+			path = name.substring(0, name.length() - 2); // remove /*
+		}
 		this.plugin = plugin;
 		this.dataFolder = this.plugin.getDataFolder();
 		this.singelFile = singelFile;
-		this.name = this.checkIfFileHasExtension(name);
+		this.name = this.checkIfFileHasExtension(path);
 		this.shallGenerateFiles = shallGenerateFiles;
+
+
 	}
 
 	protected abstract void saveDataToFile(final File file);
@@ -300,10 +309,18 @@ public abstract class SimpleYamlHelper {
 		}
 		final File dataFolder = new File(this.getDataFolder(), directory);
 		if (!dataFolder.exists() && !directory.isEmpty()) dataFolder.mkdirs();
-		if (this.filesFromResource != null)
-			createMissingFiles(dataFolder.listFiles(file -> !file.isDirectory() && file.getName().endsWith("." + getExtension())));
 
-		return dataFolder.listFiles(file -> !file.isDirectory() && file.getName().endsWith("." + getExtension()));
+		if (this.filesFromResource != null) {
+			createMissingFiles(dataFolder.listFiles(file -> !file.isDirectory() && file.getName().endsWith("." + getExtension())));
+		}
+		File[] files;
+		if (this.recursive) {
+			files = getFilesRecursive(dataFolder);
+		} else {
+			files = dataFolder.listFiles(file ->
+					!file.isDirectory() && file.getName().endsWith("." + getExtension()));
+		}
+		return files;
 	}
 
 	public String getNameOfFile(String path) {
@@ -451,20 +468,21 @@ public abstract class SimpleYamlHelper {
 			bw.close();*/
 	}
 
-	private void createMissingFiles(final File[] listFiles) {
-		if (this.filesFromResource == null) return;
-		if (listFiles == null || listFiles.length < 1) return;
+    private void createMissingFiles(final File[] listFiles) {
+        if (this.filesFromResource == null) return;
+        File[] existingFiles = listFiles != null ? listFiles : new File[0];
 
-		this.filesFromResource.stream().filter((files) -> {
-			if (!files.endsWith(getExtension())) return false;
-			for (final File file : listFiles) {
-				if (this.getName(files).equals(file.getName())) {
-					return false;
-				}
-			}
-			return true;
-		}).forEach((files) -> this.plugin.saveResource(files, false));
-	}
+        this.filesFromResource.stream()
+                .filter(files -> files.endsWith(getExtension()))
+                .filter((files) -> {
+                    for (final File file : existingFiles) {
+                        if (this.getName(files).equals(file.getName())) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }).forEach((files) -> this.plugin.saveResource(files, false));
+    }
 
 	private boolean isClassListEqual(final Class<?>[] first, final Class<?>[] second) {
 		if (first.length != second.length) {
@@ -490,5 +508,22 @@ public abstract class SimpleYamlHelper {
 				super(message);
 			}
 		}
+	}
+
+	private File[] getFilesRecursive(File folder) {
+		List<File> result = new ArrayList<>();
+
+		File[] files = folder.listFiles();
+		if (files == null) return new File[0];
+
+		for (File file : files) {
+			if (file.isDirectory()) {
+				result.addAll(Arrays.asList(getFilesRecursive(file)));
+			} else if (file.getName().endsWith("." + getExtension())) {
+				result.add(file);
+			}
+		}
+
+		return result.toArray(new File[0]);
 	}
 }

@@ -81,12 +81,11 @@ public final class SoundUtillity {
 	public Sound getSoundType(String string) {
 		Sound[] types = Sound.values();
 		if (string == null) return null;
-
 		string = string.toUpperCase();
-		for (Sound type : types) {
-			if (type.name().equals(string))
-				return type;
+		try {
+			return Sound.valueOf(string);
+		} catch (IllegalArgumentException e) {
+			return types[0];
 		}
-		return types[0];
 	}
 }

@@ -20,7 +20,7 @@ import static org.brokenarrow.library.menusettings.settings.ConfigParsingUtils.s
 
 public class MenuCache extends SimpleYamlHelper {
 	private MenuActionHandler openCloseAction;
-	private final Map<String, MenuSettings> menuCache = new HashMap<>();
+	private Map<String, MenuSettings> menuCache = new HashMap<>();
 
 	public MenuCache(@NotNull final Plugin plugin,final String name, final MenuRegistrationConfig config) {
 		super(plugin, name,  config.isOneFile(), config.isGenerateDefaultFiles());
@@ -34,6 +34,10 @@ public class MenuCache extends SimpleYamlHelper {
 	 */
 	public Map<String, MenuSettings> getMenuCache() {
 		return menuCache;
+	}
+
+	public void clearMenuCache() {
+		menuCache = new HashMap<>();
 	}
 
 	@Override
