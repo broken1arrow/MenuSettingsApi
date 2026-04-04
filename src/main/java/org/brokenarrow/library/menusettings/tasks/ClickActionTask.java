@@ -188,7 +188,7 @@ public class ClickActionTask {
         final MenuSettings menuSettings = menuCache.getMenuCache().get(executable);
         if (menuSettings == null) {
             if (this.openCloseAction != null && action == CLOSE) {
-                final String name = executable == null || executable.isEmpty() ? this.menuName : executable;
+                final String name = executable == null || executable.trim().isEmpty() ? this.menuName : executable;
                 final MenuSession menuSession = new MenuSession(this.plugin, name, player);
                 openCloseAction.handle(MenuAction.CLOSE, name, menuSession);
                 return;
