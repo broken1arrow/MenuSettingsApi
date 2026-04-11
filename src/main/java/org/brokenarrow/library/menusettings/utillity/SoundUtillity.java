@@ -78,14 +78,13 @@ public final class SoundUtillity {
 	}
 
 	@Nullable
-	public Sound getSoundType(String string) {
-		Sound[] types = Sound.values();
+	public Sound getSoundType(@Nullable String string) {
 		if (string == null) return null;
 		string = string.toUpperCase();
 		try {
 			return Sound.valueOf(string);
 		} catch (IllegalArgumentException e) {
-			return types[0];
+			return null;
 		}
 	}
 }
