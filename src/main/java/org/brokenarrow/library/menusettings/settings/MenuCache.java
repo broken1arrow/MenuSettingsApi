@@ -77,8 +77,10 @@ public class MenuCache extends SimpleYamlHelper {
 		String fillSpace = config.getString(key + ".FillSpace");
 		String sound = config.getString(key + ".Sound");
 		boolean refreshAll = config.getBoolean(key + ".Refresh_all_buttons");
-		int delay = config.getInt(key + ".Update_all_buttons_delay");
-		boolean updateButtons = delay >= 0;
+		int interval = config.getInt(key + ".Update_all_buttons_interval");
+		if (interval < 1)
+			interval = config.getInt(key + ".Update_all_buttons_delay");
+		boolean updateButtons = config.getBoolean(key + ".Shall_update_interval");
 
 		String path = key + ".Menu_Items";
 		if (!config.contains(path))
@@ -92,13 +94,15 @@ public class MenuCache extends SimpleYamlHelper {
 
 				int priority = config.getInt(buttonPath + ".Priority", 1);
 				boolean refreshClickedButton = config.getBoolean(buttonPath + ".Refresh");
-				boolean updateButton = config.getBoolean(buttonPath + ".Update_Button");
-				long updateButtondelay = config.getLong(buttonPath + ".Update_delay");
+				boolean updateButton = config.getBoolean(buttonPath + ".Update_on_interval");
+				long updateButtonInterval = config.getLong(buttonPath + ".Update_interval");
+				if (updateButtonInterval < 1)
+					updateButtonInterval = config.getLong(buttonPath + ".Update_delay");
 
 				String slot = config.getString(buttonPath + ".Slot");
 
-				String itemfromarmorslot = config.getString(buttonPath + ".Item_from_armor_slot");
-				String itemfromhand = config.getString(buttonPath + ".Item_from_hand");
+				String itemFromArmorSlot = config.getString(buttonPath + ".Item_from_armor_slot");
+				String itemFromHand = config.getString(buttonPath + ".Item_from_hand");
 				String menuToOpen = config.getString(buttonPath + ".Menu_to_open");
 
 
@@ -106,12 +110,12 @@ public class MenuCache extends SimpleYamlHelper {
 						.setButtonItem(yamlConfigMapper.getItem(buttonPath, false))
 						.setUpdateButton(updateButton)
 						.setRefreshClickedButton(refreshClickedButton)
-						.setRefreshTimeWhenUpdateButton(updateButtondelay)
+						.setRefreshTimeWhenUpdateButton(updateButtonInterval)
 						.setPriority(priority)
 						.setButtonName(button)
 						.setOpenNewMenu(menuToOpen)
-						.setCheckArmor(itemfromarmorslot)
-						.setCheckHand(itemfromhand)
+						.setCheckArmor(itemFromArmorSlot)
+						.setCheckHand(itemFromHand)
 						.setClickrequirement(yamlConfigMapper.checkRequirements(buttonPath, "Click_requirement"))
 						.setLeftClickRequirement(yamlConfigMapper.checkRequirements(buttonPath, "Left_click_requirement"))
 						.setRightClickRequirement(yamlConfigMapper.checkRequirements(buttonPath, "Right_click_requirement"))
@@ -142,11 +146,11 @@ public class MenuCache extends SimpleYamlHelper {
 				.setFillSpace(fillSpace)
 				.setItemSettings(sortList(buttonsCache))
 				.setMenuSize(menuSize)
-				.setGlobalDelay(delay)
+				.setGlobalDelay(interval)
 				.setMenuTitle(menuTitle)
 				.setSound(sound)
 				.setOpenRequirement(yamlConfigMapper.checkRequirements("Menus." + key, "Open_requirement"))
-				.setUpdateButtons(updateButtons)
+				.setUpdateButtonsInterval(updateButtons)
 				.setRefreshAllButtons(refreshAll);
 
 		return builder.build();

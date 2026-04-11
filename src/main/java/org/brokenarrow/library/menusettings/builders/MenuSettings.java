@@ -201,7 +201,7 @@ public final class MenuSettings {
 			return this;
 		}
 
-		public Builder setUpdateButtons(boolean updateButtons) {
+		public Builder setUpdateButtonsInterval(boolean updateButtons) {
 			this.updateButtons = updateButtons;
 			return this;
 		}
