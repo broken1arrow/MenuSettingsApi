@@ -10,7 +10,7 @@ Menus:
     #If i shall update all buttons when one is clicked.
     Refresh_all_buttons: false
     #time format depends on the plugin 
-    Update_all_buttons_delay: -1
+    Update_all_buttons_interval: -1
     Open_requirement:
       Requirement:
         Permission:
@@ -29,9 +29,9 @@ Menus:
         #update the button when click
         Refresh: true
         #update the button on timer
-        Update_Button: false
+        Update_on_interval: false
         #time format depends on the plugin
-        Update_delay: 5
+        Update_interval: 5
         Glow: true
         Slot: 11
         Icon: SUNFLOWER

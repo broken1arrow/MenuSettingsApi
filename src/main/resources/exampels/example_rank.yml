@@ -3,12 +3,12 @@ Menus:
     Menu_Size: 27
     Menu_Title: "&2Ranks"
     Refresh_all_buttons: false
-    Update_all_buttons_delay: -1
+    Update_all_buttons_interval: -1
     Menu_Items:
       VIP_Rank:
         Priority: 0
-        Update_Button: true
-        Update_delay: 5
+        Update_on_interval: true
+        Update_interval: 5
         Glow: true
         Slot: 10
         Icon: GOLD_INGOT
@@ -35,8 +35,8 @@ Menus:
           - "[givepermission] rank.vip"
       Have_VIP_Rank:
         Priority: 100
-        Update_Button: true
-        Update_delay: 5
+        Update_on_interval: true
+        Update_interval: 5
         Glow: true
         Slot: 10
         Icon: GOLD_INGOT
@@ -51,8 +51,8 @@ Menus:
               permission: rank.vip
       MVP_Rank:
         Priority: 0
-        Update_Button: true
-        Update_delay: 5
+        Update_on_interval: true
+        Update_interval: 5
         Glow: true
         Slot: 12
         Icon: DIAMOND
@@ -79,8 +79,8 @@ Menus:
           - "[givepermission] rank.mvp"
       Have_MVP_Rank:
         Priority: 100
-        Update_Button: true
-        Update_delay: 5
+        Update_on_interval: true
+        Update_interval: 5
         Glow: true
         Slot: 12
         Icon: DIAMOND
@@ -95,8 +95,8 @@ Menus:
               permission: rank.mvp
       LEGEND_Rank:
         Priority: 0
-        Update_Button: true
-        Update_delay: 5
+        Update_on_interval: true
+        Update_interval: 5
         Glow: true
         Slot: 14
         Icon: NETHER_STAR
@@ -123,8 +123,8 @@ Menus:
           - "[givepermission] rank.legend"
       Have_LEGEND_Rank:
         Priority: 100
-        Update_Button: true
-        Update_delay: 5
+        Update_on_interval: true
+        Update_interval: 5
         Glow: true
         Slot: 14
         Icon: NETHER_STAR

@@ -80,7 +80,7 @@ public class MenuCache extends SimpleYamlHelper {
 		int interval = config.getInt(key + ".Update_all_buttons_interval");
 		if (interval < 1)
 			interval = config.getInt(key + ".Update_all_buttons_delay");
-		boolean updateButtons = config.getBoolean(key + ".Shall_update_interval");
+		boolean updateButtons = config.getBoolean(key + ".Shall_update_on_interval");
 
 		String path = key + ".Menu_Items";
 		if (!config.contains(path))
