@@ -1,5 +1,5 @@
 ## More info in the wiki. 
 
-Has done big updatews so read the wiki how to use the api.
+Has done big updates so read the wiki how to use the api.
 
 
