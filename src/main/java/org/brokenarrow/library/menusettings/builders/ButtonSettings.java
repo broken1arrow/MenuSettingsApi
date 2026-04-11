@@ -16,7 +16,7 @@ public final class ButtonSettings {
 	private final String openNewMenu;
 	private final ItemWrapper buttonItem;
 	private final RequirementsContext viewRequirement;
-	private final RequirementsContext clickrequirement;
+	private final RequirementsContext clickRequirement;
 	private final RequirementsContext shiftRightClickRequirement;
 	private final RequirementsContext shiftLeftClickRequirement;
 	private final RequirementsContext leftClickRequirement;
@@ -41,7 +41,7 @@ public final class ButtonSettings {
 		this.openNewMenu = builder.openNewMenu;
 		this.buttonItem = builder.buttonItem;
 		this.viewRequirement = builder.viewRequirement;
-		this.clickrequirement = builder.clickrequirement;
+		this.clickRequirement = builder.clickrequirement;
 		this.shiftRightClickRequirement = builder.shiftRightClickRequirement;
 		this.shiftLeftClickRequirement = builder.shiftLeftClickRequirement;
 		this.leftClickRequirement = builder.leftClickRequirement;
@@ -140,7 +140,7 @@ public final class ButtonSettings {
 	}
 
 	public RequirementsContext getClickRequirement() {
-		return clickrequirement;
+		return clickRequirement;
 	}
 
 	public RequirementsContext getShiftRightClickRequirement() {
@@ -343,7 +343,7 @@ public final class ButtonSettings {
 				", openMenu='" + openNewMenu + '\'' +
 				", buttonItem=" + buttonItem +
 				", viewRequirement=" + viewRequirement +
-				", clickrequirement=" + clickrequirement +
+				", clickrequirement=" + clickRequirement +
 				", shiftRightClickRequirement=" + shiftRightClickRequirement +
 				", shiftLeftClickRequirement=" + shiftLeftClickRequirement +
 				", leftClickRequirement=" + leftClickRequirement +
