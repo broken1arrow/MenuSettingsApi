@@ -3,12 +3,14 @@ package org.brokenarrow.library.menusettings;
 import org.brokenarrow.library.menusettings.builders.ButtonContext;
 import org.brokenarrow.library.menusettings.builders.ButtonSettings;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
+import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
 import org.brokenarrow.library.menusettings.settings.MenuCache;
 import org.brokenarrow.library.menusettings.utillity.RequirementResultHandler;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,8 +21,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import static org.brokenarrow.library.menusettings.MenuSettingsAddon.setPlaceholders;
 
 /**
  * Helper class for accessing buttons and requirements for a menu.
@@ -33,6 +33,7 @@ public final class MenuSession {
     private final Player viewer;
     private final String menuName;
     private final MenuDataRegister menuDataRegister = MenuDataRegister.getInstance();
+    private final MenuPlaceholderContext menuPlaceholderContext;
 
     /**
      * Creates a new MenuSession instance for a specific menu and player.
@@ -44,9 +45,25 @@ public final class MenuSession {
      * @param player   the player who will view the menu
      */
     public MenuSession(@NotNull Plugin plugin, @NotNull final String menuName, @NotNull final Player player) {
-        Valid.checkNotNull(this.menuDataRegister, "MenuSettingsAddon class is not registed.");
+        this(plugin, null, menuName, player);
+    }
+
+    /**
+     * Creates a new MenuSession instance for a specific menu and player.
+     * <p>
+     * This will load the settings for the specified menu from the plugin's menu cache.
+     *
+     * @param plugin                 the plugin instance that registered the menu
+     * @param menuPlaceholderContext the context after player run command registered trough the config.
+     * @param menuName               the name of the menu to load
+     * @param player                 the player who will view the menu
+     */
+    @ApiStatus.Internal
+    public MenuSession(@NotNull final Plugin plugin, @Nullable final MenuPlaceholderContext menuPlaceholderContext, @NotNull final String menuName, @NotNull final Player player) {
+        Valid.checkNotNull(this.menuDataRegister, "MenuSettingsAddon class is not registered.");
         MenuCache menuCache = this.menuDataRegister.getMenuCache(plugin);
-        Valid.checkNotNull(menuCache, "the plugin is not registed, so can't load the settings");
+        Valid.checkNotNull(menuCache, "the plugin is not registered, so can't load the settings");
+        this.menuPlaceholderContext = menuPlaceholderContext;
         this.menuName = menuName;
         Map<String, MenuSettings> menu = menuCache.getMenuCache();
         if (menu != null) {
@@ -56,7 +73,6 @@ public final class MenuSession {
 
         this.viewer = player;
     }
-
 
     /**
      * Returns the {@link MenuSettings} for this menu.
@@ -119,12 +135,12 @@ public final class MenuSession {
         }
         RequirementsContext openRequirement = this.getMenuSettings().getOpenRequirement();
         if (openRequirement != null && this.viewer != null) {
-            openRequirement.estimateLater(this.viewer, hasRequirements -> {
+            openRequirement.estimateLater(this.viewer, this.menuPlaceholderContext, hasRequirements -> {
                 if (hasRequirements) {
                     handler.executeSuccess();
                 } else {
                     if (openRequirement.getDenyCommands() != null)
-                        openRequirement.runClickActionTasks(openRequirement.getDenyCommands(), this.viewer).thenRun(handler::executeFailure);
+                        openRequirement.runClickActionTasks(openRequirement.getDenyCommands(), this.viewer, this.menuPlaceholderContext).thenRun(handler::executeFailure);
                 }
             });
         } else {
@@ -158,7 +174,7 @@ public final class MenuSession {
     public List<ButtonContext> getButtons(int slot) {
         List<ButtonSettings> buttonSettingsList = collectButtons(slot);
         if (buttonSettingsList != null)
-            return buttonSettingsList.stream().map(buttonSettings -> new ButtonContext(buttonSettings, this.viewer)).collect(Collectors.toList());
+            return buttonSettingsList.stream().map(buttonSettings -> new ButtonContext(this.menuPlaceholderContext, buttonSettings, this.viewer)).collect(Collectors.toList());
         return null;
     }
 
@@ -168,17 +184,17 @@ public final class MenuSession {
      * @param string the string containing placeholders
      * @return the string with placeholders replaced, or the original string if PlaceholderAPI is unavailable
      */
-    public String setPlaceholder(String string) {
-        return setPlaceholders(getViewer(), string);
+    public String resolvePlaceholder(String string) {
+        return MenuSettingsAddon.setPlaceholders(getViewer(), string, this.menuPlaceholderContext);
     }
 
     private @Nullable ButtonContext getButtonContext(ButtonSettings key) {
         final RequirementsContext viewRequirement = key.getViewRequirement();
         if (viewRequirement == null) {
-            return new ButtonContext(key, this.viewer);
+            return new ButtonContext(this.menuPlaceholderContext, key, this.viewer);
         }
-        if (viewRequirement.estimate(this.viewer))
-            return new ButtonContext(key, this.viewer);
+        if (viewRequirement.estimate(this.viewer, this.menuPlaceholderContext))
+            return new ButtonContext(this.menuPlaceholderContext, key, this.viewer);
         return null;
     }
 

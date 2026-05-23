@@ -278,7 +278,7 @@ public final class YamlConfigMapper {
             boolean optionalRequirement = this.getConfig().getBoolean(path + ".optional_requirement");
             rec.setOptional(optionalRequirement);
             if (clickRequirementType != null)
-                rec.setClickRequiermentType(clickRequirementType);
+                rec.setClickRequirementType(clickRequirementType);
 
             rec.setSuccessCommands(formatCommands(plugin, this.menuName, successCommands, this.openCloseAction));
             rec.setDenyCommands(formatCommands(plugin, this.menuName, denyCommands, this.openCloseAction));

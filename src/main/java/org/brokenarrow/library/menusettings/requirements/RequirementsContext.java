@@ -1,10 +1,12 @@
 package org.brokenarrow.library.menusettings.requirements;
 
 import org.brokenarrow.library.menusettings.MenuSettingsAddon;
+import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.tasks.ClickActionTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +39,15 @@ public class RequirementsContext {
      *
      * <p><strong>Note:</strong> This method does not wait for any command execution to complete.</p>
      *
-     * @param viewer the player viewing the menu
+     * @param viewer                 the player viewing the menu
+     * @param menuPlaceholderContext the execution context used for placeholder resolution
      * @return {@code true} if the requirements are met at evaluation time, otherwise {@code false}
      */
-    public boolean estimate(Player viewer) {
+    public boolean estimate(@NotNull final Player viewer, @Nullable final MenuPlaceholderContext menuPlaceholderContext) {
         int success = 0;
 
         for (Requirement requirement : getRequirements()) {
-            boolean passed = requirement.estimate(viewer);
+            boolean passed = requirement.estimate(viewer, menuPlaceholderContext);
             List<ClickActionTask> commands = passed ? requirement.getSuccessCommands() : requirement.getDenyCommands();
             if (!passed && !requirement.isOptional()) {
                 return false;
@@ -52,7 +55,7 @@ public class RequirementsContext {
             if (passed) success++;
 
             if (commands != null) {
-                runClickActionTasks(commands, viewer)
+                runClickActionTasks(commands, viewer, menuPlaceholderContext)
                         .exceptionally(ex -> {
                             MenuSettingsAddon.getLogger(ex, "Could not run the command set.");
                             return null;
@@ -73,7 +76,7 @@ public class RequirementsContext {
      *
      * <p><strong>Important:</strong> This only guarantees completion of commands that are
      * tracked via {@link CompletableFuture} (i.e., commands executed through
-     * {@link #runClickActionTasks(List, Player)}).
+     * {@link #runClickActionTasks(List, Player, MenuPlaceholderContext)}).
      * </p>
      *
      * <p>Commands that perform additional asynchronous work outside of this system
@@ -83,17 +86,18 @@ public class RequirementsContext {
      * <p>As a result, the callback reflects the evaluation result at the time of execution,
      * but does not guarantee that all external side effects are fully applied.</p>
      *
-     * @param viewer the player viewing the menu
-     * @param callback callback invoked after tracked command tasks complete,
-     *                 receiving the evaluation result
+     * @param viewer                 the player viewing the menu
+     * @param menuPlaceholderContext the execution context used for placeholder resolution
+     * @param callback               callback invoked after tracked command tasks complete,
+     *                               receiving the evaluation result
      */
-    public void estimateLater(@NotNull final Player viewer, @NotNull final Consumer<Boolean> callback) {
+    public void estimateLater(@NotNull final Player viewer, @Nullable final MenuPlaceholderContext menuPlaceholderContext, @NotNull final Consumer<Boolean> callback) {
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         int success = 0;
 
         for (Requirement requirement : this.getRequirements()) {
             List<ClickActionTask> commands;
-            if (requirement.estimate(viewer)) {
+            if (requirement.estimate(viewer, menuPlaceholderContext)) {
                 ++success;
                 commands = requirement.getSuccessCommands();
                 if (this.isStopAtSuccess() && success >= this.getMinimumRequirements())
@@ -107,7 +111,7 @@ public class RequirementsContext {
                 }
             }
             if (commands != null) {
-                futures.add(runClickActionTasks(commands, viewer));
+                futures.add(runClickActionTasks(commands, viewer, menuPlaceholderContext));
             }
         }
         final boolean result = success >= this.getMinimumRequirements();
@@ -116,7 +120,7 @@ public class RequirementsContext {
                 .thenRun(() -> callback.accept(result));
     }
 
-    public CompletableFuture<Void> runClickActionTasks(List<ClickActionTask> list, Player wiver) {
+    public CompletableFuture<Void> runClickActionTasks(@Nullable final List<ClickActionTask> list, @NotNull final Player wiver, @Nullable final MenuPlaceholderContext menuPlaceholderContext) {
         if (list == null || list.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
@@ -124,7 +128,7 @@ public class RequirementsContext {
 
         for (ClickActionTask action : list) {
             if (action == null) continue;
-            futures.add(runTask(action, wiver));
+            futures.add(runTask(action, wiver, menuPlaceholderContext));
         }
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
     }
@@ -162,19 +166,19 @@ public class RequirementsContext {
 
     }
 
-    private CompletableFuture<Void> runTask(ClickActionTask clickAction, Player wiver) {
+    private CompletableFuture<Void> runTask(@NotNull final ClickActionTask clickAction, @NotNull final Player wiver, @Nullable final MenuPlaceholderContext menuPlaceholderContext) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
-        if (!clickAction.checkChance(wiver)) {
+        if (!clickAction.checkChance(wiver, menuPlaceholderContext)) {
             future.complete(null);
             return future;
         }
 
-        long delay = clickAction.formatDelay(wiver);
+        long delay = clickAction.formatDelay(wiver, menuPlaceholderContext);
 
         Runnable task = () -> {
             try {
-                clickAction.task(wiver);
+                clickAction.task(wiver, menuPlaceholderContext);
                 future.complete(null);
             } catch (Exception e) {
                 future.completeExceptionally(e);

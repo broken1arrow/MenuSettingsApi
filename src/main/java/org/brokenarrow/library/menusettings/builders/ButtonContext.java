@@ -1,6 +1,7 @@
 package org.brokenarrow.library.menusettings.builders;
 
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
+import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
 import org.brokenarrow.library.menusettings.utillity.CreateItemStack;
@@ -24,11 +25,12 @@ import static org.brokenarrow.library.menusettings.utillity.ArmorSlots.getArmorP
  * and provides logic for rendering and handling interactions for that button.
  */
 public class ButtonContext {
-
+    private final MenuPlaceholderContext menuPlaceholderContext;
     private final Player viewer;
     private final ButtonSettings buttonSettings;
 
-    public ButtonContext(@NotNull final ButtonSettings buttonSettings, @NotNull final Player viewer) {
+    public ButtonContext(@Nullable final MenuPlaceholderContext menuPlaceholderContext, @NotNull final ButtonSettings buttonSettings, @NotNull final Player viewer) {
+        this.menuPlaceholderContext = menuPlaceholderContext;
         this.viewer = viewer;
         this.buttonSettings = buttonSettings;
     }
@@ -98,7 +100,7 @@ public class ButtonContext {
             itemStack = SkullCreator.itemFromUuid(viewer.getUniqueId());
         }
 
-        return CreateItemStack.of(itemStack, itemWrapper, viewer).makeItemStack();
+        return CreateItemStack.of(itemStack, itemWrapper, viewer,this.menuPlaceholderContext).makeItemStack();
     }
 
     /**
@@ -254,17 +256,17 @@ public class ButtonContext {
         resultCallback.accept(handler);
 
         if (requirementsContext == null) {
-            clickActionHandler.runClickActionTasks(viewer)
+            clickActionHandler.runClickActionTasks(viewer, this.menuPlaceholderContext)
                     .thenRun(handler::executeSuccess);
             return true;
         }
-        requirementsContext.estimateLater(viewer, hasRequirement -> {
+        requirementsContext.estimateLater(viewer, this.menuPlaceholderContext, hasRequirement -> {
             if (hasRequirement) {
-                clickActionHandler.runClickActionTasks(viewer)
+                clickActionHandler.runClickActionTasks(viewer, this.menuPlaceholderContext)
                         .thenRun(handler::executeSuccess);
             } else {
                 requirementsContext
-                        .runClickActionTasks(requirementsContext.getDenyCommands(), viewer)
+                        .runClickActionTasks(requirementsContext.getDenyCommands(), viewer, this.menuPlaceholderContext)
                         .thenRun(handler::executeFailure);
             }
         });

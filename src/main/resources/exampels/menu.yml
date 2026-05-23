@@ -11,6 +11,17 @@ Menus:
     Refresh_all_buttons: false
     #time format depends on the plugin 
     Update_all_buttons_interval: -1
+    Open_commands:
+      - maincommand
+    Open_args:
+      - arg: player
+        optional: true
+    Open_args_requirement:
+      Requirement:
+        Permission:
+          type: "is object"
+          input: "{player}"
+          object: "player"
     Open_requirement:
       Requirement:
         Permission:
@@ -46,7 +57,7 @@ Menus:
                 - "command deny"
         Display_name: "&6Example item"
         Lore:
-          - ""
+          - "Player name {player}"
           - "&4Example lore"
         # This is all different requirement checks you
         # can use to check different clicks.

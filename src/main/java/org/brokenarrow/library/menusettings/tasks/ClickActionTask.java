@@ -11,6 +11,7 @@ import org.brokenarrow.library.menusettings.builders.MenuContext;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
 import org.brokenarrow.library.menusettings.builders.Template;
 import org.brokenarrow.library.menusettings.clickactions.CommandActionType;
+import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.settings.MenuCache;
 import org.brokenarrow.library.menusettings.settings.TemplatesCache;
 import org.brokenarrow.library.menusettings.utillity.MenuAction;
@@ -36,7 +37,6 @@ import java.util.logging.Logger;
 
 import static org.broken.lib.rbg.TextTranslator.toSpigotFormat;
 import static org.brokenarrow.library.menusettings.MenuSettingsAddon.getLogger;
-import static org.brokenarrow.library.menusettings.MenuSettingsAddon.setPlaceholders;
 import static org.brokenarrow.library.menusettings.clickactions.CommandActionType.*;
 import static org.brokenarrow.library.menusettings.utillity.CreateItemStack.formatColors;
 import static org.brokenarrow.library.menusettings.utillity.ExperienceUtillity.setExp;
@@ -63,9 +63,9 @@ public class ClickActionTask {
         this.openCloseAction = openCloseAction;
     }
 
-    public void task(Player player) {
+    public void task(@Nullable final Player player, @Nullable final MenuPlaceholderContext menuPlaceholderContext) {
         if (player == null) return;
-        String executable = setPlaceholders(player, this.getExecutable());
+        String executable = MenuSettingsAddon.setPlaceholders(player, this.getExecutable(), menuPlaceholderContext);
         switch (this.actionType) {
             case CONSOLE:
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), executable);
@@ -99,7 +99,7 @@ public class ClickActionTask {
                 menuDataRegister.getAudiences().player(player).showTitle(title);
                 break;
             case PLACEHOLDER:
-                setPlaceholders(player, executable);
+                MenuSettingsAddon.setPlaceholders(player, executable,menuPlaceholderContext);
             case PLAYER_COMMAND_EVENT:
                 Bukkit.getPluginManager().callEvent(new PlayerCommandPreprocessEvent(player, "/" + executable));
                 break;
@@ -185,7 +185,7 @@ public class ClickActionTask {
             return;
         }
 
-        final MenuSettings menuSettings = menuCache.getMenuCache().get(executable);
+        final MenuSettings menuSettings = menuCache.getMenuSettings(executable);
         if (menuSettings == null) {
             if (this.openCloseAction != null && action == CLOSE) {
                 final String name = executable == null || executable.trim().isEmpty() ? this.menuName : executable;
@@ -211,9 +211,9 @@ public class ClickActionTask {
     }
 
 
-    public long formatDelay(Player wiver) {
+    public long formatDelay(@NotNull final Player wiver, @Nullable final MenuPlaceholderContext menuPlaceholderContext) {
         if (this.getDelay() == null || this.getDelay().isEmpty()) return -1;
-        String delayTranslated = setPlaceholders(wiver, this.getDelay());
+        String delayTranslated = MenuSettingsAddon.setPlaceholders(wiver, this.getDelay(), menuPlaceholderContext);
 
         try {
             return Long.parseLong(delayTranslated);
@@ -222,11 +222,11 @@ public class ClickActionTask {
         }
     }
 
-    public boolean checkChance(Player wiver) {
+    public boolean checkChance(@NotNull final Player wiver, @Nullable final MenuPlaceholderContext menuPlaceholderContext) {
         if (this.getChance() == null) {
             return true;
         } else {
-            String chanceTranslated = setPlaceholders(wiver, this.getChance());
+            String chanceTranslated = MenuSettingsAddon.setPlaceholders(wiver, this.getChance(), menuPlaceholderContext);
             double chance;
             try {
                 chance = Double.parseDouble(chanceTranslated);

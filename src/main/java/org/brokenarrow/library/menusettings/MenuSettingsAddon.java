@@ -4,6 +4,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.broken.arrow.library.nbt.RegisterNbtAPI;
 import org.brokenarrow.library.menusettings.builders.MenuRegistrationConfig;
+import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.hooks.economy.RegisterEconomyHook;
 import org.brokenarrow.library.menusettings.hooks.permission.RegisterPermissionHook;
 import org.brokenarrow.library.menusettings.settings.MenuCache;
@@ -18,8 +19,10 @@ import org.bukkit.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -82,9 +85,9 @@ public final class MenuSettingsAddon extends JavaPlugin {
     /**
      * Registers this API and loads YML files, while registering plugin hooks.
      *
-     * @param plugin                   your main plugin class
-     * @param name                     the file name or folder name (if you set up one menu per file)
-     * @param makeOneFile              {@code true} if only a single file is used
+     * @param plugin                    your main plugin class
+     * @param name                      the file name or folder name (if you set up one menu per file)
+     * @param makeOneFile               {@code true} if only a single file is used
      * @param shallGenerateDefaultFiles {@code true} to generate default files from resources if they do not exist
      * @return the {@link MenuDataRegister}, which contains all necessary methods for further usage
      */
@@ -92,13 +95,13 @@ public final class MenuSettingsAddon extends JavaPlugin {
         return registerPlugin(plugin, null, name, makeOneFile, shallGenerateDefaultFiles);
     }
 
-     /**
+    /**
      * Registers this API and loads YML files, while registering plugin hooks.
      *
-     * @param plugin                   your main plugin class
-     * @param audiences                your instance of {@link BukkitAudiences}, if you do not want this API to override an existing one
-     * @param name                     the file name or folder name (if you set up one menu per file)
-     * @param makeOneFile              {@code true} if only a single file is used
+     * @param plugin                    your main plugin class
+     * @param audiences                 your instance of {@link BukkitAudiences}, if you do not want this API to override an existing one
+     * @param name                      the file name or folder name (if you set up one menu per file)
+     * @param makeOneFile               {@code true} if only a single file is used
      * @param shallGenerateDefaultFiles {@code true} to generate default files from resources if they do not exist
      * @return the {@link MenuDataRegister}, which contains all necessary methods for further usage
      */
@@ -140,7 +143,7 @@ public final class MenuSettingsAddon extends JavaPlugin {
      * @param plugin your main plugin class
      * @return the {@link MenuDataRegister}, which contains all necessary methods for further usage
      */
-    public MenuDataRegister reloadPluginConfigs(@NotNull final Plugin plugin) {
+    public MenuDataRegister reloadPluginConfigs(@Nonnull final Plugin plugin) {
         menuDataRegister.reloadConfigs(plugin);
         return menuDataRegister;
     }
@@ -152,10 +155,36 @@ public final class MenuSettingsAddon extends JavaPlugin {
         return string;
     }
 
+    public static String setPlaceholders(@Nonnull final Player player, @Nonnull final String string, @Nullable final MenuPlaceholderContext menuPlaceholderContext) {
+        if (isPlaceholderAPIRegisted) {
+            if (menuPlaceholderContext != null) {
+                return PlaceholderAPI.setPlaceholders(player, menuPlaceholderContext.apply(string));
+            }
+            return PlaceholderAPI.setPlaceholders(player, string);
+        }
+        return string;
+
+    }
+
     public static List<String> setPlaceholders(Player player, List<String> list) {
         if (isPlaceholderAPIRegisted)
             return PlaceholderAPI.setPlaceholders(player, list);
         return list;
+    }
+
+    public static List<String> setPlaceholders(@Nonnull final Player player, @Nonnull final List<String> list, @Nullable final MenuPlaceholderContext menuPlaceholderContext) {
+        if (isPlaceholderAPIRegisted) {
+            if (menuPlaceholderContext != null) {
+                List<String> placeholders = new ArrayList<>();
+                for (String placeholder : list) {
+                    placeholders.add(PlaceholderAPI.setPlaceholders(player, menuPlaceholderContext.apply(placeholder)));
+                }
+                return placeholders;
+            }
+            return PlaceholderAPI.setPlaceholders(player, list);
+        }
+        return list;
+
     }
 
     @NotNull

@@ -37,8 +37,9 @@ public final class ConfigParsingUtils {
 	public static final java.util.regex.Pattern DELAY_MATCH = java.util.regex.Pattern.compile("<delay=([^<>]+)>", java.util.regex.Pattern.CASE_INSENSITIVE);
 	public static final java.util.regex.Pattern CHANCE_MATCH = java.util.regex.Pattern.compile("<chance=([^<>]+)>", java.util.regex.Pattern.CASE_INSENSITIVE);
 
+	@NotNull
 	public static List<ClickActionTask> formatCommands(@NotNull final Plugin plugin, @NotNull final String menuName, @Nullable final List<String> commands, @Nullable final MenuActionHandler openCloseAction) {
-		if (commands == null || commands.isEmpty()) return null;
+		if (commands == null || commands.isEmpty()) return new ArrayList<>();
 		List<ClickActionTask> list = new ArrayList<>();
 		for (String command : commands) {
 			CommandActionType commandType = CommandActionType.getType(command);

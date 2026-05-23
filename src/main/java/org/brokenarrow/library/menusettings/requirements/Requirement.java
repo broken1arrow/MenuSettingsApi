@@ -1,8 +1,11 @@
 package org.brokenarrow.library.menusettings.requirements;
 
 import org.brokenarrow.library.menusettings.clickactions.ClickRequirementType;
+import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.tasks.ClickActionTask;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -21,7 +24,7 @@ public abstract class Requirement {
 		this.setOptional(optional);
 	}
 
-	abstract boolean estimate(Player wiver);
+	abstract boolean estimate(@NotNull final Player wiver, @Nullable final MenuPlaceholderContext menuPlaceholderContext);
 
 	public RequirementType getType() {
 		return null;
@@ -39,11 +42,11 @@ public abstract class Requirement {
 		return successCommands;
 	}
 
-	public ClickRequirementType getClickRequiermentType() {
+	public ClickRequirementType getClickRequirementType() {
 		return clickRequirementType;
 	}
 
-	public void setClickRequiermentType(ClickRequirementType clickRequirementType) {
+	public void setClickRequirementType(ClickRequirementType clickRequirementType) {
 		this.clickRequirementType = clickRequirementType;
 
 	}
