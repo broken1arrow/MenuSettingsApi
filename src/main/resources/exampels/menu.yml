@@ -14,14 +14,18 @@ Menus:
     Open_commands:
       - maincommand
     Open_args:
-      - arg: player
-        optional: true
-    Open_args_requirement:
-      Requirement:
-        Permission:
-          type: "is object"
-          input: "{player}"
-          object: "player"
+      Args:
+        - arg: player
+          optional: true
+      Message:
+        - "&4You missing this arguments:"
+        - "&6{arguments}"
+      Args_requirement:
+        Requirement:
+          Permission:
+            type: "is object"
+            input: "{player}"
+            object: "player"
     Open_requirement:
       Requirement:
         Permission:

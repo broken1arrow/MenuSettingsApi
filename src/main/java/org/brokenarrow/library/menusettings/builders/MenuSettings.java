@@ -2,7 +2,6 @@ package org.brokenarrow.library.menusettings.builders;
 
 import org.brokenarrow.library.menusettings.MenuSettingsAddon;
 import org.brokenarrow.library.menusettings.command.CommandHandler;
-import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
 import org.brokenarrow.library.menusettings.utillity.GuiTypeUtillity;
 import org.bukkit.entity.Player;
@@ -182,18 +181,6 @@ public final class MenuSettings {
     @Nullable
     public CommandHandler getCommandHandler() {
         return commandHandler;
-    }
-
-    /**
-     * Retrieve the execution context.
-     *
-     * @return returns the execution context.
-     */
-    @Nullable
-    public MenuPlaceholderContext getMenuExecutionContext() {
-        if (commandHandler != null)
-            return commandHandler.getMenuExecutionContext();
-        return null;
     }
 
     public Builder getBuilder() {

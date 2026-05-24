@@ -192,4 +192,14 @@ public class RequirementsContext {
 
         return future;
     }
+
+    @Override
+    public String toString() {
+        return "RequirementsContext{" +
+                "requirements=" + requirements +
+                ", minimumRequirements=" + minimumRequirements +
+                ", stopAtSuccess=" + stopAtSuccess +
+                ", denyCommands=" + denyCommands +
+                '}';
+    }
 }

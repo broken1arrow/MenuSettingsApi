@@ -107,8 +107,8 @@ public class HasItemRequirement extends Requirement {
             }
             if (this.wrapper.getLore() != null) {
                 if (itemMetaOnInventoryItem.hasLore()) {
-                    String itemToMatch = getLore(this.wrapper.getLore(), wiver);
-                    String itemInInventory = getLore(itemMetaOnInventoryItem.getLore(), wiver);
+                    String itemToMatch = getLore(menuPlaceholderContext, this.wrapper.getLore(), wiver);
+                    String itemInInventory = getLore(menuPlaceholderContext, itemMetaOnInventoryItem.getLore(), wiver);
                     CheckTypes types = null;
 
                     if (itemChecks.isCheckLoreContains())
@@ -145,10 +145,10 @@ public class HasItemRequirement extends Requirement {
         return true;
     }
 
-    private String getLore(List<String> loreList, Player player) {
+    private String getLore(@Nullable final MenuPlaceholderContext menuPlaceholderContext, List<String> loreList, Player player) {
         if (loreList == null) return "";
 
-        return loreList.stream().map((lore) -> MenuSettingsAddon.setPlaceholders(player, lore))
+        return loreList.stream().map((lore) -> MenuSettingsAddon.setPlaceholders(player, lore, menuPlaceholderContext))
                 .map(CreateItemStack::formatColors).collect(Collectors.joining("&&"));
     }
 

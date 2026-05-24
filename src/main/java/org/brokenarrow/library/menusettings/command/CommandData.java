@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class CommandData {
-    private String menuId;
     private final List<Argument> argumentList = new ArrayList<>();
     private RequirementsContext argsRequirement;
 
@@ -27,5 +26,14 @@ public class CommandData {
 
     public void setArgsRequirement(RequirementsContext argsRequirement) {
         this.argsRequirement = argsRequirement;
+    }
+
+
+    @Override
+    public String toString() {
+        return "CommandData{" +
+                "argumentList=" + argumentList +
+                ", argsRequirement=" + argsRequirement +
+                '}';
     }
 }

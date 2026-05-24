@@ -54,7 +54,8 @@ public final class MenuSession {
      * This will load the settings for the specified menu from the plugin's menu cache.
      *
      * @param plugin                 the plugin instance that registered the menu
-     * @param menuPlaceholderContext the context after player run command registered trough the config.
+     * @param menuPlaceholderContext the placeholder context derived from command arguments,
+     *                               or {@code null} if the menu was not opened via a command
      * @param menuName               the name of the menu to load
      * @param player                 the player who will view the menu
      */

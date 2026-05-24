@@ -4,6 +4,7 @@ import org.broken.arrow.library.command.CommandRegister;
 import org.broken.arrow.library.command.builers.CommandBuilder;
 import org.broken.arrow.library.command.command.CommandHolder;
 import org.brokenarrow.library.menusettings.MenuSession;
+import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,33 +24,36 @@ public class CommandHandler {
     private final String menuId;
     private final CommandRegister commandRegister;
     private final Map<String, CommandData> commandsData;
-    private MenuPlaceholderContext menuPlaceholderContext;
-    private FunctionCommand runCommand;
+    private final ClickActionHandler openCommandsAction;
+    private MenuCommandExecutor onMenuCommandExecutor;
 
     public CommandHandler(@NotNull final Plugin plugin, @NotNull final String menuId, @NotNull final Consumer<CommandHandlerSettings> callback) {
         this.plugin = plugin;
         this.menuId = menuId;
         CommandHandlerSettings settings = new CommandHandlerSettings();
         callback.accept(settings);
+
+        this.openCommandsAction = settings.getOpenCommandsAction();
         final List<String> openCommands = settings.getOpenCommands();
         final List<?> openArguments = settings.getOpenArguments();
         RequirementsContext openArgsRequirement = settings.getOpenArgsRequirement();
 
         this.commandsData = this.registerCommands(openCommands, openArguments, openArgsRequirement);
+        System.out.println("this.commandsData " + this.commandsData);
         this.commandRegister = new CommandRegister();
     }
 
-    @Nullable
-    public MenuPlaceholderContext getMenuExecutionContext() {
-        return menuPlaceholderContext;
+
+    public MenuCommandExecutor getMenuCommandExecutor() {
+        return onMenuCommandExecutor;
     }
 
-    public FunctionCommand getRunCommand() {
-        return runCommand;
+    public void setRunCommand(@Nonnull final MenuCommandExecutor onMenuCommandExecutor) {
+        this.onMenuCommandExecutor = onMenuCommandExecutor;
     }
 
-    public void setRunCommand(@Nonnull final FunctionCommand runCommand) {
-        this.runCommand = runCommand;
+    public ClickActionHandler getOpenCommandsAction() {
+        return openCommandsAction;
     }
 
     public class SubCommand extends CommandHolder {
@@ -61,12 +65,12 @@ public class CommandHandler {
         @Override
         public boolean onCommand(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] cmdArg) {
             this.checkConsole();
-
-            CommandData commandData = commandsData.get(commandLabel);
+            final int index = commandLabel.indexOf(":");
+            final CommandData commandData = commandsData.get(index > 0 ? commandLabel.substring(index + 1) : commandLabel);
             if (commandData != null) {
                 final MenuPlaceholderContext menuPlaceholderContext = new MenuPlaceholderContext((Player) sender, commandData.getArgumentsList(), cmdArg);
                 final MenuSession session = new MenuSession(plugin, menuPlaceholderContext, menuId, (Player) sender);
-                return runCommand.apply(session, menuPlaceholderContext);
+                return onMenuCommandExecutor.execute(session, menuPlaceholderContext);
             }
             return false;
         }

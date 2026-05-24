@@ -73,4 +73,15 @@ public abstract class Requirement {
 	public void setClickActionTask(ClickActionTask clickActionTask) {
 		this.clickActionTask = clickActionTask;
 	}
+
+	@Override
+	public String toString() {
+		return "Requirement{" +
+				"optional=" + optional +
+				", denyCommands=" + denyCommands +
+				", successCommands=" + successCommands +
+				", clickRequirementType=" + clickRequirementType +
+				", clickActionTask=" + clickActionTask +
+				'}';
+	}
 }

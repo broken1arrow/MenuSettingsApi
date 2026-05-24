@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,14 +98,24 @@ public class MenuCache extends SimpleYamlHelper {
         if (interval < 1)
             interval = config.getInt(key + ".Update_all_buttons_delay");
         final boolean updateButtons = config.getBoolean(key + ".Shall_update_on_interval");
+
         final List<String> openCommands = config.getStringList(key + ".Open_commands");
-        final List<?> openArguments = config.getList(key + ".Open_args");
-        final RequirementsContext openArgsRequirement = yamlConfigMapper.checkRequirements("Menus." + key, "Open_args_requirement");
         ClickActionHandler openCommandsAction = yamlConfigMapper.checkCommands("Menus." + key, "Open_commands");
+
+        final String args = key + ".Open_args";
+        System.out.println("args path " + args);
+        final List<?> openArguments = config.getList(args + ".Args");
+        List<String> message = config.getStringList(args + ".Message");
+        if (message.isEmpty())
+            message = Collections.singletonList(config.getString(args + ".Message"));
+
+        final RequirementsContext openArgsRequirement = yamlConfigMapper.checkRequirements("Menus." + args, "Args_requirement");
 
         if (openCommandsAction != null && openCommandsAction.isActionTaskListEmpty()) {
             openCommandsAction = null;
         }
+        final ClickActionHandler finalOpenCommandsAction = openCommandsAction;
+        final List<String> finalMessage = message;
 
         String path = key + ".Menu_Items";
         if (!config.contains(path))
@@ -165,10 +176,13 @@ public class MenuCache extends SimpleYamlHelper {
                 }
             }
 
+
         CommandHandler commandHandler = new CommandHandler(plugin, menuName, commandHandlerSettings -> {
             commandHandlerSettings.setOpenCommands(openCommands);
+            commandHandlerSettings.setOpenAction(finalOpenCommandsAction);
             commandHandlerSettings.setOpenArguments(openArguments);
             commandHandlerSettings.setOpenArgsRequirement(openArgsRequirement);
+            commandHandlerSettings.setArgsMissingMessage(finalMessage);
         });
 
         MenuSettings.Builder builder = new MenuSettings.Builder()

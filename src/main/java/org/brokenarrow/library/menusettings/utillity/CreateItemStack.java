@@ -138,7 +138,7 @@ public class CreateItemStack {
 
         if (itemWrapper.getDynamicAmount() != null) {
             try {
-                createItemStack.setAmoutOfItems(Integer.parseInt(setPlaceholders(player, itemWrapper.getDynamicAmount())));
+                createItemStack.setAmoutOfItems(Integer.parseInt(MenuSettingsAddon.setPlaceholders(player, itemWrapper.getDynamicAmount(),menuPlaceholderContext)));
             } catch (NumberFormatException exception) {
                 exception.printStackTrace();
             } finally {
