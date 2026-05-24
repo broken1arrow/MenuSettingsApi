@@ -221,8 +221,8 @@
                                 </relocation>
 
                                 <relocation>
-                                    <pattern>org.broken.lib</pattern>
-                                    <shadedPattern>${project.groupId}.${project.artifactId}.rbglib</shadedPattern>
+                                    <pattern>org.broken.library</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.lib</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

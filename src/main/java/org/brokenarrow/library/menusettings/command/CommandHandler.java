@@ -32,15 +32,15 @@ public class CommandHandler {
         this.menuId = menuId;
         CommandHandlerSettings settings = new CommandHandlerSettings();
         callback.accept(settings);
-
         this.openCommandsAction = settings.getOpenCommandsAction();
+
         final List<String> openCommands = settings.getOpenCommands();
         final List<?> openArguments = settings.getOpenArguments();
         RequirementsContext openArgsRequirement = settings.getOpenArgsRequirement();
 
+        this.commandRegister = new CommandRegister();
         this.commandsData = this.registerCommands(openCommands, openArguments, openArgsRequirement);
         System.out.println("this.commandsData " + this.commandsData);
-        this.commandRegister = new CommandRegister();
     }
 
 

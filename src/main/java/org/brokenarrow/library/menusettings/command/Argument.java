@@ -28,4 +28,13 @@ public class Argument {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return "Argument{" +
+                "argument='" + argument + '\'' +
+                ", optional=" + optional +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }

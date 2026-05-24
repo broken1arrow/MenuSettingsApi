@@ -109,7 +109,7 @@ public class MenuCache extends SimpleYamlHelper {
         if (message.isEmpty())
             message = Collections.singletonList(config.getString(args + ".Message"));
 
-        final RequirementsContext openArgsRequirement = yamlConfigMapper.checkRequirements("Menus." + args, "Args_requirement");
+        final RequirementsContext openArgsRequirement = yamlConfigMapper.checkRequirements(args, "Args_requirement");
 
         if (openCommandsAction != null && openCommandsAction.isActionTaskListEmpty()) {
             openCommandsAction = null;
@@ -193,7 +193,7 @@ public class MenuCache extends SimpleYamlHelper {
                 .setGlobalDelay(interval)
                 .setMenuTitle(menuTitle)
                 .setSound(sound)
-                .setOpenRequirement(yamlConfigMapper.checkRequirements("Menus." + key, "Open_requirement"))
+                .setOpenRequirement(yamlConfigMapper.checkRequirements(key, "Open_requirement"))
                 .setUpdateButtonsInterval(updateButtons)
                 .setRefreshAllButtons(refreshAll)
                 .setCommandHandler(commandHandler);
