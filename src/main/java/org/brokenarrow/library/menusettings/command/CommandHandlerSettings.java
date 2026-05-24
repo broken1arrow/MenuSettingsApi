@@ -11,6 +11,11 @@ public class CommandHandlerSettings {
     private RequirementsContext openArgsRequirement;
     private ClickActionHandler openCommandsAction;
     private List<String> message;
+    private RequirementsContext openRequirement;
+
+    public RequirementsContext getOpenRequirement() {
+        return openRequirement;
+    }
 
     public List<String> getOpenCommands() {
         return openCommands;
@@ -50,5 +55,9 @@ public class CommandHandlerSettings {
 
     public void setArgsMissingMessage(List<String> message) {
         this.message = message;
+    }
+
+    public void setOpenRequirement(final RequirementsContext openRequirement) {
+        this.openRequirement = openRequirement;
     }
 }

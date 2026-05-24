@@ -99,23 +99,25 @@ public class MenuCache extends SimpleYamlHelper {
             interval = config.getInt(key + ".Update_all_buttons_delay");
         final boolean updateButtons = config.getBoolean(key + ".Shall_update_on_interval");
 
+        final RequirementsContext openRequirement = yamlConfigMapper.checkRequirements(key, "Open_requirement");
         final List<String> openCommands = config.getStringList(key + ".Open_commands");
-        ClickActionHandler openCommandsAction = yamlConfigMapper.checkCommands("Menus." + key, "Open_commands");
-
-        final String args = key + ".Open_args";
-        System.out.println("args path " + args);
-        final List<?> openArguments = config.getList(args + ".Args");
-        List<String> message = config.getStringList(args + ".Message");
-        if (message.isEmpty())
-            message = Collections.singletonList(config.getString(args + ".Message"));
-
-        final RequirementsContext openArgsRequirement = yamlConfigMapper.checkRequirements(args, "Args_requirement");
-
+        openCommands.removeIf(s -> s.startsWith("["));
+        ClickActionHandler openCommandsAction = yamlConfigMapper.checkCommands(key, "Open_commands");
         if (openCommandsAction != null && openCommandsAction.isActionTaskListEmpty()) {
             openCommandsAction = null;
         }
         final ClickActionHandler finalOpenCommandsAction = openCommandsAction;
+
+        String args = key + ".Open_args";
+        if (!config.contains(args))
+            args = key + "Open_args";
+
+        final List<?> openArguments = config.getList(args + ".Args");
+        List<String> message = config.getStringList(args + ".Message");
+        if (message.isEmpty())
+            message = Collections.singletonList(config.getString(args + ".Message"));
         final List<String> finalMessage = message;
+        final RequirementsContext openArgsRequirement = yamlConfigMapper.checkRequirements(args, "Args_requirement");
 
         String path = key + ".Menu_Items";
         if (!config.contains(path))
@@ -178,12 +180,14 @@ public class MenuCache extends SimpleYamlHelper {
 
 
         CommandHandler commandHandler = new CommandHandler(plugin, menuName, commandHandlerSettings -> {
+            commandHandlerSettings.setOpenRequirement(openRequirement);
             commandHandlerSettings.setOpenCommands(openCommands);
             commandHandlerSettings.setOpenAction(finalOpenCommandsAction);
             commandHandlerSettings.setOpenArguments(openArguments);
             commandHandlerSettings.setOpenArgsRequirement(openArgsRequirement);
             commandHandlerSettings.setArgsMissingMessage(finalMessage);
         });
+
 
         MenuSettings.Builder builder = new MenuSettings.Builder()
                 .setMenuType(menuType)
@@ -193,7 +197,7 @@ public class MenuCache extends SimpleYamlHelper {
                 .setGlobalDelay(interval)
                 .setMenuTitle(menuTitle)
                 .setSound(sound)
-                .setOpenRequirement(yamlConfigMapper.checkRequirements(key, "Open_requirement"))
+                .setOpenRequirement(openRequirement)
                 .setUpdateButtonsInterval(updateButtons)
                 .setRefreshAllButtons(refreshAll)
                 .setCommandHandler(commandHandler);

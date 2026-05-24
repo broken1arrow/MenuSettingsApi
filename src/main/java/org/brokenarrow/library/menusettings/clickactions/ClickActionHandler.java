@@ -59,4 +59,11 @@ public class ClickActionHandler {
         }
         return future;
     }
+
+    @Override
+    public String toString() {
+        return "ClickActionHandler{" +
+                "clickActionTaskList=" + clickActionTaskList +
+                '}';
+    }
 }

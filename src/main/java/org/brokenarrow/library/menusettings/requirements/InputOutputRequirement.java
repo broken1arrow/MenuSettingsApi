@@ -64,4 +64,13 @@ public class InputOutputRequirement extends Requirement {
                 }
         }
     }
+
+    @Override
+    public String toString() {
+        return "InputOutputRequirement{" +
+                "type=" + type +
+                ", input='" + input + '\'' +
+                ", output='" + output + '\'' +
+                "} " + super.toString();
+    }
 }

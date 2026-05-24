@@ -6,6 +6,7 @@ import org.broken.arrow.library.command.command.CommandHolder;
 import org.brokenarrow.library.menusettings.MenuSession;
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
+import org.brokenarrow.library.menusettings.utillity.RequirementResultHandler;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -18,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class CommandHandler {
     private final Plugin plugin;
@@ -25,6 +27,7 @@ public class CommandHandler {
     private final CommandRegister commandRegister;
     private final Map<String, CommandData> commandsData;
     private final ClickActionHandler openCommandsAction;
+    private final RequirementsContext openRequirement;
     private MenuCommandExecutor onMenuCommandExecutor;
 
     public CommandHandler(@NotNull final Plugin plugin, @NotNull final String menuId, @NotNull final Consumer<CommandHandlerSettings> callback) {
@@ -33,6 +36,7 @@ public class CommandHandler {
         CommandHandlerSettings settings = new CommandHandlerSettings();
         callback.accept(settings);
         this.openCommandsAction = settings.getOpenCommandsAction();
+        this.openRequirement = settings.getOpenRequirement();
 
         final List<String> openCommands = settings.getOpenCommands();
         final List<?> openArguments = settings.getOpenArguments();
@@ -40,6 +44,7 @@ public class CommandHandler {
 
         this.commandRegister = new CommandRegister();
         this.commandsData = this.registerCommands(openCommands, openArguments, openArgsRequirement);
+        System.out.println("this.commandsData keySet " + this.commandsData.keySet());
         System.out.println("this.commandsData " + this.commandsData);
     }
 
@@ -68,11 +73,55 @@ public class CommandHandler {
             final int index = commandLabel.indexOf(":");
             final CommandData commandData = commandsData.get(index > 0 ? commandLabel.substring(index + 1) : commandLabel);
             if (commandData != null) {
-                final MenuPlaceholderContext menuPlaceholderContext = new MenuPlaceholderContext((Player) sender, commandData.getArgumentsList(), cmdArg);
-                final MenuSession session = new MenuSession(plugin, menuPlaceholderContext, menuId, (Player) sender);
+                if (openRequirement != null) {
+
+                }
+                Player player = (Player) sender;
+                final MenuPlaceholderContext menuPlaceholderContext = new MenuPlaceholderContext(player, commandData.getArgumentsList(), cmdArg);
+                final MenuSession session = new MenuSession(plugin, menuPlaceholderContext, menuId, player);
+                boolean success = false;
+                openRequirements(session, () -> true);
                 return onMenuCommandExecutor.execute(session, menuPlaceholderContext);
             }
             return false;
+        }
+
+        private boolean openRequirements(MenuSession session, Supplier<Boolean> success) {
+            session.checkOpenRequirements("", resultHandler -> {
+                resultHandler.onSuccess(() -> {
+
+                });
+
+            });
+            return success.get();
+        }
+
+        /**
+         * Checks whether the player meets the requirements to open this menu.
+         *
+         * @param bypassPermission a permission node to bypass the requirements, if applicable
+         * @param resultCallback   configures actions to execute on success or failure
+         */
+        public void checkOpenRequirements(@Nonnull final Player viewer, @Nonnull final MenuPlaceholderContext menuPlaceholderContext, @Nullable final String bypassPermission, @Nonnull final Consumer<RequirementResultHandler> resultCallback) {
+            final RequirementResultHandler handler = new RequirementResultHandler();
+            resultCallback.accept(handler);
+            if (viewer != null && bypassPermission != null && !bypassPermission.isEmpty() && viewer.hasPermission(bypassPermission)) {
+                handler.executeSuccess();
+                return;
+            }
+
+            if (openRequirement != null) {
+                openRequirement.estimateLater(viewer, menuPlaceholderContext, hasRequirements -> {
+                    if (hasRequirements) {
+                        handler.executeSuccess();
+                    } else {
+                        if (openRequirement.getDenyCommands() != null)
+                            openRequirement.runClickActionTasks(openRequirement.getDenyCommands(), viewer, menuPlaceholderContext).thenRun(handler::executeFailure);
+                    }
+                });
+            } else {
+                handler.executeSuccess();
+            }
         }
     }
 

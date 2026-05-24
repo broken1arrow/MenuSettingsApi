@@ -89,7 +89,7 @@
         <dependency>
             <groupId>org.broken.arrow.library</groupId>
             <artifactId>commands</artifactId>
-            <version>0.134</version>
+            <version>0.135</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

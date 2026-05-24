@@ -27,4 +27,13 @@ public class HasMoneyRequirement extends Requirement {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "HasMoneyRequirement{" +
+                "menuDataRegister=" + menuDataRegister +
+                ", invert=" + invert +
+                ", amount='" + amount + '\'' +
+                "} " + super.toString();
+    }
 }

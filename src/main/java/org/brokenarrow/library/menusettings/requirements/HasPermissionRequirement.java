@@ -20,4 +20,12 @@ public class HasPermissionRequirement extends Requirement {
     boolean estimate(@NotNull final Player wiver, @Nullable final MenuPlaceholderContext menuPlaceholderContext) {
         return this.inverted != wiver.hasPermission(MenuSettingsAddon.setPlaceholders(wiver, permission, menuPlaceholderContext));
     }
+
+    @Override
+    public String toString() {
+        return "HasPermissionRequirement{" +
+                "permission='" + permission + '\'' +
+                ", inverted=" + inverted +
+                "} " + super.toString();
+    }
 }

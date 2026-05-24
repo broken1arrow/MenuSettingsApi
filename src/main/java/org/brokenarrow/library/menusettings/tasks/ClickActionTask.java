@@ -381,4 +381,18 @@ public class ClickActionTask {
         }
     }
 
+    @Override
+    public String toString() {
+        return "ClickActionTask{" +
+                "plugin=" + plugin +
+                ", menuName='" + menuName + '\'' +
+                ", actionType=" + actionType +
+                ", menuContext=" + menuContext +
+                ", openCloseAction=" + openCloseAction +
+                ", executable='" + executable + '\'' +
+                ", delay='" + delay + '\'' +
+                ", chance='" + chance + '\'' +
+                ", menuDataRegister=" + menuDataRegister +
+                '}';
+    }
 }

@@ -2,7 +2,7 @@ package org.brokenarrow.library.menusettings.clickactions;
 
 public enum ClickRequirementType {
 	OPEN_REQUIREMENT("Open_requirement"),
-	OPEN_ARGS_REQUIREMENT("Open_args_requirement"),
+	OPEN_ARGS_REQUIREMENT("Args_requirement"),
 	VIEW_REQUIREMENT("View_requirement"),
 	LEFT_CLICK_REQUIREMENT("Left_click_requirement"),
 	RIGHT_CLICK_REQUIREMENT("Right_click_requirement"),

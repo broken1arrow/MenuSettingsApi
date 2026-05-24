@@ -70,8 +70,8 @@ public final class YamlConfigMapper {
 
         if (!clickType.contains("_requirement")) return null;
         String innerPath = path + "." + clickType + ".Requirement";
-
         ConfigurationSection innerRequirementSection = this.getConfig().getConfigurationSection(innerPath);
+
         if (innerRequirementSection == null) return null;
         List<Requirement> requirementsList = new ArrayList<>();
         for (String requirement : innerRequirementSection.getKeys(false)) {
@@ -230,10 +230,16 @@ public final class YamlConfigMapper {
         switch (requirementType) {
             case HAS_PERMISSION:
             case DO_NOT_HAVE_PERMISSION:
-                if (permission != null)
+                if (permission != null) {
                     rec = new HasPermissionRequirement(permission, requirementType == DO_NOT_HAVE_PERMISSION);
-                else
-                    logger.log(Level.INFO, "Permission key is null");
+                } else {
+                    if (input != null) {
+                        rec = new HasPermissionRequirement(input, requirementType == DO_NOT_HAVE_PERMISSION);
+                    } else {
+                        logger.log(Level.INFO, "Both the permission and input key is null, just must set a value " +
+                                "to one of the keys to make it work for this click type: " + clickType);
+                    }
+                }
                 break;
             case HAS_MONEY:
             case DO_NOT_HAVE_MONEY:
