@@ -195,6 +195,8 @@
                                     <include>org.broken.arrow.library:item-creator</include>
                                     <include>org.broken.arrow.library:log-and-validate</include>
                                     <include>org.broken.arrow.library:version</include>
+                                    <include>org.broken.arrow.library:commands</include>
+                                    <include>org.broken.arrow.library:color-conversion</include>
                                     <include>com.github.broken1arrow:*</include>
                                 </includes>
                                 <excludes>
