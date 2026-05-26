@@ -129,8 +129,8 @@ public final class MenuSettingsAddon extends JavaPlugin {
         final MenuRegistrationConfig config = new MenuRegistrationConfig();
         configCallBack.accept(config);
 
-        MenuCache menuCache = new MenuCache(plugin, name, config);
-        TemplatesCache templatesCache = new TemplatesCache(plugin);
+        final MenuCache menuCache = new MenuCache(plugin, name, config);
+        final TemplatesCache templatesCache = new TemplatesCache(plugin);
         menuDataRegister.addMenuCache(plugin, menuCache, templatesCache);
         if (config.getAudiences() != null)
             menuDataRegister.setAudiences(config.getAudiences());

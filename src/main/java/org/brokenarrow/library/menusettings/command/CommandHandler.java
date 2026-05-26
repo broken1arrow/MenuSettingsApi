@@ -3,6 +3,7 @@ package org.brokenarrow.library.menusettings.command;
 import org.broken.arrow.library.command.CommandRegister;
 import org.broken.arrow.library.command.builers.CommandBuilder;
 import org.broken.arrow.library.command.command.CommandHolder;
+import org.broken.arrow.library.logging.Logging;
 import org.brokenarrow.library.menusettings.MenuSession;
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
@@ -21,12 +22,12 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class CommandHandler {
+    private Logging logging = new Logging(CommandHandler.class);
     private final Plugin plugin;
     private final String menuId;
     private final CommandRegister commandRegister;
     private final Map<String, CommandData> commandsData;
     private final ClickActionHandler openCommandsAction;
-    private final RequirementsContext openRequirement;
     private final List<String> messages;
     private MenuCommandExecutor onMenuCommandExecutor;
 
@@ -36,7 +37,6 @@ public class CommandHandler {
         CommandHandlerSettings settings = new CommandHandlerSettings();
         callback.accept(settings);
         this.openCommandsAction = settings.getOpenCommandsAction();
-        this.openRequirement = settings.getOpenRequirement();
         this.messages = settings.getMessage();
 
         final List<String> openCommands = settings.getOpenCommands();
@@ -46,10 +46,7 @@ public class CommandHandler {
 
         this.commandRegister = new CommandRegister();
         this.commandsData = this.registerCommands(overridePermission, openCommands, openArguments, openArgsRequirement);
-        System.out.println("this.commandsData keySet " + this.commandsData.keySet());
-        System.out.println("this.commandsData " + this.commandsData);
     }
-
 
     public MenuCommandExecutor getMenuCommandExecutor() {
         return onMenuCommandExecutor;
@@ -57,10 +54,6 @@ public class CommandHandler {
 
     public void setRunCommand(@Nonnull final MenuCommandExecutor onMenuCommandExecutor) {
         this.onMenuCommandExecutor = onMenuCommandExecutor;
-    }
-
-    public ClickActionHandler getOpenCommandsAction() {
-        return openCommandsAction;
     }
 
     public class SubCommand extends CommandHolder {
@@ -72,6 +65,12 @@ public class CommandHandler {
         @Override
         public boolean onCommand(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] cmdArg) {
             this.checkConsole();
+
+            if (onMenuCommandExecutor == null) {
+                logging.log(() -> "Not implemented the option to set commands in config");
+                return false;
+            }
+
             final int index = commandLabel.indexOf(":");
             final CommandData commandData = commandsData.get(index > 0 ? commandLabel.substring(index + 1) : commandLabel);
             if (commandData != null) {

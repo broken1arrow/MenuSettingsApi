@@ -11,12 +11,9 @@ public class CommandHandlerSettings {
     private RequirementsContext openArgsRequirement;
     private ClickActionHandler openCommandsAction;
     private List<String> message;
-    private RequirementsContext openRequirement;
     private String overridePermission;
 
-    public RequirementsContext getOpenRequirement() {
-        return openRequirement;
-    }
+
 
     public List<String> getOpenCommands() {
         return openCommands;
@@ -62,9 +59,6 @@ public class CommandHandlerSettings {
         this.message = message;
     }
 
-    public void setOpenRequirement(final RequirementsContext openRequirement) {
-        this.openRequirement = openRequirement;
-    }
 
     public void setOverridePermission(final String overridePermission) {
         this.overridePermission = overridePermission;

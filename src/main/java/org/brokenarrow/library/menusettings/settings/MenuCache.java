@@ -5,6 +5,7 @@ import org.brokenarrow.library.menusettings.builders.MenuRegistrationConfig;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
 import org.brokenarrow.library.menusettings.command.CommandHandler;
+import org.brokenarrow.library.menusettings.command.MenuCommandExecutor;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
 import org.brokenarrow.library.menusettings.utillity.MenuActionHandler;
 import org.bukkit.configuration.ConfigurationSection;
@@ -25,11 +26,13 @@ import static org.brokenarrow.library.menusettings.settings.ConfigParsingUtils.s
 
 public class MenuCache extends SimpleYamlHelper {
     private final MenuActionHandler openCloseAction;
+    private final MenuCommandExecutor menuCommandExecutor;
     private Map<String, MenuSettings> menuCache = new HashMap<>();
 
     public MenuCache(@NotNull final Plugin plugin, final String name, final MenuRegistrationConfig config) {
         super(plugin, name, config.isOneFile(), config.isGenerateDefaultFiles());
-        openCloseAction = config.getActionHandler();
+        this.openCloseAction = config.getActionHandler();
+        this.menuCommandExecutor = config.getMenuCommandExecutor();
     }
 
     /**
@@ -181,7 +184,6 @@ public class MenuCache extends SimpleYamlHelper {
 
 
         CommandHandler commandHandler = new CommandHandler(plugin, menuName, commandHandlerSettings -> {
-            commandHandlerSettings.setOpenRequirement(openRequirement);
             commandHandlerSettings.setOpenCommands(openCommands);
             commandHandlerSettings.setOverridePermission(overridePermission );
             commandHandlerSettings.setOpenAction(finalOpenCommandsAction);
@@ -189,7 +191,7 @@ public class MenuCache extends SimpleYamlHelper {
             commandHandlerSettings.setOpenArgsRequirement(openArgsRequirement);
             commandHandlerSettings.setArgsMissingMessage(finalMessage);
         });
-
+        commandHandler.setRunCommand(menuCommandExecutor);
 
         MenuSettings.Builder builder = new MenuSettings.Builder()
                 .setMenuType(menuType)

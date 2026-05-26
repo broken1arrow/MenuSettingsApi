@@ -1,6 +1,7 @@
 package org.brokenarrow.library.menusettings.builders;
 
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import org.brokenarrow.library.menusettings.command.MenuCommandExecutor;
 import org.brokenarrow.library.menusettings.utillity.MenuActionHandler;
 
 /**
@@ -18,6 +19,7 @@ public class MenuRegistrationConfig {
     private  boolean oneFile;
     private  boolean generateDefaultFiles;
     private  MenuActionHandler actionHandler;
+    private MenuCommandExecutor menuCommandExecutor;
 
     /**
      * Returns whether a single file is used for all menus.
@@ -81,6 +83,24 @@ public class MenuRegistrationConfig {
      */
     public void setActionHandler(MenuActionHandler actionHandler) {
         this.actionHandler = actionHandler;
+    }
+
+    /**
+     * Retrieve the set CommandExecutor for open the menu.
+     *
+     * @return the instance of the MenuCommandExecutor.
+     */
+    public MenuCommandExecutor getMenuCommandExecutor() {
+        return menuCommandExecutor;
+    }
+
+    /**
+     * Handle when open commands is set in the config
+     *
+     * @param menuCommandExecutor The callback after the command is executed.
+     */
+    public void setMenuCommandExecutor(MenuCommandExecutor menuCommandExecutor) {
+        this.menuCommandExecutor = menuCommandExecutor;
     }
 
     /**
