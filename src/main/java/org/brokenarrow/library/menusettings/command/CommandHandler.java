@@ -6,7 +6,7 @@ import org.broken.arrow.library.command.command.CommandHolder;
 import org.brokenarrow.library.menusettings.MenuSession;
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
-import org.brokenarrow.library.menusettings.utillity.RequirementResultHandler;
+import org.brokenarrow.library.menusettings.utillity.CreateItemStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -19,7 +19,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class CommandHandler {
     private final Plugin plugin;
@@ -28,6 +27,7 @@ public class CommandHandler {
     private final Map<String, CommandData> commandsData;
     private final ClickActionHandler openCommandsAction;
     private final RequirementsContext openRequirement;
+    private final List<String> messages;
     private MenuCommandExecutor onMenuCommandExecutor;
 
     public CommandHandler(@NotNull final Plugin plugin, @NotNull final String menuId, @NotNull final Consumer<CommandHandlerSettings> callback) {
@@ -37,13 +37,15 @@ public class CommandHandler {
         callback.accept(settings);
         this.openCommandsAction = settings.getOpenCommandsAction();
         this.openRequirement = settings.getOpenRequirement();
+        this.messages = settings.getMessage();
 
         final List<String> openCommands = settings.getOpenCommands();
         final List<?> openArguments = settings.getOpenArguments();
         RequirementsContext openArgsRequirement = settings.getOpenArgsRequirement();
+        String overridePermission = settings.getOverridePermission();
 
         this.commandRegister = new CommandRegister();
-        this.commandsData = this.registerCommands(openCommands, openArguments, openArgsRequirement);
+        this.commandsData = this.registerCommands(overridePermission, openCommands, openArguments, openArgsRequirement);
         System.out.println("this.commandsData keySet " + this.commandsData.keySet());
         System.out.println("this.commandsData " + this.commandsData);
     }
@@ -73,59 +75,40 @@ public class CommandHandler {
             final int index = commandLabel.indexOf(":");
             final CommandData commandData = commandsData.get(index > 0 ? commandLabel.substring(index + 1) : commandLabel);
             if (commandData != null) {
-                if (openRequirement != null) {
+                List<Argument> argumentsList = commandData.getArgumentsList();
+                if (checkCorrectArgumentsSet(sender, cmdArg, argumentsList)) return false;
 
-                }
                 Player player = (Player) sender;
-                final MenuPlaceholderContext menuPlaceholderContext = new MenuPlaceholderContext(player, commandData.getArgumentsList(), cmdArg);
+                final MenuPlaceholderContext menuPlaceholderContext = new MenuPlaceholderContext(player, argumentsList, cmdArg);
                 final MenuSession session = new MenuSession(plugin, menuPlaceholderContext, menuId, player);
-                boolean success = false;
-                openRequirements(session, () -> true);
-                return onMenuCommandExecutor.execute(session, menuPlaceholderContext);
+                session.checkOpenRequirements(commandData.getOverridePermission(), resultHandler -> {
+                    resultHandler.onSuccess(() -> {
+                        onMenuCommandExecutor.execute(session, menuPlaceholderContext);
+                    });
+                });
+                return true;
             }
             return false;
         }
 
-        private boolean openRequirements(MenuSession session, Supplier<Boolean> success) {
-            session.checkOpenRequirements("", resultHandler -> {
-                resultHandler.onSuccess(() -> {
+        private boolean checkCorrectArgumentsSet(@NotNull final CommandSender sender, @NotNull final String[] cmdArg, @NotNull final List<Argument> argumentsList) {
+            final long required = argumentsList.stream()
+                    .filter(arg -> !arg.isOptional())
+                    .count();
+            final int provided = cmdArg.length;
+            final int max = argumentsList.size();
+            final boolean valid = provided >= required && provided <= max;
 
-                });
-
-            });
-            return success.get();
-        }
-
-        /**
-         * Checks whether the player meets the requirements to open this menu.
-         *
-         * @param bypassPermission a permission node to bypass the requirements, if applicable
-         * @param resultCallback   configures actions to execute on success or failure
-         */
-        public void checkOpenRequirements(@Nonnull final Player viewer, @Nonnull final MenuPlaceholderContext menuPlaceholderContext, @Nullable final String bypassPermission, @Nonnull final Consumer<RequirementResultHandler> resultCallback) {
-            final RequirementResultHandler handler = new RequirementResultHandler();
-            resultCallback.accept(handler);
-            if (viewer != null && bypassPermission != null && !bypassPermission.isEmpty() && viewer.hasPermission(bypassPermission)) {
-                handler.executeSuccess();
-                return;
+            if (!valid) {
+                for (String message : messages) {
+                    sender.sendMessage(CreateItemStack.translateColors(message));
+                }
             }
-
-            if (openRequirement != null) {
-                openRequirement.estimateLater(viewer, menuPlaceholderContext, hasRequirements -> {
-                    if (hasRequirements) {
-                        handler.executeSuccess();
-                    } else {
-                        if (openRequirement.getDenyCommands() != null)
-                            openRequirement.runClickActionTasks(openRequirement.getDenyCommands(), viewer, menuPlaceholderContext).thenRun(handler::executeFailure);
-                    }
-                });
-            } else {
-                handler.executeSuccess();
-            }
+            return valid;
         }
     }
 
-    private Map<String, CommandData> registerCommands(@NotNull final List<String> openCommands, @Nullable final List<?> arguments, @Nullable final RequirementsContext openArgsRequirement) {
+    private Map<String, CommandData> registerCommands(final String overridePermission, @NotNull final List<String> openCommands, @Nullable final List<?> arguments, @Nullable final RequirementsContext openArgsRequirement) {
         Map<String, CommandData> map = new LinkedHashMap<>();
         openCommands.forEach(command -> {
             final CommandData commandData = new CommandData();
@@ -149,6 +132,7 @@ public class CommandHandler {
             }
 
             this.registerMainCommand(command, argumentsList);
+            commandData.setOverridePermission(overridePermission);
             commandData.setArgsRequirement(openArgsRequirement);
             map.put(command, commandData);
         });

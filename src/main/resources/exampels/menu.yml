@@ -12,7 +12,9 @@ Menus:
     #time format depends on the plugin 
     Update_all_buttons_interval: -1
     Open_commands:
-      - maincommand
+      - menucommand
+    #This is used when the open command is set, remove key or set to empty string if override should not be used.
+    Override_permission: "menu.admin"
     Open_args:
       Args:
         - arg: player

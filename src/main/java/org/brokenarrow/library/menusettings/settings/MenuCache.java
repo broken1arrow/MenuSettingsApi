@@ -107,6 +107,7 @@ public class MenuCache extends SimpleYamlHelper {
             openCommandsAction = null;
         }
         final ClickActionHandler finalOpenCommandsAction = openCommandsAction;
+        final String overridePermission = config.getString(key + ".Override_permission");
 
         String args = key + ".Open_args";
         if (!config.contains(args))
@@ -182,6 +183,7 @@ public class MenuCache extends SimpleYamlHelper {
         CommandHandler commandHandler = new CommandHandler(plugin, menuName, commandHandlerSettings -> {
             commandHandlerSettings.setOpenRequirement(openRequirement);
             commandHandlerSettings.setOpenCommands(openCommands);
+            commandHandlerSettings.setOverridePermission(overridePermission );
             commandHandlerSettings.setOpenAction(finalOpenCommandsAction);
             commandHandlerSettings.setOpenArguments(openArguments);
             commandHandlerSettings.setOpenArgsRequirement(openArgsRequirement);

@@ -1012,10 +1012,10 @@ public class CreateItemStack {
         return lores;
     }
 
-    private String translateColors(final String rawSingelLine) {
-        return TextTranslator.toSpigotFormat(rawSingelLine);
-    }
 
+    public static String translateColors(final String rawSingleLine) {
+        return TextTranslator.toSpigotFormat(rawSingleLine);
+    }
 
     public static ItemStack createItemStackAsOne(Material material) {
         ItemStack itemstack = null;
