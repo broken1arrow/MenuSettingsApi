@@ -1,5 +1,6 @@
 package org.brokenarrow.library.menusettings.settings;
 
+import org.broken.arrow.library.command.CommandRegister;
 import org.brokenarrow.library.menusettings.builders.ButtonSettings;
 import org.brokenarrow.library.menusettings.builders.MenuRegistrationConfig;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
@@ -27,12 +28,14 @@ import static org.brokenarrow.library.menusettings.settings.ConfigParsingUtils.s
 public class MenuCache extends SimpleYamlHelper {
     private final MenuActionHandler openCloseAction;
     private final MenuCommandExecutor menuCommandExecutor;
+    private final CommandRegister commandRegister;
     private Map<String, MenuSettings> menuCache = new HashMap<>();
 
     public MenuCache(@NotNull final Plugin plugin, final String name, final MenuRegistrationConfig config) {
         super(plugin, name, config.isOneFile(), config.isGenerateDefaultFiles());
         this.openCloseAction = config.getActionHandler();
         this.menuCommandExecutor = config.getMenuCommandExecutor();
+        this.commandRegister = config.getCommandRegister();
     }
 
     /**
@@ -183,7 +186,7 @@ public class MenuCache extends SimpleYamlHelper {
             }
 
 
-        CommandHandler commandHandler = new CommandHandler(plugin, menuName, commandHandlerSettings -> {
+        CommandHandler commandHandler = new CommandHandler(plugin,commandRegister, menuName, commandHandlerSettings -> {
             commandHandlerSettings.setOpenCommands(openCommands);
             commandHandlerSettings.setOverridePermission(overridePermission );
             commandHandlerSettings.setOpenAction(finalOpenCommandsAction);

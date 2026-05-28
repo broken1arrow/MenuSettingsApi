@@ -5,7 +5,6 @@ import org.broken.arrow.library.command.builers.CommandBuilder;
 import org.broken.arrow.library.command.command.CommandHolder;
 import org.broken.arrow.library.logging.Logging;
 import org.brokenarrow.library.menusettings.MenuSession;
-import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
 import org.brokenarrow.library.menusettings.utillity.CreateItemStack;
 import org.bukkit.command.CommandSender;
@@ -27,16 +26,14 @@ public class CommandHandler {
     private final String menuId;
     private final CommandRegister commandRegister;
     private final Map<String, CommandData> commandsData;
-    private final ClickActionHandler openCommandsAction;
     private final List<String> messages;
     private MenuCommandExecutor onMenuCommandExecutor;
 
-    public CommandHandler(@NotNull final Plugin plugin, @NotNull final String menuId, @NotNull final Consumer<CommandHandlerSettings> callback) {
+    public CommandHandler(@NotNull final Plugin plugin, @NotNull final CommandRegister commandRegister, @NotNull final String menuId, @NotNull final Consumer<CommandHandlerSettings> callback) {
         this.plugin = plugin;
         this.menuId = menuId;
         CommandHandlerSettings settings = new CommandHandlerSettings();
         callback.accept(settings);
-        this.openCommandsAction = settings.getOpenCommandsAction();
         this.messages = settings.getMessage();
 
         final List<String> openCommands = settings.getOpenCommands();
@@ -44,7 +41,7 @@ public class CommandHandler {
         RequirementsContext openArgsRequirement = settings.getOpenArgsRequirement();
         String overridePermission = settings.getOverridePermission();
 
-        this.commandRegister = new CommandRegister();
+        this.commandRegister = commandRegister;
         this.commandsData = this.registerCommands(overridePermission, openCommands, openArguments, openArgsRequirement);
     }
 
@@ -68,14 +65,14 @@ public class CommandHandler {
 
             if (onMenuCommandExecutor == null) {
                 logging.log(() -> "Not implemented the option to set commands in config");
-                return false;
+                return true;
             }
 
             final int index = commandLabel.indexOf(":");
             final CommandData commandData = commandsData.get(index > 0 ? commandLabel.substring(index + 1) : commandLabel);
             if (commandData != null) {
                 List<Argument> argumentsList = commandData.getArgumentsList();
-                if (checkCorrectArgumentsSet(sender, cmdArg, argumentsList)) return false;
+                if (!checkCorrectArgumentsSet(sender, cmdArg, argumentsList)) return true;
 
                 Player player = (Player) sender;
                 final MenuPlaceholderContext menuPlaceholderContext = new MenuPlaceholderContext(player, argumentsList, cmdArg);
@@ -84,10 +81,32 @@ public class CommandHandler {
                     resultHandler.onSuccess(() -> {
                         onMenuCommandExecutor.execute(session, menuPlaceholderContext);
                     });
+                    resultHandler.onFailure(() -> {
+                        sender.sendMessage(CreateItemStack.translateColors("[" + plugin.getName() + "] Could not open the menu, do you not have the set conditions?"));
+
+                    });
                 });
                 return true;
             }
-            return false;
+            return true;
+        }
+
+        @Override
+        @Nullable
+        public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] cmdArgs) {
+            final int index = commandLabel.indexOf(":");
+            final CommandData commandData = commandsData.get(index > 0 ? commandLabel.substring(index + 1) : commandLabel);
+            if (commandData != null) {
+                final int provided = cmdArgs.length;
+                final List<Argument> argumentsList = commandData.getArgumentsList();
+                if (provided - 1 < argumentsList.size()) {
+                    Argument argument = argumentsList.get(provided == 0 ? 0 : provided - 1);
+                    if (argument != null && !argument.isOptional()) {
+                        return completeLastWord(argument.getArgument());
+                    }
+                }
+            }
+            return new ArrayList<>();
         }
 
         private boolean checkCorrectArgumentsSet(@NotNull final CommandSender sender, @NotNull final String[] cmdArg, @NotNull final List<Argument> argumentsList) {
@@ -97,7 +116,6 @@ public class CommandHandler {
             final int provided = cmdArg.length;
             final int max = argumentsList.size();
             final boolean valid = provided >= required && provided <= max;
-
             if (!valid) {
                 for (String message : messages) {
                     sender.sendMessage(CreateItemStack.translateColors(message));
@@ -139,12 +157,10 @@ public class CommandHandler {
     }
 
     private void registerMainCommand(@Nonnull final String mainCommandLabel, @Nonnull final List<String> subCommand) {
+        if (commandRegister.getCommand(mainCommandLabel) != null) return;
+
         final CommandBuilder mainCommand = commandRegister.registerCommand(plugin, mainCommandLabel);
-        if (!subCommand.isEmpty()) {
-            mainCommand.registerSubCommands(new SubCommand(subCommand.toArray(new String[0])));
-        } else {
-            mainCommand.setMainCommand(new SubCommand("main"));
-        }
+        mainCommand.setMainCommand(new SubCommand("main"));
     }
 
 }

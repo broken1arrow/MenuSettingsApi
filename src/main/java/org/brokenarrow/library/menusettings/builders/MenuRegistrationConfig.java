@@ -1,6 +1,7 @@
 package org.brokenarrow.library.menusettings.builders;
 
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import org.broken.arrow.library.command.CommandRegister;
 import org.brokenarrow.library.menusettings.command.MenuCommandExecutor;
 import org.brokenarrow.library.menusettings.utillity.MenuActionHandler;
 
@@ -20,6 +21,11 @@ public class MenuRegistrationConfig {
     private  boolean generateDefaultFiles;
     private  MenuActionHandler actionHandler;
     private MenuCommandExecutor menuCommandExecutor;
+    private final CommandRegister commandRegister;
+
+    public MenuRegistrationConfig() {
+        this.commandRegister = new CommandRegister();
+    }
 
     /**
      * Returns whether a single file is used for all menus.
@@ -46,6 +52,15 @@ public class MenuRegistrationConfig {
      */
     public boolean isGenerateDefaultFiles() {
         return generateDefaultFiles;
+    }
+
+    /**
+     * get the command register for this settings.
+     *
+     * @return the command register instance.
+     */
+    public CommandRegister getCommandRegister() {
+        return commandRegister;
     }
 
     /**

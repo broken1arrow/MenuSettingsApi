@@ -30,8 +30,6 @@ public class MenuSettingsListener implements Listener {
             this.permissionHook = new RegisterPermissionHook() ;
             plugin.getLogger().info("Hooked into Permission via event!");
         }
-        plugin.getLogger().info("ServiceRegisterEven getProvider trihgger " + event.getProvider());
-        plugin.getLogger().info("ServiceRegisterEven trihgger " + event.getProvider().getService());
     }
 
     public RegisterEconomyHook getEconomyHook() {
