@@ -1,7 +1,7 @@
 package org.brokenarrow.library.menusettings.requirements;
 
 import org.brokenarrow.library.menusettings.MenuSettingsAddon;
-import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
+import org.brokenarrow.library.menusettings.command.modal.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.tasks.ClickActionTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

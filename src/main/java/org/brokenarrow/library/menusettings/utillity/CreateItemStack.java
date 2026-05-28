@@ -6,7 +6,7 @@ import org.broken.lib.rbg.TextTranslator;
 import org.brokenarrow.library.menusettings.MenuDataRegister;
 import org.brokenarrow.library.menusettings.MenuSettingsAddon;
 import org.brokenarrow.library.menusettings.builders.ItemWrapper;
-import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
+import org.brokenarrow.library.menusettings.command.modal.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;

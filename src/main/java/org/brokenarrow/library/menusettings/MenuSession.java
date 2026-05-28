@@ -3,7 +3,7 @@ package org.brokenarrow.library.menusettings;
 import org.brokenarrow.library.menusettings.builders.ButtonContext;
 import org.brokenarrow.library.menusettings.builders.ButtonSettings;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
-import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
+import org.brokenarrow.library.menusettings.command.modal.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
 import org.brokenarrow.library.menusettings.settings.MenuCache;

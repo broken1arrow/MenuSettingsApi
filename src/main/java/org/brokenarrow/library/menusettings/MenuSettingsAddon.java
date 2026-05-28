@@ -4,7 +4,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.broken.arrow.library.nbt.RegisterNbtAPI;
 import org.brokenarrow.library.menusettings.builders.MenuRegistrationConfig;
-import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
+import org.brokenarrow.library.menusettings.command.modal.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.hooks.economy.RegisterEconomyHook;
 import org.brokenarrow.library.menusettings.hooks.permission.RegisterPermissionHook;
 import org.brokenarrow.library.menusettings.settings.MenuCache;

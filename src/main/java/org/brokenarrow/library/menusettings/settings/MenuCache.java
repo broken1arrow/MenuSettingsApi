@@ -6,7 +6,8 @@ import org.brokenarrow.library.menusettings.builders.MenuRegistrationConfig;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
 import org.brokenarrow.library.menusettings.command.CommandHandler;
-import org.brokenarrow.library.menusettings.command.MenuCommandExecutor;
+import org.brokenarrow.library.menusettings.command.modal.CommandHandlerSettings;
+import org.brokenarrow.library.menusettings.command.modal.MenuCommandExecutor;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
 import org.brokenarrow.library.menusettings.utillity.MenuActionHandler;
 import org.bukkit.configuration.ConfigurationSection;
@@ -29,6 +30,7 @@ public class MenuCache extends SimpleYamlHelper {
     private final MenuActionHandler openCloseAction;
     private final MenuCommandExecutor menuCommandExecutor;
     private final CommandRegister commandRegister;
+    private final Map<String, CommandHandler> commandHandlerCache = new HashMap<>();
     private Map<String, MenuSettings> menuCache = new HashMap<>();
 
     public MenuCache(@NotNull final Plugin plugin, final String name, final MenuRegistrationConfig config) {
@@ -59,7 +61,9 @@ public class MenuCache extends SimpleYamlHelper {
 
 
     public void clearMenuCache() {
-        menuCache = new HashMap<>();
+        this.menuCache.forEach((menuName, menuSettings) -> commandHandlerCache.put(menuName, menuSettings.getCommandHandler()));
+        this.menuCache = new HashMap<>();
+
     }
 
     @Override
@@ -185,16 +189,27 @@ public class MenuCache extends SimpleYamlHelper {
                 }
             }
 
-
-        CommandHandler commandHandler = new CommandHandler(plugin,commandRegister, menuName, commandHandlerSettings -> {
-            commandHandlerSettings.setOpenCommands(openCommands);
-            commandHandlerSettings.setOverridePermission(overridePermission );
-            commandHandlerSettings.setOpenAction(finalOpenCommandsAction);
-            commandHandlerSettings.setOpenArguments(openArguments);
-            commandHandlerSettings.setOpenArgsRequirement(openArgsRequirement);
-            commandHandlerSettings.setArgsMissingMessage(finalMessage);
-        });
-        commandHandler.setRunCommand(menuCommandExecutor);
+        CommandHandler commandHandler = commandHandlerCache.remove(menuName);
+        if (commandHandler != null) {
+            final CommandHandlerSettings settings = new CommandHandlerSettings();
+            settings.setOpenCommands(openCommands);
+            settings.setOverridePermission(overridePermission);
+            settings.setOpenAction(finalOpenCommandsAction);
+            settings.setOpenArguments(openArguments);
+            settings.setOpenArgsRequirement(openArgsRequirement);
+            settings.setArgsMissingMessage(finalMessage);
+            commandHandler.registerCommand(settings);
+        } else {
+            commandHandler = new CommandHandler(plugin, commandRegister, menuName, commandHandlerSettings -> {
+                commandHandlerSettings.setOpenCommands(openCommands);
+                commandHandlerSettings.setOverridePermission(overridePermission);
+                commandHandlerSettings.setOpenAction(finalOpenCommandsAction);
+                commandHandlerSettings.setOpenArguments(openArguments);
+                commandHandlerSettings.setOpenArgsRequirement(openArgsRequirement);
+                commandHandlerSettings.setArgsMissingMessage(finalMessage);
+            });
+            commandHandler.setRunCommand(menuCommandExecutor);
+        }
 
         MenuSettings.Builder builder = new MenuSettings.Builder()
                 .setMenuType(menuType)

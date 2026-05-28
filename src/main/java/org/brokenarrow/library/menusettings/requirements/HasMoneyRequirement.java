@@ -2,7 +2,7 @@ package org.brokenarrow.library.menusettings.requirements;
 
 import org.brokenarrow.library.menusettings.MenuDataRegister;
 import org.brokenarrow.library.menusettings.MenuSettingsAddon;
-import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
+import org.brokenarrow.library.menusettings.command.modal.MenuPlaceholderContext;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

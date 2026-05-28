@@ -11,7 +11,7 @@ import org.brokenarrow.library.menusettings.builders.MenuContext;
 import org.brokenarrow.library.menusettings.builders.MenuSettings;
 import org.brokenarrow.library.menusettings.builders.Template;
 import org.brokenarrow.library.menusettings.clickactions.CommandActionType;
-import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
+import org.brokenarrow.library.menusettings.command.modal.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.settings.MenuCache;
 import org.brokenarrow.library.menusettings.settings.TemplatesCache;
 import org.brokenarrow.library.menusettings.utillity.MenuAction;

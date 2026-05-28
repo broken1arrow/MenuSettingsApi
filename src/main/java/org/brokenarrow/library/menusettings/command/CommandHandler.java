@@ -5,6 +5,11 @@ import org.broken.arrow.library.command.builers.CommandBuilder;
 import org.broken.arrow.library.command.command.CommandHolder;
 import org.broken.arrow.library.logging.Logging;
 import org.brokenarrow.library.menusettings.MenuSession;
+import org.brokenarrow.library.menusettings.command.modal.Argument;
+import org.brokenarrow.library.menusettings.command.modal.CommandData;
+import org.brokenarrow.library.menusettings.command.modal.CommandHandlerSettings;
+import org.brokenarrow.library.menusettings.command.modal.MenuCommandExecutor;
+import org.brokenarrow.library.menusettings.command.modal.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
 import org.brokenarrow.library.menusettings.utillity.CreateItemStack;
 import org.bukkit.command.CommandSender;
@@ -19,30 +24,25 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class CommandHandler {
-    private Logging logging = new Logging(CommandHandler.class);
+    private final Logging logging = new Logging(CommandHandler.class);
+    private final Map<String, CommandData> commandsData = new LinkedHashMap<>();
     private final Plugin plugin;
     private final String menuId;
     private final CommandRegister commandRegister;
-    private final Map<String, CommandData> commandsData;
-    private final List<String> messages;
+    private List<String> messages;
     private MenuCommandExecutor onMenuCommandExecutor;
 
     public CommandHandler(@NotNull final Plugin plugin, @NotNull final CommandRegister commandRegister, @NotNull final String menuId, @NotNull final Consumer<CommandHandlerSettings> callback) {
+        final CommandHandlerSettings settings = new CommandHandlerSettings();
+
         this.plugin = plugin;
         this.menuId = menuId;
-        CommandHandlerSettings settings = new CommandHandlerSettings();
         callback.accept(settings);
-        this.messages = settings.getMessage();
-
-        final List<String> openCommands = settings.getOpenCommands();
-        final List<?> openArguments = settings.getOpenArguments();
-        RequirementsContext openArgsRequirement = settings.getOpenArgsRequirement();
-        String overridePermission = settings.getOverridePermission();
-
         this.commandRegister = commandRegister;
-        this.commandsData = this.registerCommands(overridePermission, openCommands, openArguments, openArgsRequirement);
+        this.registerCommand(settings);
     }
 
     public MenuCommandExecutor getMenuCommandExecutor() {
@@ -53,9 +53,43 @@ public class CommandHandler {
         this.onMenuCommandExecutor = onMenuCommandExecutor;
     }
 
-    public class SubCommand extends CommandHolder {
+    public void registerCommand(@NotNull final CommandHandlerSettings settings) {
+        this.messages = settings.getMessage();
+        final List<String> openCommands = settings.getOpenCommands();
+        final List<?> openArguments = settings.getOpenArguments();
+        RequirementsContext openArgsRequirement = settings.getOpenArgsRequirement();
+        String overridePermission = settings.getOverridePermission();
 
-        public SubCommand(String... commandLabel) {
+        openCommands.forEach(command -> {
+            final CommandData commandData = new CommandData();
+            final List<String> argumentsList = new ArrayList<>();
+
+            if (openArguments != null && !openArguments.isEmpty()) {
+                openArguments.forEach(object -> {
+                    if (!(object instanceof Map)) return;
+                    Map<String, Object> mapOfArguments = (Map<String, Object>) object;
+                    commandData.addArgument(argument -> {
+                        Object arg = mapOfArguments.get("arg");
+                        if (arg != null) {
+                            final Object optional = mapOfArguments.get("optional");
+                            argument.setArgument(arg + "");
+                            argumentsList.add(arg + "");
+                            if (optional != null)
+                                argument.setOptional(Boolean.parseBoolean(optional + ""));
+                        }
+                    });
+                });
+            }
+            this.registerMainCommand(command, argumentsList);
+            commandData.setOverridePermission(overridePermission);
+            commandData.setArgsRequirement(openArgsRequirement);
+            commandsData.put(command, commandData);
+        });
+    }
+
+    public class MainCommand extends CommandHolder {
+
+        public MainCommand(String... commandLabel) {
             super(commandLabel);
         }
 
@@ -118,49 +152,19 @@ public class CommandHandler {
             final boolean valid = provided >= required && provided <= max;
             if (!valid) {
                 for (String message : messages) {
-                    sender.sendMessage(CreateItemStack.translateColors(message));
+                    sender.sendMessage(CreateItemStack.translateColors(message.replace("{arguments}", argumentsList.stream().map(Argument::getArgument).collect(Collectors.joining(", ")))));
                 }
             }
             return valid;
         }
     }
 
-    private Map<String, CommandData> registerCommands(final String overridePermission, @NotNull final List<String> openCommands, @Nullable final List<?> arguments, @Nullable final RequirementsContext openArgsRequirement) {
-        Map<String, CommandData> map = new LinkedHashMap<>();
-        openCommands.forEach(command -> {
-            final CommandData commandData = new CommandData();
-            final List<String> argumentsList = new ArrayList<>();
-
-            if (arguments != null && !arguments.isEmpty()) {
-                arguments.forEach(object -> {
-                    if (!(object instanceof Map)) return;
-                    Map<String, Object> mapOfArguments = (Map<String, Object>) object;
-                    commandData.addArgument(argument -> {
-                        Object arg = mapOfArguments.get("arg");
-                        if (arg != null) {
-                            final Object optional = mapOfArguments.get("optional");
-                            argument.setArgument(arg + "");
-                            argumentsList.add(arg + "");
-                            if (optional != null)
-                                argument.setOptional(Boolean.parseBoolean(optional + ""));
-                        }
-                    });
-                });
-            }
-
-            this.registerMainCommand(command, argumentsList);
-            commandData.setOverridePermission(overridePermission);
-            commandData.setArgsRequirement(openArgsRequirement);
-            map.put(command, commandData);
-        });
-        return map;
-    }
 
     private void registerMainCommand(@Nonnull final String mainCommandLabel, @Nonnull final List<String> subCommand) {
         if (commandRegister.getCommand(mainCommandLabel) != null) return;
 
         final CommandBuilder mainCommand = commandRegister.registerCommand(plugin, mainCommandLabel);
-        mainCommand.setMainCommand(new SubCommand("main"));
+        mainCommand.setMainCommand(new MainCommand("main"));
     }
 
 }

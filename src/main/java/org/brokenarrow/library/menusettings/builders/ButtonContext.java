@@ -1,7 +1,7 @@
 package org.brokenarrow.library.menusettings.builders;
 
 import org.brokenarrow.library.menusettings.clickactions.ClickActionHandler;
-import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
+import org.brokenarrow.library.menusettings.command.modal.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.exceptions.Valid;
 import org.brokenarrow.library.menusettings.requirements.RequirementsContext;
 import org.brokenarrow.library.menusettings.utillity.CreateItemStack;

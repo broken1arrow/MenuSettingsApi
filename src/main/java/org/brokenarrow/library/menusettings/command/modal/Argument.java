@@ -1,4 +1,4 @@
-package org.brokenarrow.library.menusettings.command;
+package org.brokenarrow.library.menusettings.command.modal;
 
 public class Argument {
     private String argument;

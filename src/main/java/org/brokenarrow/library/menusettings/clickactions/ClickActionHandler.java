@@ -1,6 +1,6 @@
 package org.brokenarrow.library.menusettings.clickactions;
 
-import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
+import org.brokenarrow.library.menusettings.command.modal.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.tasks.ClickActionTask;
 import org.brokenarrow.library.menusettings.utillity.RunTimedTask;
 import org.bukkit.entity.Player;

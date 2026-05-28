@@ -2,7 +2,7 @@ package org.brokenarrow.library.menusettings.builders;
 
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.broken.arrow.library.command.CommandRegister;
-import org.brokenarrow.library.menusettings.command.MenuCommandExecutor;
+import org.brokenarrow.library.menusettings.command.modal.MenuCommandExecutor;
 import org.brokenarrow.library.menusettings.utillity.MenuActionHandler;
 
 /**

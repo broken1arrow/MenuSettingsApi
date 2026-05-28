@@ -1,7 +1,7 @@
 package org.brokenarrow.library.menusettings.requirements;
 
 import org.brokenarrow.library.menusettings.clickactions.ClickRequirementType;
-import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
+import org.brokenarrow.library.menusettings.command.modal.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.tasks.ClickActionTask;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

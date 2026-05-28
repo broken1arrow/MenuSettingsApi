@@ -3,7 +3,7 @@ package org.brokenarrow.library.menusettings.requirements;
 import org.brokenarrow.library.menusettings.MenuSettingsAddon;
 import org.brokenarrow.library.menusettings.builders.ItemChecks;
 import org.brokenarrow.library.menusettings.builders.ItemWrapper;
-import org.brokenarrow.library.menusettings.command.MenuPlaceholderContext;
+import org.brokenarrow.library.menusettings.command.modal.MenuPlaceholderContext;
 import org.brokenarrow.library.menusettings.utillity.CreateItemStack;
 import org.brokenarrow.library.menusettings.utillity.ServerVersion;
 import org.bukkit.Material;
