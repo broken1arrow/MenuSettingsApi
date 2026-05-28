@@ -152,7 +152,11 @@ public class CommandHandler {
             final boolean valid = provided >= required && provided <= max;
             if (!valid) {
                 for (String message : messages) {
-                    sender.sendMessage(CreateItemStack.translateColors(message.replace("{arguments}", argumentsList.stream().map(Argument::getArgument).collect(Collectors.joining(", ")))));
+                    sender.sendMessage(CreateItemStack.translateColors(message.replace("{arguments}", argumentsList.stream()
+                            .filter(argument -> !argument.isOptional())
+                            .map(Argument::getArgument)
+                            .collect(Collectors.joining(", "))))
+                    );
                 }
             }
             return valid;
