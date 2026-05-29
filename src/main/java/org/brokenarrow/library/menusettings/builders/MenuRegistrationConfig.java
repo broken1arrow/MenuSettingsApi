@@ -5,6 +5,8 @@ import org.broken.arrow.library.command.CommandRegister;
 import org.brokenarrow.library.menusettings.command.modal.MenuCommandExecutor;
 import org.brokenarrow.library.menusettings.utillity.MenuActionHandler;
 
+import javax.annotation.Nonnull;
+
 /**
  * Configuration object used during menu registration with the API.
  *
@@ -41,7 +43,7 @@ public class MenuRegistrationConfig {
      *
      * @param oneFile {@code true} to use one file, {@code false} for separate files
      */
-    public void setOneFile(boolean oneFile) {
+    public void setOneFile(final boolean oneFile) {
         this.oneFile = oneFile;
     }
 
@@ -55,7 +57,7 @@ public class MenuRegistrationConfig {
     }
 
     /**
-     * get the command register for this settings.
+     * Retries the command register for this menu instance.
      *
      * @return the command register instance.
      */
@@ -68,7 +70,7 @@ public class MenuRegistrationConfig {
      *
      * @param generateDefaultFiles {@code true} to generate missing files, otherwise {@code false}
      */
-    public void setGenerateDefaultFiles(boolean generateDefaultFiles) {
+    public void setGenerateDefaultFiles(final boolean generateDefaultFiles) {
         this.generateDefaultFiles = generateDefaultFiles;
     }
 
@@ -96,25 +98,44 @@ public class MenuRegistrationConfig {
      *
      * @param actionHandler the handler to use, or {@code null} to use the default/fallback behavior
      */
-    public void setActionHandler(MenuActionHandler actionHandler) {
+    public void setActionHandler(final MenuActionHandler actionHandler) {
         this.actionHandler = actionHandler;
     }
 
     /**
-     * Retrieve the set CommandExecutor for open the menu.
+     * Returns the currently configured {@link MenuCommandExecutor}.
      *
-     * @return the instance of the MenuCommandExecutor.
+     * @return the command executor, or {@code null} if none has been set
      */
     public MenuCommandExecutor getMenuCommandExecutor() {
         return menuCommandExecutor;
     }
 
     /**
-     * Handle when open commands is set in the config
+     * Sets the {@link MenuCommandExecutor} used to handle execution of menu open commands.
      *
-     * @param menuCommandExecutor The callback after the command is executed.
+     * <p>This executor is invoked after:
+     * <ul>
+     *     <li>A configured open command is executed by a player</li>
+     *     <li>All command arguments are validated</li>
+     *     <li>Any defined requirements or permissions are successfully passed</li>
+     * </ul>
+     *
+     * <p>The executor provides access to:
+     * <ul>
+     *     <li>The active {@link org.brokenarrow.library.menusettings.MenuSession}</li>
+     *     <li>The {@link org.brokenarrow.library.menusettings.command.modal.MenuPlaceholderContext} containing parsed command arguments</li>
+     * </ul>
+     *
+     * <p>This allows developers to inject custom logic before or during menu opening,
+     * such as modifying placeholders, cancelling execution, or performing additional checks.</p>
+     *
+     * <p>If no executor is set, commands defined in menu configurations will not perform
+     * anything like open a menu.</p>
+     *
+     * @param menuCommandExecutor the executor responsible for handling command execution
      */
-    public void setMenuCommandExecutor(MenuCommandExecutor menuCommandExecutor) {
+    public void setMenuCommandExecutor(@Nonnull final MenuCommandExecutor menuCommandExecutor) {
         this.menuCommandExecutor = menuCommandExecutor;
     }
 

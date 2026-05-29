@@ -30,7 +30,7 @@ public class MenuCache extends SimpleYamlHelper {
     private final MenuActionHandler openCloseAction;
     private final MenuCommandExecutor menuCommandExecutor;
     private final CommandRegister commandRegister;
-    private final Map<String, CommandHandler> commandHandlerCache = new HashMap<>();
+    private final Map<String, CommandHandler> previousCommandHandlers = new HashMap<>();
     private Map<String, MenuSettings> menuCache = new HashMap<>();
 
     public MenuCache(@NotNull final Plugin plugin, final String name, final MenuRegistrationConfig config) {
@@ -61,7 +61,7 @@ public class MenuCache extends SimpleYamlHelper {
 
 
     public void clearMenuCache() {
-        this.menuCache.forEach((menuName, menuSettings) -> commandHandlerCache.put(menuName, menuSettings.getCommandHandler()));
+        this.menuCache.forEach((menuName, menuSettings) -> previousCommandHandlers.put(menuName, menuSettings.getCommandHandler()));
         this.menuCache = new HashMap<>();
 
     }
@@ -189,7 +189,7 @@ public class MenuCache extends SimpleYamlHelper {
                 }
             }
 
-        CommandHandler commandHandler = commandHandlerCache.remove(menuName);
+        CommandHandler commandHandler = previousCommandHandlers.remove(menuName);
         if (commandHandler != null) {
             final CommandHandlerSettings settings = new CommandHandlerSettings();
             settings.setOpenCommands(openCommands);
@@ -198,6 +198,8 @@ public class MenuCache extends SimpleYamlHelper {
             settings.setOpenArguments(openArguments);
             settings.setOpenArgsRequirement(openArgsRequirement);
             settings.setArgsMissingMessage(finalMessage);
+
+            commandHandler.resetRegisteredCommands();
             commandHandler.registerCommand(settings);
         } else {
             commandHandler = new CommandHandler(plugin, commandRegister, menuName, commandHandlerSettings -> {
@@ -208,7 +210,7 @@ public class MenuCache extends SimpleYamlHelper {
                 commandHandlerSettings.setOpenArgsRequirement(openArgsRequirement);
                 commandHandlerSettings.setArgsMissingMessage(finalMessage);
             });
-            commandHandler.setRunCommand(menuCommandExecutor);
+            commandHandler.setCommandExecutor(menuCommandExecutor);
         }
 
         MenuSettings.Builder builder = new MenuSettings.Builder()
@@ -226,6 +228,5 @@ public class MenuCache extends SimpleYamlHelper {
 
         return builder.build();
     }
-
 
 }

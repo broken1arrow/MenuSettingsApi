@@ -1,10 +1,9 @@
 package org.brokenarrow.library.menusettings.command.modal;
 
-import org.bukkit.entity.Player;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 /**
  * Represents the execution context for a menu interaction.
  *
@@ -29,23 +28,30 @@ import java.util.Map;
  * <p>The context is immutable after creation.</p>
  */
 public class MenuPlaceholderContext {
-    private final Map<String, String> placeholders = new LinkedHashMap<>();
-    private final Player player;
+    private final Map<String, String> placeholdersMap = new LinkedHashMap<>();
 
-    public MenuPlaceholderContext(final Player player, final List<Argument> placeholders, final String[] inputArgs) {
-        this.player = player;
-        int i = 0;
-        for (Argument entry : placeholders) {
-            String value = (i < inputArgs.length) ? inputArgs[i] : "";
-            this.placeholders.put(entry.getArgument(), value);
-            i++;
+
+    public MenuPlaceholderContext(final List<Argument> placeholders, final String[] inputArgs) {
+        placeholders.forEach(argument -> {
+            this.placeholdersMap.put(argument.getArgument(), "");
+        });
+        for (String arg : inputArgs) {
+            int lastIndex = arg.indexOf(":");
+            if (lastIndex < 0) continue;
+
+            for (Argument argument : placeholders) {
+                String argKey = argument.getArgument();
+                if (arg.startsWith(argKey + ":")) {
+                    this.placeholdersMap.put(argKey, arg.substring(lastIndex + 1));
+                }
+            }
         }
     }
 
     public String apply(final String text) {
         String result = text;
 
-        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+        for (Map.Entry<String, String> entry : placeholdersMap.entrySet()) {
             result = result.replace("{" + entry.getKey() + "}", entry.getValue());
         }
 

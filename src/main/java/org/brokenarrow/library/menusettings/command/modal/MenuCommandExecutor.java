@@ -22,8 +22,7 @@ public interface MenuCommandExecutor {
      *
      * @param session the active menu session for the player
      * @param context the placeholder context used for resolving dynamic values
-     * @return {@code true} if the command was handled successfully, otherwise {@code false}
      */
-    boolean execute(@Nonnull final MenuSession session, @Nonnull final MenuPlaceholderContext context);
+    void execute(@Nonnull final MenuSession session, @Nonnull final MenuPlaceholderContext context);
 
 }
