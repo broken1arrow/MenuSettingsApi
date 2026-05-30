@@ -200,7 +200,7 @@ public class CommandHandler {
             this.checkConsole();
 
             if (onMenuCommandExecutor == null) {
-                logging.log(() -> "Not implemented the option to set commands in config");
+                logging.log(() -> "Not implemented the option to set commands in config.");
                 return true;
             }
 
@@ -234,7 +234,7 @@ public class CommandHandler {
             if (commandData != null) {
                 final List<Argument> argumentsList = commandData.getArgumentsList();
                 return completeLastWord(argumentsList.stream()
-                        .filter(argument -> !argument.isOptional())
+                        //.filter(argument -> !argument.isOptional())
                         .map(argument -> argument.getArgument() + ":")
                         .collect(Collectors.toList()));
             }
