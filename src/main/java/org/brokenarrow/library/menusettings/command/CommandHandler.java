@@ -211,14 +211,14 @@ public class CommandHandler {
                 if (!checkCorrectArgumentsSet(sender, cmdArg, argumentsList)) return true;
 
                 Player player = (Player) sender;
-                final MenuPlaceholderContext menuPlaceholderContext = new MenuPlaceholderContext( argumentsList, cmdArg);
+                final MenuPlaceholderContext menuPlaceholderContext = new MenuPlaceholderContext(argumentsList, cmdArg);
                 final MenuSession session = new MenuSession(plugin, menuPlaceholderContext, menuId, player);
                 session.checkOpenRequirements(commandData.getOverridePermission(), resultHandler -> {
                     resultHandler.onSuccess(() -> {
                         onMenuCommandExecutor.execute(session, menuPlaceholderContext);
                     });
                     resultHandler.onFailure(() -> {
-                        logging.log(() -> "Could not open the menu, do you not have the set conditions?");
+                        logging.log(() -> "Could not open the menu '" + menuId + "', do you not have the set conditions?");
                     });
                 });
                 return true;
