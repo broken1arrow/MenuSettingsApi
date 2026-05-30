@@ -1,5 +1,6 @@
 package org.brokenarrow.library.menusettings.command.modal;
 
+import javax.annotation.Nonnull;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class MenuPlaceholderContext {
     private final Map<String, String> placeholdersMap = new LinkedHashMap<>();
 
 
-    public MenuPlaceholderContext(final List<Argument> placeholders, final String[] inputArgs) {
+    public MenuPlaceholderContext(@Nonnull final List<Argument> placeholders,@Nonnull final String[] inputArgs) {
         placeholders.forEach(argument -> {
             this.placeholdersMap.put(argument.getArgument(), "");
         });

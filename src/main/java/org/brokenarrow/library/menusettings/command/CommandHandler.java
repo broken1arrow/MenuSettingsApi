@@ -218,8 +218,7 @@ public class CommandHandler {
                         onMenuCommandExecutor.execute(session, menuPlaceholderContext);
                     });
                     resultHandler.onFailure(() -> {
-                        sender.sendMessage(CreateItemStack.translateColors("[" + plugin.getName() + "] Could not open the menu, do you not have the set conditions?"));
-
+                        logging.log(() -> "Could not open the menu, do you not have the set conditions?");
                     });
                 });
                 return true;
