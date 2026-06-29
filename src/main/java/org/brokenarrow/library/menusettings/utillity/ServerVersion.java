@@ -1,5 +1,6 @@
 package org.brokenarrow.library.menusettings.utillity;
 
+import org.broken.arrow.library.version.VersionUtil;
 import org.bukkit.plugin.Plugin;
 
 public enum ServerVersion {
@@ -21,47 +22,20 @@ public enum ServerVersion {
 	v1_4(4.0F),
 	v1_3_AND_BELOW(3.0F);
 
+	private static VersionUtil VERSION;
 	private final float version;
-	private static float currentServerVersion;
-
-	public static boolean equals(ServerVersion version) {
-		return serverVersion(version) == 0;
-	}
 
 	public static boolean newerThan(ServerVersion version) {
-		return serverVersion(version) > 0;
+		return VERSION.versionNewer(version.version );
 	}
 
 	public static boolean olderThan(ServerVersion version) {
-		return serverVersion(version) < 0;
+		return VERSION.versionOlder(version.version ) ;
 	}
 
-	public static float serverVersion(ServerVersion version) {
-		return currentServerVersion - version.getVersion();
-	}
 
 	public static void setServerVersion(Plugin plugin) {
-		String[] strings = plugin.getServer().getBukkitVersion().split("\\.");
-		String firstNumber;
-		String secondNumber;
-		String firstString = strings[1];
-		if (firstString.contains("-")) {
-			firstNumber = firstString.substring(0, firstString.lastIndexOf("-"));
-
-			secondNumber = firstString.substring(firstString.lastIndexOf("-") + 1);
-			int index = secondNumber.toUpperCase().indexOf("R");
-			if (index >= 0)
-				secondNumber = secondNumber.substring(index + 1);
-		} else {
-			String secondString = strings[2];
-			firstNumber = firstString;
-			secondNumber = secondString.substring(0, secondString.lastIndexOf("-"));
-		}
-		float version = Float.parseFloat(firstNumber + "." + secondNumber);
-		if (version < 20)
-			currentServerVersion = (float) Math.floor(version);
-		else
-			currentServerVersion = version;
+		VERSION = new VersionUtil(plugin);
 	}
 
 	ServerVersion(float version) {
@@ -69,11 +43,4 @@ public enum ServerVersion {
 
 	}
 
-	public float getVersion() {
-		return version;
-	}
-
-	public static float getCurrentServerVersion() {
-		return currentServerVersion;
-	}
 }

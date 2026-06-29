@@ -83,19 +83,19 @@
         <dependency>
             <groupId>org.broken.arrow.library</groupId>
             <artifactId>item-creator</artifactId>
-            <version>0.134</version>
+            <version>0.136</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.broken.arrow.library</groupId>
             <artifactId>commands</artifactId>
-            <version>0.135</version>
+            <version>0.136</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.broken.arrow.library</groupId>
             <artifactId>nbt</artifactId>
-            <version>0.134</version>
+            <version>0.136</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
